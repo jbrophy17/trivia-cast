@@ -28,4 +28,5 @@ aloud.
 
 The game is played as normal. As answers are correctly guessed, the reader will
 select them on the app and choose who guessed the answer. The receiver app will
-keep score.
+keep score. Score is displayed on the Chromecast at the end of each round and
+is available on the app at all times.
