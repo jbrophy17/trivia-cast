@@ -24,6 +24,14 @@
 		DCE24F0217EA966100C1615F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDA17EA966100C1615F /* Foundation.framework */; };
 		DCE24F0A17EA966100C1615F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DCE24F0817EA966100C1615F /* InfoPlist.strings */; };
 		DCE24F0D17EA966100C1615F /* TriviaCastTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F0C17EA966100C1615F /* TriviaCastTests.m */; };
+		DCE24F1E17EA968A00C1615F /* sampleInput.txt in Resources */ = {isa = PBXBuildFile; fileRef = DCE24F1717EA968A00C1615F /* sampleInput.txt */; };
+		DCE24F1F17EA968A00C1615F /* TVCGame.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F1917EA968A00C1615F /* TVCGame.m */; };
+		DCE24F2017EA968A00C1615F /* TVCPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F1B17EA968A00C1615F /* TVCPlayer.m */; };
+		DCE24F2117EA968A00C1615F /* TVCResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F1D17EA968A00C1615F /* TVCResponse.m */; };
+		DCE24F2717EB6FB300C1615F /* TVCCastDiscoveryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F2617EB6FB300C1615F /* TVCCastDiscoveryViewController.m */; };
+		DCE24F2F17EB85AE00C1615F /* GCKFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */; };
+		DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */; };
+		DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +68,20 @@
 		DCE24F0917EA966100C1615F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DCE24F0B17EA966100C1615F /* TriviaCastTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TriviaCastTests.h; sourceTree = "<group>"; };
 		DCE24F0C17EA966100C1615F /* TriviaCastTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TriviaCastTests.m; sourceTree = "<group>"; };
+		DCE24F1717EA968A00C1615F /* sampleInput.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sampleInput.txt; path = ../sampleInput.txt; sourceTree = "<group>"; };
+		DCE24F1817EA968A00C1615F /* TVCGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCGame.h; sourceTree = "<group>"; };
+		DCE24F1917EA968A00C1615F /* TVCGame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCGame.m; sourceTree = "<group>"; };
+		DCE24F1A17EA968A00C1615F /* TVCPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCPlayer.h; sourceTree = "<group>"; };
+		DCE24F1B17EA968A00C1615F /* TVCPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCPlayer.m; sourceTree = "<group>"; };
+		DCE24F1C17EA968A00C1615F /* TVCResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCResponse.h; sourceTree = "<group>"; };
+		DCE24F1D17EA968A00C1615F /* TVCResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCResponse.m; sourceTree = "<group>"; };
+		DCE24F2517EB6FB300C1615F /* TVCCastDiscoveryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCCastDiscoveryViewController.h; sourceTree = "<group>"; };
+		DCE24F2617EB6FB300C1615F /* TVCCastDiscoveryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCCastDiscoveryViewController.m; sourceTree = "<group>"; };
+		DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCKFramework.framework; path = ../../Desktop/GCKFramework.framework; sourceTree = "<group>"; };
+		DCE24F3517EBA9DA00C1615F /* TVCSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCSettingsViewController.h; sourceTree = "<group>"; };
+		DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCSettingsViewController.m; sourceTree = "<group>"; };
+		DCE24F3817EBE7DF00C1615F /* TVCLobbyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCLobbyViewController.h; sourceTree = "<group>"; };
+		DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCLobbyViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +92,7 @@
 				DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */,
 				DCE24EDB17EA966100C1615F /* Foundation.framework in Frameworks */,
 				DCE24EDD17EA966100C1615F /* CoreGraphics.framework in Frameworks */,
+				DCE24F2F17EB85AE00C1615F /* GCKFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +131,7 @@
 		DCE24ED717EA966100C1615F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */,
 				DCE24ED817EA966100C1615F /* UIKit.framework */,
 				DCE24EDA17EA966100C1615F /* Foundation.framework */,
 				DCE24EDC17EA966100C1615F /* CoreGraphics.framework */,
@@ -119,12 +143,14 @@
 		DCE24EDE17EA966100C1615F /* TriviaCast */ = {
 			isa = PBXGroup;
 			children = (
+				DCE24F2417EB6F8500C1615F /* ViewControllers */,
 				DCE24EE717EA966100C1615F /* TVCAppDelegate.h */,
 				DCE24EE817EA966100C1615F /* TVCAppDelegate.m */,
 				DCE24EF017EA966100C1615F /* MainStoryboard_iPhone.storyboard */,
 				DCE24EF317EA966100C1615F /* MainStoryboard_iPad.storyboard */,
 				DCE24EF617EA966100C1615F /* TVCViewController.h */,
 				DCE24EF717EA966100C1615F /* TVCViewController.m */,
+				DCE24F1617EA966A00C1615F /* Models */,
 				DCE24EDF17EA966100C1615F /* Supporting Files */,
 			);
 			path = TriviaCast;
@@ -133,6 +159,7 @@
 		DCE24EDF17EA966100C1615F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DCE24F1717EA968A00C1615F /* sampleInput.txt */,
 				DCE24EE017EA966100C1615F /* TriviaCast-Info.plist */,
 				DCE24EE117EA966100C1615F /* InfoPlist.strings */,
 				DCE24EE417EA966100C1615F /* main.m */,
@@ -161,6 +188,33 @@
 				DCE24F0817EA966100C1615F /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		DCE24F1617EA966A00C1615F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DCE24F1817EA968A00C1615F /* TVCGame.h */,
+				DCE24F1917EA968A00C1615F /* TVCGame.m */,
+				DCE24F1A17EA968A00C1615F /* TVCPlayer.h */,
+				DCE24F1B17EA968A00C1615F /* TVCPlayer.m */,
+				DCE24F1C17EA968A00C1615F /* TVCResponse.h */,
+				DCE24F1D17EA968A00C1615F /* TVCResponse.m */,
+			);
+			name = Models;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		DCE24F2417EB6F8500C1615F /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				DCE24F2517EB6FB300C1615F /* TVCCastDiscoveryViewController.h */,
+				DCE24F2617EB6FB300C1615F /* TVCCastDiscoveryViewController.m */,
+				DCE24F3517EBA9DA00C1615F /* TVCSettingsViewController.h */,
+				DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */,
+				DCE24F3817EBE7DF00C1615F /* TVCLobbyViewController.h */,
+				DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */,
+			);
+			name = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,6 +295,7 @@
 				DCE24EEF17EA966100C1615F /* Default-568h@2x.png in Resources */,
 				DCE24EF217EA966100C1615F /* MainStoryboard_iPhone.storyboard in Resources */,
 				DCE24EF517EA966100C1615F /* MainStoryboard_iPad.storyboard in Resources */,
+				DCE24F1E17EA968A00C1615F /* sampleInput.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +333,12 @@
 				DCE24EE517EA966100C1615F /* main.m in Sources */,
 				DCE24EE917EA966100C1615F /* TVCAppDelegate.m in Sources */,
 				DCE24EF817EA966100C1615F /* TVCViewController.m in Sources */,
+				DCE24F1F17EA968A00C1615F /* TVCGame.m in Sources */,
+				DCE24F2017EA968A00C1615F /* TVCPlayer.m in Sources */,
+				DCE24F2117EA968A00C1615F /* TVCResponse.m in Sources */,
+				DCE24F2717EB6FB300C1615F /* TVCCastDiscoveryViewController.m in Sources */,
+				DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */,
+				DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,10 +457,18 @@
 		DCE24F1117EA966100C1615F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Desktop\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "TriviaCast/TriviaCast-Prefix.pch";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "TriviaCast/TriviaCast-Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -407,10 +476,18 @@
 		DCE24F1217EA966100C1615F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Desktop\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "TriviaCast/TriviaCast-Prefix.pch";
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "TriviaCast/TriviaCast-Info.plist";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

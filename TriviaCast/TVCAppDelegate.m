@@ -8,11 +8,24 @@
 
 #import "TVCAppDelegate.h"
 
+#import <GCKFramework/GCKFramework.h>
+
+static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
+
+@interface TVCAppDelegate ()
+
+@property(nonatomic, strong, readwrite) GCKContext *context;
+
+@end
+
 @implementation TVCAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    self.context = [[GCKContext alloc] initWithUserAgent:@"triviaCast"];
+    self.deviceManager = [[GCKDeviceManager alloc] initWithContext:self.context];
+    
     return YES;
 }
 							
@@ -41,6 +54,16 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (NSString *)userName {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    return [userDefaults stringForKey:kUserDefaultsKeyUserName];
+}
+
+- (void)setUserName:(NSString *)userName {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setValue:userName forKey:kUserDefaultsKeyUserName];
 }
 
 @end

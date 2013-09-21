@@ -8,8 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
+
+@class GCKContext;
+@class GCKDevice;
+@class GCKDeviceManager;
+
 @interface TVCAppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
+@property(nonatomic, strong, readonly) GCKContext *context;
+
+@property(nonatomic, strong) UIWindow *window;
+
+@property(nonatomic, strong) GCKDeviceManager *deviceManager;
+
+- (NSString *)userName;
+- (void)setUserName:(NSString *)userName;
 
 @end
+
+#define appDelegate ((TVCAppDelegate *) [UIApplication sharedApplication].delegate)
