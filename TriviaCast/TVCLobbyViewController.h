@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <GCKFramework/GCKFramework.h>
 
 @interface TVCLobbyViewController : UIViewController
+
+@property (nonatomic, strong) GCKDevice * device;
 
 @end

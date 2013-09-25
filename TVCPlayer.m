@@ -10,11 +10,12 @@
 
 @implementation TVCPlayer
 
--(id) initWithName:(NSString *)name {
+-(id) initWithName:(NSString *)name andNumber:(NSInteger )number{
     self = [super init];
     
     if (self) {
         self.name = [NSString stringWithString:name];
+        self.playerNumber = number;
         self.score = 0;
         self.isReader = NO;
         self.isGuessing = NO;

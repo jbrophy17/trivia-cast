@@ -28,7 +28,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-   
+    self.nameInput.delegate = self;
+    NSString *userName = [appDelegate userName];
+    if (userName && userName.length > 0) {
+        [self.nameInput setText:userName];
+    }
 	// Do any additional setup after loading the view.
 }
 
@@ -42,10 +46,23 @@
     if ([self.nameInput hasText]) {
         NSString * name = [self.nameInput text];
         [appDelegate setUserName:name];
+        
     }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UITextFieldDelegate
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [self animateTextField: textField up: YES];
+}
+
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    [self animateTextField: textField up: NO];
+}
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     return [textField.text length] > 0;
@@ -55,9 +72,23 @@
     [textField resignFirstResponder];
     return YES;
 }
+
 - (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;
 }
 
+- (void) animateTextField: (UITextField*) textField up: (BOOL) up
+{
+    const int movementDistance = 80; // tweak as needed
+    const float movementDuration = 0.3f; // tweak as needed
+    
+    int movement = (up ? -movementDistance : movementDistance);
+    
+    [UIView beginAnimations: @"anim" context: nil];
+    [UIView setAnimationBeginsFromCurrentState: YES];
+    [UIView setAnimationDuration: movementDuration];
+    self.view.frame = CGRectOffset(self.view.frame, 0, movement);
+    [UIView commitAnimations];
+}
 
 @end

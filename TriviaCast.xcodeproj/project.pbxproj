@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC007F6617F15B4800342963 /* guesserIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6217F15B4800342963 /* guesserIcon.png */; };
+		DC007F6717F15B4800342963 /* guesserIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6317F15B4800342963 /* guesserIcon@2x.png */; };
+		DC007F6817F15B4800342963 /* readerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6417F15B4800342963 /* readerIcon.png */; };
+		DC007F6917F15B4800342963 /* readerIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6517F15B4800342963 /* readerIcon@2x.png */; };
+		DC007F6D17F1EEF700342963 /* TVCPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC007F6C17F1EEF700342963 /* TVCPickerView.m */; };
+		DC007F6F17F241BF00342963 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC007F6E17F241BF00342963 /* QuartzCore.framework */; };
+		DC007F7117F2889100342963 /* defaultProfile.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DC007F7017F2889100342963 /* defaultProfile.jpg */; };
 		DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24ED817EA966100C1615F /* UIKit.framework */; };
 		DCE24EDB17EA966100C1615F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDA17EA966100C1615F /* Foundation.framework */; };
 		DCE24EDD17EA966100C1615F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDC17EA966100C1615F /* CoreGraphics.framework */; };
@@ -32,6 +39,12 @@
 		DCE24F2F17EB85AE00C1615F /* GCKFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */; };
 		DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */; };
 		DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */; };
+		DCF84F6417EEB1EA00E52B11 /* TVCResponseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F6317EEB1EA00E52B11 /* TVCResponseViewController.m */; };
+		DCF84F6817EED01200E52B11 /* TVCMessageStream.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F6717EED01200E52B11 /* TVCMessageStream.m */; };
+		DCF84F6F17F0005F00E52B11 /* TVCReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F6E17F0005F00E52B11 /* TVCReaderViewController.m */; };
+		DCF84F7217F01AFB00E52B11 /* TVCGuesserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */; };
+		DCF84F7917F14B1400E52B11 /* guessButton.png in Resources */ = {isa = PBXBuildFile; fileRef = DCF84F7717F14B1400E52B11 /* guessButton.png */; };
+		DCF84F7A17F14B1400E52B11 /* guessButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DCF84F7817F14B1400E52B11 /* guessButton@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +58,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DC007F6217F15B4800342963 /* guesserIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guesserIcon.png; sourceTree = "<group>"; };
+		DC007F6317F15B4800342963 /* guesserIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guesserIcon@2x.png"; sourceTree = "<group>"; };
+		DC007F6417F15B4800342963 /* readerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readerIcon.png; sourceTree = "<group>"; };
+		DC007F6517F15B4800342963 /* readerIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "readerIcon@2x.png"; sourceTree = "<group>"; };
+		DC007F6B17F1EEF700342963 /* TVCPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCPickerView.h; sourceTree = "<group>"; };
+		DC007F6C17F1EEF700342963 /* TVCPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCPickerView.m; sourceTree = "<group>"; };
+		DC007F6E17F241BF00342963 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		DC007F7017F2889100342963 /* defaultProfile.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = defaultProfile.jpg; sourceTree = "<group>"; };
 		DCE24ED517EA966100C1615F /* TriviaCast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TriviaCast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE24ED817EA966100C1615F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCE24EDA17EA966100C1615F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -82,6 +103,16 @@
 		DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCSettingsViewController.m; sourceTree = "<group>"; };
 		DCE24F3817EBE7DF00C1615F /* TVCLobbyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCLobbyViewController.h; sourceTree = "<group>"; };
 		DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCLobbyViewController.m; sourceTree = "<group>"; };
+		DCF84F6217EEB1EA00E52B11 /* TVCResponseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCResponseViewController.h; sourceTree = "<group>"; };
+		DCF84F6317EEB1EA00E52B11 /* TVCResponseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCResponseViewController.m; sourceTree = "<group>"; };
+		DCF84F6617EED01200E52B11 /* TVCMessageStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCMessageStream.h; sourceTree = "<group>"; };
+		DCF84F6717EED01200E52B11 /* TVCMessageStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCMessageStream.m; sourceTree = "<group>"; };
+		DCF84F6D17F0005F00E52B11 /* TVCReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCReaderViewController.h; sourceTree = "<group>"; };
+		DCF84F6E17F0005F00E52B11 /* TVCReaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCReaderViewController.m; sourceTree = "<group>"; };
+		DCF84F7017F01AFB00E52B11 /* TVCGuesserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCGuesserViewController.h; sourceTree = "<group>"; };
+		DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCGuesserViewController.m; sourceTree = "<group>"; };
+		DCF84F7717F14B1400E52B11 /* guessButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guessButton.png; sourceTree = "<group>"; };
+		DCF84F7817F14B1400E52B11 /* guessButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guessButton@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC007F6F17F241BF00342963 /* QuartzCore.framework in Frameworks */,
 				DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */,
 				DCE24EDB17EA966100C1615F /* Foundation.framework in Frameworks */,
 				DCE24EDD17EA966100C1615F /* CoreGraphics.framework in Frameworks */,
@@ -109,6 +141,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC007F6A17F1EEBE00342963 /* Custom Views */ = {
+			isa = PBXGroup;
+			children = (
+				DC007F6B17F1EEF700342963 /* TVCPickerView.h */,
+				DC007F6C17F1EEF700342963 /* TVCPickerView.m */,
+			);
+			name = "Custom Views";
+			sourceTree = "<group>";
+		};
 		DCE24ECC17EA966100C1615F = {
 			isa = PBXGroup;
 			children = (
@@ -131,6 +172,7 @@
 		DCE24ED717EA966100C1615F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC007F6E17F241BF00342963 /* QuartzCore.framework */,
 				DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */,
 				DCE24ED817EA966100C1615F /* UIKit.framework */,
 				DCE24EDA17EA966100C1615F /* Foundation.framework */,
@@ -143,6 +185,8 @@
 		DCE24EDE17EA966100C1615F /* TriviaCast */ = {
 			isa = PBXGroup;
 			children = (
+				DC007F6A17F1EEBE00342963 /* Custom Views */,
+				DCF84F6517EECFDA00E52B11 /* Networking */,
 				DCE24F2417EB6F8500C1615F /* ViewControllers */,
 				DCE24EE717EA966100C1615F /* TVCAppDelegate.h */,
 				DCE24EE817EA966100C1615F /* TVCAppDelegate.m */,
@@ -159,6 +203,13 @@
 		DCE24EDF17EA966100C1615F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DC007F7017F2889100342963 /* defaultProfile.jpg */,
+				DC007F6217F15B4800342963 /* guesserIcon.png */,
+				DC007F6317F15B4800342963 /* guesserIcon@2x.png */,
+				DC007F6417F15B4800342963 /* readerIcon.png */,
+				DC007F6517F15B4800342963 /* readerIcon@2x.png */,
+				DCF84F7717F14B1400E52B11 /* guessButton.png */,
+				DCF84F7817F14B1400E52B11 /* guessButton@2x.png */,
 				DCE24F1717EA968A00C1615F /* sampleInput.txt */,
 				DCE24EE017EA966100C1615F /* TriviaCast-Info.plist */,
 				DCE24EE117EA966100C1615F /* InfoPlist.strings */,
@@ -213,8 +264,23 @@
 				DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */,
 				DCE24F3817EBE7DF00C1615F /* TVCLobbyViewController.h */,
 				DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */,
+				DCF84F6217EEB1EA00E52B11 /* TVCResponseViewController.h */,
+				DCF84F6317EEB1EA00E52B11 /* TVCResponseViewController.m */,
+				DCF84F6D17F0005F00E52B11 /* TVCReaderViewController.h */,
+				DCF84F6E17F0005F00E52B11 /* TVCReaderViewController.m */,
+				DCF84F7017F01AFB00E52B11 /* TVCGuesserViewController.h */,
+				DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */,
 			);
 			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		DCF84F6517EECFDA00E52B11 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				DCF84F6617EED01200E52B11 /* TVCMessageStream.h */,
+				DCF84F6717EED01200E52B11 /* TVCMessageStream.m */,
+			);
+			name = Networking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,12 +356,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCE24EE317EA966100C1615F /* InfoPlist.strings in Resources */,
+				DC007F6617F15B4800342963 /* guesserIcon.png in Resources */,
+				DC007F6717F15B4800342963 /* guesserIcon@2x.png in Resources */,
 				DCE24EEB17EA966100C1615F /* Default.png in Resources */,
 				DCE24EED17EA966100C1615F /* Default@2x.png in Resources */,
+				DC007F7117F2889100342963 /* defaultProfile.jpg in Resources */,
 				DCE24EEF17EA966100C1615F /* Default-568h@2x.png in Resources */,
 				DCE24EF217EA966100C1615F /* MainStoryboard_iPhone.storyboard in Resources */,
+				DCF84F7917F14B1400E52B11 /* guessButton.png in Resources */,
+				DCF84F7A17F14B1400E52B11 /* guessButton@2x.png in Resources */,
+				DC007F6817F15B4800342963 /* readerIcon.png in Resources */,
 				DCE24EF517EA966100C1615F /* MainStoryboard_iPad.storyboard in Resources */,
 				DCE24F1E17EA968A00C1615F /* sampleInput.txt in Resources */,
+				DC007F6917F15B4800342963 /* readerIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,12 +406,17 @@
 				DCE24EE517EA966100C1615F /* main.m in Sources */,
 				DCE24EE917EA966100C1615F /* TVCAppDelegate.m in Sources */,
 				DCE24EF817EA966100C1615F /* TVCViewController.m in Sources */,
+				DCF84F6F17F0005F00E52B11 /* TVCReaderViewController.m in Sources */,
 				DCE24F1F17EA968A00C1615F /* TVCGame.m in Sources */,
 				DCE24F2017EA968A00C1615F /* TVCPlayer.m in Sources */,
+				DC007F6D17F1EEF700342963 /* TVCPickerView.m in Sources */,
 				DCE24F2117EA968A00C1615F /* TVCResponse.m in Sources */,
 				DCE24F2717EB6FB300C1615F /* TVCCastDiscoveryViewController.m in Sources */,
 				DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */,
 				DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */,
+				DCF84F6817EED01200E52B11 /* TVCMessageStream.m in Sources */,
+				DCF84F6417EEB1EA00E52B11 /* TVCResponseViewController.m in Sources */,
+				DCF84F7217F01AFB00E52B11 /* TVCGuesserViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,6 +623,7 @@
 				DCE24F1217EA966100C1615F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DCE24F1317EA966100C1615F /* Build configuration list for PBXNativeTarget "TriviaCastTests" */ = {
 			isa = XCConfigurationList;
@@ -553,6 +632,7 @@
 				DCE24F1517EA966100C1615F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -9,7 +9,7 @@
 #import "TVCCastDiscoveryViewController.h"
 #import "TVCAppDelegate.h"
 #import <GCKFramework/GCKFramework.h>
-#import "TVCLobbyViewController.h"
+#import "TVCResponseViewController.h"
 #import "TVCSettingsViewController.h"
 
 @interface TVCCastDiscoveryViewController () <GCKDeviceManagerListener>
@@ -53,13 +53,8 @@
     
     NSString *userName = [appDelegate userName];
     if (!userName || [userName length] == 0) {
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPhone" bundle:nil];
-        TVCSettingsViewController *settingsVC = (TVCSettingsViewController *)[storyboard instantiateViewControllerWithIdentifier:@"SettingsPage"];
-        settingsVC.modalPresentationStyle = UIModalPresentationFormSheet;
-        settingsVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        [self presentViewController:settingsVC animated:YES completion:nil];
         
-        //[self performSegueWithIdentifier:@"Settings" sender:self];
+        [self performSegueWithIdentifier:@"Settings" sender:self];
     }
 }
 
@@ -121,9 +116,9 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"DeviceSelected"]) {
-        TVCLobbyViewController *viewController = segue.destinationViewController;
+        TVCResponseViewController *viewController = segue.destinationViewController;
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        //viewController.device = [_devices objectAtIndex:indexPath.row];
+        viewController.device = [_devices objectAtIndex:indexPath.row];
     }
 }
 

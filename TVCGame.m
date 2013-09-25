@@ -10,7 +10,7 @@
 
 @implementation TVCGame
 
--(id) initWithHost:(TVCPlayer *)host {
+-(id) initWithPlayers:(NSArray *)players {
     self = [super init];
     
     if(self) {
@@ -24,7 +24,7 @@
             NSLog(@"%@",s);
         }
         
-        [self.listOfPlayers addObject:host];
+        self.listOfPlayers = [NSMutableArray arrayWithArray:players];
         
     }
     

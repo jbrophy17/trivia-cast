@@ -18,6 +18,6 @@
 @property (nonatomic, strong) TVCPlayer * reader;
 @property (nonatomic, strong) TVCPlayer * guesser;
 
--(id) initWithHost:(TVCPlayer*) host;
+-(id) initWithPlayers:(NSArray*) players;
 
 @end
