@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, GameResult) {
  * @param opponent The name of the opponent.
  */
 - (void)didJoinGameAsPlayer:(TVCPlayer *)player
-          withOpponents:(NSArray *)opponents;
+          withPlayers:(NSArray *)players;
 
 /**
  * Called when the game could not be joined.
@@ -62,6 +62,25 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (void)didFailToJoinWithErrorMessage:(NSString *)message;
 
+
+/**
+ * Called when a new player successfully joined.
+ *
+ * @param player The player that joined.
+ */
+- (void)didRecieveNewPlayer:(TVCPlayer *)player;
+
+
+/**
+ * Called when the game sends out responses
+ *
+ * The two arrays correspond to eachother by index (i.e. the player number in index 0
+ * authored the response in index 0)
+ *
+ * @param responses The array of given responses
+ * @param players The array of player numbers corresponding to the responses
+ */
+- (void)didRecieveResponses:(NSArray*)responses forPlayers:(NSArray*)players;
 
 /**
  * Called when the responses are sent to the reader

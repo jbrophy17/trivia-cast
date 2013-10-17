@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "TVCPickerView.h"
+#import "TVCAppDelegate.h"
+#import "TVCDataSource.h"
 
 @interface TVCGuesserViewController : UIViewController <UIScrollViewDelegate, TVCPickerViewDelegate> {
     BOOL pageControlUsed;

@@ -9,6 +9,7 @@
 #import "TVCAppDelegate.h"
 
 #import <GCKFramework/GCKFramework.h>
+#import "TVCDataSource.h"
 
 static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 
@@ -25,7 +26,7 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     // Override point for customization after application launch.
     self.context = [[GCKContext alloc] initWithUserAgent:@"TriviaCast/1.0"];
     self.deviceManager = [[GCKDeviceManager alloc] initWithContext:self.context];
-    
+    _dataSource = [[TVCDataSource alloc] init];
     return YES;
 }
 							

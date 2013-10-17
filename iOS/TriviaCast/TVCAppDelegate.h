@@ -12,10 +12,13 @@
 @class GCKContext;
 @class GCKDevice;
 @class GCKDeviceManager;
+@class TVCDataSource;
 
 @interface TVCAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property(nonatomic, strong, readonly) GCKContext *context;
+
+@property(nonatomic, strong, readonly) TVCDataSource *dataSource;
 
 @property(nonatomic, strong) UIWindow *window;
 

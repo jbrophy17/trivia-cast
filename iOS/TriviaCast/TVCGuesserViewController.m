@@ -216,24 +216,23 @@
 #pragma mark TVCPickerViewDelegate methods
 
 - (void) didSelectPlayer:(int)player {
-    if ([self.responses count] == 1) {
-        //End of guessing logic
-        return;
+    
+    if ( [appDelegate.dataSource guessPlayer:player forResponse:[self.responses objectAtIndex:player]]){
+        //Check correctness
+        //if correct
+        [self.responses removeObjectAtIndex:self.pageControl.currentPage];
+        
+        if (self.pageControl.currentPage >= [self.responses count]) {
+            self.pageControl.currentPage = [self.responses count] -1;
+        }
+        
+        [self.players removeObjectAtIndex:player];
+        [self loadScrollView];
+        
+        
+        [self.scrollView setScrollEnabled:YES];
     }
     
-    //Check correctness
-    //if correct
-    [self.responses removeObjectAtIndex:self.pageControl.currentPage];
-    
-    if (self.pageControl.currentPage >= [self.responses count]) {
-        self.pageControl.currentPage = [self.responses count] -1;
-    }
-    
-    [self.players removeObjectAtIndex:player];
-    [self loadScrollView];
-    
-    
-    [self.scrollView setScrollEnabled:YES];
     
 }
 
