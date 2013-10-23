@@ -1,0 +1,18 @@
+Protocol
+
+Type:
+
+join - When a player attempts to join the game
+
+Responds with:
+
+joined - Lists all the players that are in the game
+
+
+Type: response - when a player submits a response
+playerNum: the player number that sent the response
+response: the text of the response
+
+Responds with:
+	responseReceived - True/False (whether the response was valid or not)
+
