@@ -7,6 +7,7 @@
 //
 
 #import "TVCDataSource.h"
+#import "TVCPlayer.h"
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
@@ -92,7 +93,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     _channel = _session.channel;
     if (!_channel) {
         NSString *message = NSLocalizedString(@"Could not establish channel.", nil);
-        //[self showErrorMessage:message popViewControllerOnOK:YES];
+        NSLog(message); //[self showErrorMessage:message popViewControllerOnOK:YES];
         [_session endSession];
     }
     
@@ -124,6 +125,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
           [error localizedDescription]);
     _messageStream = nil;
     NSString *message = NSLocalizedString(@"Could not start game.", nil);
+    NSLog(message);
     //[self showErrorMessage:message popViewControllerOnOK:YES];
 }
 
@@ -134,6 +136,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     _messageStream = nil;
     if (error) {
         NSString *message = NSLocalizedString(@"Lost connection.", nil);
+        NSLog(message);
     //    [self showErrorMessage:message popViewControllerOnOK:YES];
     }
 }
@@ -144,9 +147,9 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 // When the game has been joined, update the current player to whichever player
 // we joined as, update the game state to a new game, and keep track of the
 // opponent's name.
-- (void)didJoinGameAsPlayer:(int)player
+- (void)didJoinGameAsPlayer:(TVCPlayer*)player
           withPlayers:(NSArray *)players {
-    playerNumber = player;
+    playerNumber = [player playerNumber];
     self.players = [NSArray arrayWithArray:players];
 }
 
@@ -168,7 +171,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         [self.responseMap setObject:[responses objectAtIndex:i] forKey:[NSNumber numberWithInt:num]];
     }
 }
-
+/*
 // When the move is received, update the board state with the move, and update
 // the game state so that it is the other player's turn.
 - (void)didReceiveMoveByPlayer:(TicTacToePlayer)player
@@ -183,7 +186,9 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     [self.boardState setState:newState forSquareAtRow:(NSUInteger)row column:(NSUInteger)column];
     [_ticTacToeView setNeedsDisplay];
 }
+ */
 
+/*
 // Update the game board to show the winning strikethrough if there is a winner,
 // and show an alert indicating if the player won, lost, or the game was a draw.
 - (void)didEndGameWithResult:(GameResult)result
@@ -231,7 +236,9 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     }
     [_messageStream leaveGame];
 }
+*/
 
+/*
 // Converts the message stream representation of a win, which is a single
 // integer, to a TicTacToeWinType and (if necessary) the index at which that
 // win type applies.
@@ -252,6 +259,6 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         *winType = kTicTacToeWinTypeNone;
     }
 }
-
+*/
 
 @end

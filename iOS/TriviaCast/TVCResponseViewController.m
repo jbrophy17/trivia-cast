@@ -126,12 +126,12 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         NSLog(@"ERROR: %@", message);//[self showErrorMessage:message popViewControllerOnOK:YES];
         [_session endSession];
     }
-    
+    NSLog(@"%@",[_channel description]);
     _messageStream = [self createMessageStream];
     if ([_channel attachMessageStream:_messageStream]) {
         if (_messageStream.messageSink) {
             if (20 < _channel.sendBufferAvailableBytes) {
-                if ([_messageStream joinGameWithName:[self currentUserName]]) {
+                if (![_messageStream joinGameWithName:[self currentUserName]]) {
                     NSLog(@"Couldn't join game.");
                 }
             } else {
@@ -227,5 +227,6 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
 
 - (IBAction)submitAction:(id)sender {
+    NSLog(@"%hhd",[_messageStream joinGameWithName:[self currentUserName]]);
 }
 @end

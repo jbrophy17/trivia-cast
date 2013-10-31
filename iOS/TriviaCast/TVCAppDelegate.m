@@ -24,9 +24,9 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    self.context = [[GCKContext alloc] initWithUserAgent:@"TriviaCast/1.0"];
+    self.context = [[GCKContext alloc] initWithUserAgent:@"com.bears.triviaCast"];
     self.deviceManager = [[GCKDeviceManager alloc] initWithContext:self.context];
-    _dataSource = [[TVCDataSource alloc] init];
+    //_dataSource = [[TVCDataSource alloc] init];
     return YES;
 }
 							

@@ -23,7 +23,7 @@
 #import "TVCMessageStream.h"
 #import "TVCPlayer.h"
 
-static NSString * const kNamespace = @"com.google.chromecast.demo.tictactoe";
+static NSString * const kNamespace = @"com.bears.triviaCast";
 
 static NSString * const kKeyColumn = @"column";
 static NSString * const kKeyCommand = @"command";
@@ -82,9 +82,10 @@ static NSString * const kValuePlayerX = @"X";
 
 - (BOOL)joinGameWithName:(NSString *)name {
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    [payload gck_setStringValue:@"jeff is gay" forKey:@"type"];
     [payload gck_setStringValue:kValueCommandJoin forKey:kKeyCommand];
     [payload gck_setStringValue:name forKey:kKeyName];
-    
+    NSLog(@"%@",[payload valueForKey:@"type"]);
     return [self sendMessage:payload];
 }
 
@@ -127,7 +128,7 @@ static NSString * const kValuePlayerX = @"X";
         _joined = YES;
         self.player = player;
         
-        [self.delegate didJoinGameAsPlayer:player withOpponents:opponents];
+        //[self.delegate didJoinGameAsPlayer:player withOpponents:opponents];
         
     } else if ([event isEqualToString:kValueEventReader])
     {
