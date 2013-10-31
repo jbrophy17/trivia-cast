@@ -1,10 +1,20 @@
-<?php file_put_contents('log.txt', "\n\n======\n\nreceiver.html hit at " . date('g:i a n/j/y') . " by " . $_SERVER['REMOTE_ADDR'], FILE_APPEND); ?><html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <link rel="stylesheet" type="text/css" href="receiver.css?4" />
+        <link rel="stylesheet" type="text/css" href="receiver.css?4">
     </head>
 <body>
-    <div class="messages">
-        <h1>Waiting for Messages...</h1>
+    <div id="notification"><marquee><strong>Butthole Explorer</strong> will join the game after this round.</marquee></div>
+    <div id="content">
+        <h1>TriviaCast</h1>
+        <p id="instructions">Join using your mobile device, then we'll get started.</p>
+
+        <br /><br />
+
+        <h2>Current Players</h3>
+        <ul id="playerlist">
+
+        </ul>
     </div>
 </body>
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
