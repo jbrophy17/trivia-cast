@@ -41,6 +41,4 @@ function Game() {
       }
     };
 
-    this.
-
 }

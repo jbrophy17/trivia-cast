@@ -7,6 +7,7 @@ join - When a player attempts to join the game
 Responds with:
 
 joined - Lists all the players that are in the game
+clientNum - the player assigned to this client
 
 
 Type: response - when a player submits a response

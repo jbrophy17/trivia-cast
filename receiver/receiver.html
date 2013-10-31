@@ -1,0 +1,43 @@
+<?php file_put_contents('log.txt', "\n\n======\n\nreceiver.html hit at " . date('g:i a n/j/y') . " by " . $_SERVER['REMOTE_ADDR'], FILE_APPEND); ?><html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="receiver.css?4" />
+    </head>
+<body>
+    <div class="messages">
+        <h1>Waiting for Messages...</h1>
+    </div>
+</body>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/cast/js/receiver/1.0/cast_receiver.js"></script>
+<!-- <script type="text/javascript" src="triviaGame.js"></script> -->
+<script type="text/javascript">
+    $(function() {
+        var receiver = new cast.receiver.Receiver('1f96e9a0-9cf0-4e61-910e-c76f33bd42a2', ['com.bears.triviaCast'], "", 5),
+            channelHandler = new cast.receiver.ChannelHandler('com.bears.triviaCast'),
+            $messages = $('.messages');
+
+        channelHandler.addChannelFactory(
+            receiver.createChannelFactory('com.bears.triviaCast'));
+
+        receiver.start();
+        console.log('receiver started');
+
+        channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
+        // channelHandler.addEventListener(cast.receiver.Channel.EventType.ERROR, onError.bind(this));
+
+        function onMessage(event) {
+            console.log('message received');
+            console.log(event);
+            $.post('debug.php', { msg : event.message.type }, function(data){ console.log('message logged at debug.php')});
+            $messages.html(event.message.type);
+        }
+
+        // function onError(event){
+        //     console.warn('error received');
+        //     console.log(event);
+        //     $.post('debug.php', { msg : event.message.type }, function(data){ console.log('error logged at debug.php')});
+        //     $messages.html(event.message.type);
+        // }
+    });
+</script>
+</html>
