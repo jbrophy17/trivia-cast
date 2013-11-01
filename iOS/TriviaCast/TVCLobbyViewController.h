@@ -14,9 +14,12 @@
 
 @property (nonatomic, strong) GCKDevice * device;
 @property (nonatomic, strong) TVCDataSource * dataSource;
+@property (weak, nonatomic) IBOutlet UIButton *roundStartButton;
 
 - (void) segueToResponseViewWithCue:(NSString*)cue;
 -(void) segueToReaderViewWithResponses:(NSDictionary *)responseDictionary;
 -(void) segueToGuesserViewWithResponses:(NSDictionary *)responseDictionary andPlayers:(NSArray*)players;
+
+- (IBAction)startRoundAction:(id)sender;
 
 @end

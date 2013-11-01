@@ -71,11 +71,22 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="QRP-vL-jLG">
+                                <rect key="frame" x="104" y="302" width="113" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Start The Round">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="startRoundAction:" destination="4bf-1A-86a" eventType="touchUpInside" id="Rdr-F8-8tG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="TIW-gT-2lF"/>
                     <connections>
+                        <outlet property="roundStartButton" destination="QRP-vL-jLG" id="ilx-eI-GHU"/>
                         <segue destination="xsJ-hd-th5" kind="push" identifier="roundStarted" id="dAR-ps-oix"/>
                     </connections>
                 </viewController>

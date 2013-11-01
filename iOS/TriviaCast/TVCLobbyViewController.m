@@ -75,6 +75,12 @@
     [self presentViewController:viewController animated:YES completion:nil];
 }
 
+- (IBAction)startRoundAction:(id)sender {
+    
+    [[[appDelegate dataSource] getMessageStream] sendNextRound];
+    
+}
+
 -(void) segueToReaderViewWithResponses:(NSDictionary *)responseDictionary {
     UIStoryboard *storyboard = self.storyboard;
     TVCReaderViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"readerViewController"];

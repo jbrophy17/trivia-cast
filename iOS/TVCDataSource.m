@@ -120,8 +120,6 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         NSLog(@"Couldn't attachMessageStream.");
     }
     
-    [_messageStream sendNextRound]; //TODO: remove
-    
     //_gameStatusLabel.text = NSLocalizedString(@"Waiting for opponent\u2026", nil);
 }
 
