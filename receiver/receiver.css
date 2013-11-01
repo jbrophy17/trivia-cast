@@ -10,7 +10,7 @@ body {
   background: #A6C8BC;
   margin: auto;
   padding: 50px;
-  padding-top: 90px;
+  padding-top: 60px;
 }
 #notification {
   width: 100%;
@@ -29,6 +29,7 @@ body {
   color: #333;
   font-weight: 900;
   letter-spacing: 1px;
+  font-size: 24px;
 }
 #responses,
 #status {
@@ -36,7 +37,7 @@ body {
 }
 #status {
   color: #666;
-  font-size: 30px;
+  font-size: 45px;
 }
 ul {
   list-style-type: none;
@@ -55,9 +56,10 @@ li em {
   padding-right: 10px;
   font-style: normal;
   font-weight: 900;
+  color: #000;
 }
 h1 {
-  font-size: 60px;
+  font-size: 75px;
   margin: 0;
 }
 h2 {
