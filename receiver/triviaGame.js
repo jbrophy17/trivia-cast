@@ -156,6 +156,8 @@ function joinPlayer(channel, name){
     else{
         game.queuePlayer(newPlayer);
     }
+
+    updatePlayerList();
 }
 
 function leavePlayer(channel){
