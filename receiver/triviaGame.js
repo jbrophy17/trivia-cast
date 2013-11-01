@@ -4,7 +4,6 @@ ALREADY_HAVE_RESPONSES = 2;
 WAITING_ON_RESPONSES   = 3;
 
 function Player(name, ID, channel) {
-    var that = this;
     this.name    = name;
     // this.picture = picture;
     this.ID      = ID;
@@ -16,15 +15,15 @@ function Player(name, ID, channel) {
     this.score = 0;
 
     this.getScore = function() {
-        return that.score;
+        return this.score;
     };
 
     this.incrementScore = function() {
-        that.score++;
+        this.score++;
     };
 
     this.getID = function() {
-        return that.ID;
+        return this.ID;
     };
 
     this.didGetOut = function(){
@@ -33,6 +32,14 @@ function Player(name, ID, channel) {
 
     this.didLeave = function(){
         this.isGone = true;
+    }
+
+    this.clientSafeVersion = function(){
+        var thisObj   = new Object();
+        thisObj.name  = this.name;
+        thisObj.ID    = this.ID;
+        thisObj.score = this.score;
+        return thisObj;
     }
 
 }
@@ -44,11 +51,11 @@ function Response(response, responseID, userID, channel){
     this.channel    = channel;
     this.isActive   = true;
 
-    this.getJSON = function(){
+    this.clientSafeVersion = function(){
         var thisObj = new Object();
         thisObj.response   = this.response;
         thisObj.responseID = this.responseID;
-        return JSON.stringify(thisObj);
+        return thisObj;
     }
 }
 
@@ -65,6 +72,7 @@ function Game() {
     this.guesser = 0;
 
     this.isBetweenRounds = true;
+    this.currentCue      = '';
 
     this.addPlayer = function(player){
         while(typeof this.players[player.ID] != 'undefined'){
@@ -105,12 +113,14 @@ function getPlayerIdByChannel(channel){
 // update the list of players on screen
 function updatePlayerList(){
     $('#playerlist').empty();
-    console.debug('updatePlayerList()');
-    console.debug(game.players);
     for(var i = 0; i < game.players.length; i++){
-        console.debug(game.players[i]);
-        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].name + '</li>';
+        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].name + '</li><br>';
         $('#playerlist').append(playerHTML);
+    }
+
+    if(game.players.length == 0){
+        var infoHTML = '<p>There aren\'t any players in this game. Queued players will be added when the round starts.</p>';
+        $('#playerlist').append(infoHTML);
     }
 
     $('#notification').slideUp();
@@ -156,6 +166,7 @@ function startScreen(){
     hideNotification();
     $('#content h1').html('TriviaCast');
     $('#responses').fadeOut();
+    $('#status').fadeOut();
     updatePlayerList();
     $('#scoreboard').fadeIn();
 }
@@ -164,8 +175,14 @@ function startScreen(){
 function roundScreen(){
     hideNotification();
     $('#content h1').html(game.currentCue);
+    $('#instructions').fadeOut();
     $('#responses').show();
     $('#scoreboard').fadeOut();
+
+    $('#status').html('Waiting for responses... 0/' + game.players.length);
+    $('#status').fadeIn();
+
+
 }
 
 function joinPlayer(channel, name){
@@ -177,12 +194,7 @@ function joinPlayer(channel, name){
     var newID = game.players.length;
     var newPlayer = new Player(name, newID, channel);
 
-    if(game.isBetweenRounds){
-        game.addPlayer(newPlayer);
-    }
-    else{
-        game.queuePlayer(newPlayer);
-    }
+    game.queuePlayer(newPlayer);
 
     updatePlayerList();
 }
@@ -192,6 +204,12 @@ function leavePlayer(channel){
     var playerID = getPlayerIdByChannel(channel);
     game.players[playerID].didGetOut();
     game.players[playerID].didLeave();
+
+    var isLastPlayer = false;
+    // is this the last player?
+    if(game.players.length == 1){
+        isLastPlayer = true;
+    }
 
     // if they haven't submitted a response yet, leave immediately
     var responseReceived = false;
@@ -211,8 +229,9 @@ function leavePlayer(channel){
         nextGuesser();
     }
 
-    // if this is the last player, go to start screen and schedule exit
-    newGrind();
+    if(isLastPlayer){
+        newGrind();
+    }
 
     return; // only one player per channel
 }
@@ -239,8 +258,10 @@ function submitResponse(channel, response){
 
     game.responses.push(newResponse);
 
+    $('#status').html('Waiting for responses... ' + game.responses.length + '/' + game.players.length);
+
     // if all responses are in, move to reading phase
-    if(responseID == game.players.length){
+    if(responseID == (game.players.length - 1)){
         startReading();
     }
 }
@@ -249,24 +270,33 @@ function getAllResponsesJSON(){
     var response = new Object();
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].isActive){
-            response[i] = game.responses[i].getJSON();
+            response[i] = game.responses[i].clientSafeVersion();
         }
     }
-    var responseJSON = JSON.stringify(response);
+    // var responseJSON = JSON.stringify(response);
+    var responseJSON = response;
     return responseJSON;
 }
 
 function startReading(){
+    $('#status').html('The reader is reading.');
+
     // randomize order of responses
     game.responses = shuffle(game.responses);
 
     // send all responses to the reader.
-    game.players[game.reader].channel.send(getAllResponsesJSON());
+    var responseJSON = getAllResponsesJSON();
+    console.debug('sending responses to reader');
+    console.debug(responseJSON);
+    game.players[game.reader].channel.send({ type : 'receiveResponses', responses : responseJSON });
 }
 
 function startGuessing(){
     // send guesser all responses
-    game.players[game.guesser].channel.send(getAllResponsesJSON());
+    var responseJSON = getAllResponsesJSON();
+    console.debug('sending responses to guesser');
+    console.debug(responseJSON);
+    game.players[game.guesser].channel.send({ type : 'receiveResponses', responses : responseJSON });
 }
 
 function submitGuess(channel, guess){
@@ -286,7 +316,7 @@ function submitGuess(channel, guess){
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
         game.responses[responseGuessed].isActive = false;
-        $('#response'+i).animate({ color : '#666' });
+        $('#response'+i).animate({ color : '#666', 'padding-left' : '-10px' });
     }
     else{
         // if the person is out, you're dumb and your turn is over.
@@ -310,9 +340,12 @@ function showResponses(){
 
 function nextGuesser(){
     // round is over when only reader's and your own responses are left
-    if(game.responses.length == 2){
-        newGrind();
-        $('h1').html('Round over!');
+    // if(game.responses.length == 2){
+    //     betweenRounds();
+    //     $('h1').html('Round over!');
+    // }
+    if(false){
+// TODO remove this
     }
     else{
         var nextGuesser = game.guesser++;
@@ -327,23 +360,31 @@ function nextGuesser(){
 }
 
 function startNextRound(){
+    newGrind();
+
     game.isBetweenRounds = false;
 
     // show next question
+    game.getNextCue();
     roundScreen();
+
+    console.debug('starting next round');
+    console.debug(game);
 
     // let everyone know the round has started
     for(var i = 0; i < game.players.length; i++){
-        game.players[i].channel.send({ type : 'roundStarted', cue: game.cues[currentCue] });
+        game.players[i].channel.send({ type : 'roundStarted', cue: game.currentCue });
     }
+}
+
+function betweenRounds(){
+    game.isBetweenRounds = true;
+
+    startScreen();
 }
 
 // prepare for next question
 function newGrind(){
-    game.isBetweenRounds = true;
-
-    startScreen();
-
     // delete players who left
     for(var i = 0; i < game.players.length; i++){
         if(game.players[i].isGone){
@@ -351,9 +392,10 @@ function newGrind(){
         }
     }
 
+    console.debug('processing player queue');
     // add players who are queued
-    for(player in game.playerQueue){
-        game.addPlayer(player);
+    for(var i = 0; i < game.playerQueue.length; i++){
+        game.addPlayer(game.playerQueue[i]);
     }
 
     // clear player queue
@@ -365,14 +407,21 @@ function newGrind(){
     // clear responses
     game.responses = [];
 
-    // notify next reader
-    game.reader++;
-    game.reader = game.reader % game.players.length;
+    // pick next reader
+    if(game.players.length > 0){
+        game.reader++;
+        game.reader = game.reader % game.players.length;
+    }
+
+    console.debug('Next reader is ' + game.reader);
 
     // update all clients' user list and scores
     for(var i = 0; i < game.players.length; i++){
-        game.players[i].channel.send({type : 'gameSync', players : playerJSON, reader : game.reader });
+        console.debug('sending gameSync to ' + game.players[i].name);
+        game.players[i].channel.send({type : 'gameSync', players : game.players[i].clientSafeVersion(), reader : game.players[game.reader].ID });
     }
+
+    console.debug('newGrind finished');
 }
 
 function initReceiver(){
@@ -401,7 +450,7 @@ function initReceiver(){
                 leavePlayer(event.target);
                 break;
             case "submitResponse": // user submits a response
-                storeResponse(event.target, event.message.response);
+                submitResponse(event.target, event.message.response);
                 break;
             case "submitGuess": // user submits a guess
                 tryGuess(event.target, event.message.guess);
@@ -419,15 +468,14 @@ function initReceiver(){
     }
 
     function onError(event){
-        console.warn('error received');
-        console.log(event);
-        $.post('debug.php', { msg : event.message.type }, function(data){ console.log('error logged at debug.php')});
-        $messages.html(event.message.type);
+        console.error('error received');
+        console.debug(event);
     }
 }
 
 function initGame(){
     game = new Game();
+    newGrind();
 }
 
 // initialize
