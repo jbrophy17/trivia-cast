@@ -18,7 +18,7 @@
 
 @property(nonatomic, strong, readonly) GCKContext *context;
 
-@property(nonatomic, strong, readonly) TVCDataSource *dataSource;
+@property(nonatomic, strong) TVCDataSource *dataSource;
 
 @property(nonatomic, strong) UIWindow *window;
 

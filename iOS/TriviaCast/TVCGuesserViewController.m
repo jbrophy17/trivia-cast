@@ -11,6 +11,7 @@
 @interface TVCGuesserViewController ()
 {
     TVCPickerView * pickerView;
+    int guessedPlayer;
 }
 @end
 
@@ -31,8 +32,8 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
     //testing
-    self.responses = [NSMutableArray arrayWithArray: @[@"Jeff's Asshole", @"Bears", @"Niggers"]];
-    self.players = [NSMutableArray arrayWithArray: @[@"test 1", @"test 2", @"test 3", @"test 4", @"test 5", @"test 6", @"test 7", @"test 8", @"test 9", @"test 10"]];
+    //self.responses = [NSMutableArray arrayWithArray: @[@"Jeff's Asshole", @"Bears", @"Niggers"]];
+    //self.players = [NSMutableArray arrayWithArray: @[@"test 1", @"test 2", @"test 3", @"test 4", @"test 5", @"test 6", @"test 7", @"test 8", @"test 9", @"test 10"]];
 	
     // a page is the width of the scroll view
     
@@ -49,6 +50,11 @@
     // load the page on either side to avoid flashes when the user starts scrolling
     [self loadScrollView];
     self.pageControl.currentPage = 0;
+}
+
+-(void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [[appDelegate dataSource] setCurrentViewController:self];
 }
 
 - (void)loadScrollView {
@@ -216,24 +222,31 @@
 #pragma mark TVCPickerViewDelegate methods
 
 - (void) didSelectPlayer:(int)player {
+    NSNumber* responseID = (NSNumber*)[self.responseDictionary objectForKey:[self.responses objectAtIndex:self.pageControl.currentPage]];
+    NSInteger holdInt = responseID.integerValue;
+    guessedPlayer = player;
+    [[[appDelegate dataSource] getMessageStream] sendGuessWithPlayer:&player andResponseId:&holdInt];
+       
     
-    if ( [appDelegate.dataSource guessPlayer:player forResponse:[self.responses objectAtIndex:player]]){
-        //Check correctness
-        //if correct
-        [self.responses removeObjectAtIndex:self.pageControl.currentPage];
-        
-        if (self.pageControl.currentPage >= [self.responses count]) {
-            self.pageControl.currentPage = [self.responses count] -1;
-        }
-        
-        [self.players removeObjectAtIndex:player];
-        [self loadScrollView];
-        
-        
-        [self.scrollView setScrollEnabled:YES];
+    
+}
+
+-(void) didMakeCorrectGuess {
+    [self.responseDictionary removeObjectForKey:[self.responses objectAtIndex:self.pageControl.currentPage]];
+    [self.responses removeObjectAtIndex:self.pageControl.currentPage];
+    
+    if (self.pageControl.currentPage >= [self.responses count]) {
+        self.pageControl.currentPage = [self.responses count] -1;
     }
     
+    [self.players removeObjectAtIndex:guessedPlayer];
     
+    guessedPlayer = -1;
+    
+    [self loadScrollView];
+    
+    
+    [self.scrollView setScrollEnabled:YES];
 }
 
 @end

@@ -23,17 +23,21 @@
 #import "TVCMessageStream.h"
 #import "TVCPlayer.h"
 
+
 static NSString * const kNamespace = @"com.bears.triviaCast";
 
 static NSString * const keyType = @"type";
 
 // Messages Received
 
+static NSString * const valueTypeDidJoin = @"didJoin";
 static NSString * const valueTypeSetGuesser = @"guesser";
 static NSString * const valueTypeSetReader = @"reader";
-static NSString * const valueTypeReceiveResponses = @"recieveResponses";
+static NSString * const valueTypeReceiveResponses = @"receiveResponses";
 static NSString * const valueTypeGuessResponse = @"guessResponse";
 static NSString * const valueTypeSyncGame = @"gameSync";
+static NSString * const valueTypeRoundStarted = @"roundStarted";
+static NSString * const valueTypeRoundOver = @"roundOver";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -46,12 +50,13 @@ static NSString * const valueTypeGetScore = @"score"; //Maybe
 
 // new Player Protocol
 static NSString * const keyName = @"name";
-static NSString * const keyPlayerNumber = @"playerNumber";
+static NSString * const keyPlayerNumber = @"number";
 static NSString * const keyPlayers = @"players";
 
 // Receive Responses Protocol
 static NSString * const keyResponses = @"responses";
 static NSString * const keyResponse = @"response";
+static NSString * const keyResponseId = @"responseID";
 
 // Receive Guesses Protocol
 static NSString * const keyGuesses = @"guesses";
@@ -60,6 +65,10 @@ static NSString * const keyGuessResponseId = @"guessResponseId";
 
 // General Protocol
 static NSString * const keyValue = @"value";
+static NSString * const keyPrompt = @"cue";
+static NSString * const keyReader = @"reader";
+static NSString * const keyScore = @"score";
+static NSString * const keyID = @"ID";
 
 //Google
 
@@ -130,8 +139,12 @@ static NSString * const kValuePlayerX = @"X";
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     [payload gck_setStringValue:valueTypeSubmitResponse forKey:keyType];
     [payload gck_setStringValue:text forKey:keyResponse];
-    
-    return [self sendMessage:payload];
+    NSLog(@"Payload: %@", payload);
+    @try {
+        return [self sendMessage:payload];
+    } @catch (GCKError *error) {
+        NSLog(@"ERROR SENDING: %@ BTW error code 6 is: %@", error, [GCKError localizedDescriptionForCode:6]);
+    }
 }
 
 - (BOOL)sendGuessWithPlayer:(NSInteger*)number andResponseId:(NSInteger*)responseId {
@@ -139,13 +152,20 @@ static NSString * const kValuePlayerX = @"X";
     [payload gck_setStringValue:valueTypeSubmitGuess forKey:keyType];
     [payload gck_setIntegerValue:*number forKey:keyGuessPlayerNumber];
     [payload gck_setIntegerValue:*responseId forKey:keyGuessResponseId];
-    
+    [self.delegate setCurrentGuess:number];
     return [self sendMessage:payload];
 }
 
 -(BOOL)sendReaderIsDone {
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     [payload gck_setStringValue:valueTypeReaderIsDone forKey:keyType];
+    
+    return [self sendMessage:payload];
+}
+
+-(BOOL)sendNextRound {
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    [payload gck_setStringValue:valueTypeStartNextRound forKey:keyType];
     
     return [self sendMessage:payload];
 }
@@ -159,29 +179,33 @@ static NSString * const kValuePlayerX = @"X";
 
 - (void)didReceiveMessage:(id)message {
     NSDictionary *payload = message;
-    
+    NSLog(@"Did receive Message");
+    NSLog(@"dict: %@",payload);
     NSString *type = [payload gck_stringForKey:keyType];
+    NSLog(@"type:%@",type);
     if (!type) {
         NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
         return;
     }
     
     
-    if([type isEqualToString:valueTypeJoin]) {
-        NSString *playerName = [payload gck_stringForKey:keyName];
-        NSInteger playerValue = [payload gck_integerForKey:keyPlayerNumber];
-        TVCPlayer * player;
-        if (playerName && playerValue) {
-            player = [[TVCPlayer alloc] initWithName:playerName andNumber:playerValue];
+    if([type isEqualToString:valueTypeDidJoin]) {
+        NSLog(@"Did start working");
+        
+        NSNumber *playerValue = [NSNumber numberWithInt:[payload gck_integerForKey:keyPlayerNumber]];
+       
+        if (playerValue) {
+            //TVCPlayer * player = [[TVCPlayer alloc] initWithName:@"test" andNumber:playerValue.integerValue];
+           // NSLog(@"%@ , %d",[player name], [player playerNumber]);
+            [self.delegate didJoinGameAsPlayer:playerValue.integerValue];
+            //NSLog(@"%@ , %d",[player name], [player playerNumber]);
+            return;
         } else {
             NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
             return;
         }
         
-        NSArray *players = [payload gck_arrayForKey:keyPlayers];
         
-        [self.delegate didJoinGameAsPlayer:player withPlayers:players];
-        return;
     }
     
     if([type isEqualToString:valueTypeSetReader]) {
@@ -191,9 +215,20 @@ static NSString * const kValuePlayerX = @"X";
     }
     
     if([type isEqualToString:valueTypeReceiveResponses]) {
-        NSArray *responses = [payload gck_arrayForKey:keyResponses];
-        //TODO: what are we receiving here
-       // [self.delegate didRecieveResponses:responses];
+        NSDictionary *responsesDictionary = [payload gck_dictionaryForKey:keyResponses];
+    
+        NSMutableDictionary *responseIdDictionary = [[NSMutableDictionary alloc] init];
+        
+        for(id key in responsesDictionary) {
+            NSDictionary * holdDict = [responsesDictionary gck_dictionaryForKey:key];
+            
+            NSString * response = [holdDict gck_stringForKey:keyResponse];
+            NSInteger responseID = [holdDict gck_integerForKey:keyResponseId];
+           
+            [responseIdDictionary setObject:[NSNumber numberWithInt:responseID] forKey:response];
+        }
+       
+        [self.delegate didReceiveResponses:responseIdDictionary];
         return;
     }
     
@@ -211,9 +246,39 @@ static NSString * const kValuePlayerX = @"X";
     }
     
     if([type isEqualToString:valueTypeSyncGame]) {
-        NSArray* players = [payload gck_arrayForKey:keyPlayers];
+        NSDictionary* players = [payload gck_dictionaryForKey:keyPlayers];
+        NSInteger readerID = [payload gck_integerForKey:keyReader];
+        NSMutableArray *returnPlayers = [NSMutableArray array];
+        for(id key in players) {
+            NSDictionary * holdDictionary = [players gck_dictionaryForKey:key];
+            NSInteger ID = [holdDictionary gck_integerForKey:keyID];
+            NSString* name = [holdDictionary gck_stringForKey:keyName];
+            NSInteger score = [holdDictionary gck_integerForKey:keyScore];
+            
+            TVCPlayer *holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID];
+            [holdPlayer setScore:&score];
+            
+            if (holdPlayer.playerNumber == readerID) {
+                [holdPlayer setIsReader:YES];
+            }
+            
+            [returnPlayers addObject:holdPlayer];
+            
+        }
+        NSLog(@"returnPlayers: %@", returnPlayers);
+        [self.delegate didReceiveGameSyncWithPlayers:returnPlayers];
+        return;
+    }
+    
+    if([type isEqualToString:valueTypeRoundStarted]) {
+        NSString *cue = [payload gck_stringForKey:keyPrompt];
+        [self.delegate didReceiveRoundStartedWithCue:cue];
+        return;
         
-        [self.delegate didReceiveGameSyncWithPlayers:players];
+    }
+    
+    if([type isEqualToString:valueTypeRoundOver]) {
+        [self.delegate didReceiveRoundEnded];
         return;
     }
     

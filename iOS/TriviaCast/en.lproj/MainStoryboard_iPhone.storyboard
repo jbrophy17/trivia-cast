@@ -38,7 +38,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="xsJ-hd-th5" kind="push" identifier="DeviceSelected" id="BpU-Kx-WhL"/>
+                                    <segue destination="4bf-1A-86a" kind="push" identifier="DeviceSelected" id="p0o-t5-oaa"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -54,17 +54,44 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iBL-eF-Vwg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-260" y="75"/>
+            <point key="canvasLocation" x="-744" y="-113"/>
+        </scene>
+        <!--Lobby View Controller-->
+        <scene sceneID="beN-O4-H9S">
+            <objects>
+                <viewController id="4bf-1A-86a" customClass="TVCLobbyViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="oqw-ei-3yH">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Lobby" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LJM-y4-yWc">
+                                <rect key="frame" x="119" y="273" width="82" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="TIW-gT-2lF"/>
+                    <connections>
+                        <segue destination="xsJ-hd-th5" kind="push" identifier="roundStarted" id="dAR-ps-oix"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YQX-NN-ZwV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-216" y="139"/>
         </scene>
         <!--Response View Controller-->
         <scene sceneID="LRm-cT-etH">
             <objects>
-                <viewController id="xsJ-hd-th5" customClass="TVCResponseViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="responseViewController" id="xsJ-hd-th5" customClass="TVCResponseViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="rQt-d1-MDi">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0kp-Uf-6cK">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Test" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0kp-Uf-6cK">
                                 <rect key="frame" x="20" y="129" width="280" height="49"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -75,7 +102,6 @@
                                 <rect key="frame" x="20" y="186" width="280" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
@@ -113,7 +139,7 @@
         <!--Reader View Controller-->
         <scene sceneID="gwH-Ah-nAM">
             <objects>
-                <viewController id="Qlp-hP-1pt" customClass="TVCReaderViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="readerViewController" id="Qlp-hP-1pt" customClass="TVCReaderViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ayl-8F-pKG">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -143,7 +169,7 @@
         <!--Guesser View Controller-->
         <scene sceneID="eRE-oD-Zgi">
             <objects>
-                <viewController id="Qbv-hu-ZcD" customClass="TVCGuesserViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="guesserViewController" id="Qbv-hu-ZcD" customClass="TVCGuesserViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="wMn-su-QQb">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -195,7 +221,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gAZ-xP-f1H" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-794" y="75"/>
+            <point key="canvasLocation" x="-1278" y="-113"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="5">

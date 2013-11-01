@@ -7,9 +7,13 @@
 //
 
 #import "TVCReaderViewController.h"
+#import "TVCAppDelegate.h"
+#import "TVCDataSource.h"
 
 @interface TVCReaderViewController ()
-
+{
+    BOOL finishedReading;
+}
 @end
 
 @implementation TVCReaderViewController
@@ -29,7 +33,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
     //testing
-    self.responses = [NSMutableArray arrayWithArray: @[@"Jeff's Asshole", @"Bears", @"Niggers"]];
+    finishedReading = NO;
 	
     // a page is the width of the scroll view
     self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * [self.responses count], self.scrollView.frame.size.height);
@@ -46,6 +50,12 @@
     // load the visible page
     // load the page on either side to avoid flashes when the user starts scrolling
     [self loadScrollView];
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [[appDelegate dataSource] setCurrentViewController:self];
+    [[[appDelegate dataSource] getMessageStream] sendReaderIsDone];
 }
 
 - (void)loadScrollView {
@@ -76,6 +86,9 @@
     int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     self.pageControl.currentPage = page;
 	
+    if(!finishedReading && page == [self.responses count]) {
+        [[[appDelegate dataSource] getMessageStream] sendReaderIsDone];
+    }
     // A possible optimization would be to unload the views+controllers which are no longer visible
 }
 

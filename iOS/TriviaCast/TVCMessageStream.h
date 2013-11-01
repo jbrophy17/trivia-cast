@@ -46,14 +46,15 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 @protocol TVCMessageStreamDelegate
 
+@property(nonatomic) NSInteger * currentGuess;
+
 /**
  * Called when a game has been successfully joined.
  *
  * @param player The symbol that was assigned to this player.
  * @param opponent The name of the opponent.
  */
-- (void)didJoinGameAsPlayer:(TVCPlayer *)player
-          withPlayers:(NSArray *)players;
+- (void)didJoinGameAsPlayer:(NSInteger)number;
 
 /**
  * Called when the game could not be joined.
@@ -62,14 +63,27 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (void)didFailToJoinWithErrorMessage:(NSString *)message;
 
+/**
+ * Called when the round starts
+ *
+ */
+- (void)didReceiveRoundStartedWithCue:(NSString*)cue;
 
 /**
- * Called when a new player successfully joined.
+ * Called when the round ends
  *
- * @param player The player that joined.
  */
-- (void)didRecieveNewPlayer:(TVCPlayer *)player;
+- (void)didReceiveRoundEnded;
 
+/**
+ * Called when the game sends out responses
+ *
+ * The two arrays correspond to eachother by index (i.e. the player number in index 0
+ * authored the response in index 0)
+ *
+ * @param responses The dictionary that maps responses to their response ID
+ */
+- (void)didReceiveResponses:(NSDictionary*)responses;
 
 /**
  * Called when the game sends out responses
@@ -137,16 +151,6 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (void) didReceiveGameSyncWithPlayers:(NSArray*) players;
 
-/**
- * Called when the game has ended.
- *
- * @param result The result.
- * @param winningLocation The winning location: 0 indicates none; 1-3 indicates rows 1-3;
- * 4-6 indicates columns 1-3; 5 indicates diagonal from top-left corner; 6 indicates
- * diagonal from bottom-left corner.
- */
-- (void)didEndGameWithResult:(GameResult)result
-             winningLocation:(NSInteger)winningLocation;
 
 @end
 
@@ -156,6 +160,7 @@ typedef NS_ENUM(NSInteger, GameResult) {
 @interface TVCMessageStream : GCKMessageStream
 
 @property(nonatomic, readonly) TVCPlayer * player;
+
 
 /**
  * Designated initializer. Constructs a TVCMessageStream with the given delegate.
@@ -171,6 +176,13 @@ typedef NS_ENUM(NSInteger, GameResult) {
  * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
  */
 - (BOOL)joinGameWithName:(NSString *)name;
+
+/**
+ * Indicates the next round should start.
+ *
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+- (BOOL) sendNextRound;
 
 /**
  * Notifies the receiver that the reader has read all responses

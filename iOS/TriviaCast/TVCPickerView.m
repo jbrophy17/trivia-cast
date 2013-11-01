@@ -7,6 +7,7 @@
 //
 
 #import "TVCPickerView.h"
+#import "TVCPlayer.h"
 
 @implementation TVCPickerView
 
@@ -28,7 +29,7 @@
         //UIScrollView * guessScrollView = [[UIScrollView alloc] initWithFrame:frame];
         self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * ceil([self.players count] / 4.0 ), self.scrollView.frame.size.height);
         
-        for (NSString *str in self.players) {
+        for (TVCPlayer *player in self.players) {
             frame = CGRectMake(0, 0, self.scrollView.frame.size.width / 2, self.scrollView.frame.size.height / 2);
             frame.origin.x = (frame.size.width) * countx;
             frame.origin.y = (frame.size.height) * county;
@@ -93,12 +94,12 @@
             //UIButton * name = [[UIButton alloc] initWithFrame:frame];
             //[name setTitle:str forState:UIControlStateNormal];
             
-            [name setTitle:str forState:UIControlStateNormal];
+            [name setTitle:player.name forState:UIControlStateNormal];
             [name addSubview:imgView];
             // [name setTextAlignment:NSTextAlignmentCenter];
             //[name setText:str];
             
-            CGRect labelRect = name.titleLabel.frame;
+            //CGRect labelRect = name.titleLabel.frame;
             //double labelOffset = imageFrame.size.height + ( (name.frame.size.height - imageFrame.size.height) / 2.0);
             double labelOffset = imageFrame.size.height;
             //[name.titleLabel setFrame:CGRectMake(labelRect.origin.x, 100, labelRect.size.width, labelRect.size.height)];

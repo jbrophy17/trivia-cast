@@ -9,8 +9,9 @@
 #import "TVCCastDiscoveryViewController.h"
 #import "TVCAppDelegate.h"
 #import <GCKFramework/GCKFramework.h>
-#import "TVCResponseViewController.h"
+#import "TVCLobbyViewController.h"
 #import "TVCSettingsViewController.h"
+#import "TVCDataSource.h"
 
 @interface TVCCastDiscoveryViewController () <GCKDeviceManagerListener>
 {
@@ -116,9 +117,10 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"DeviceSelected"]) {
-        TVCResponseViewController *viewController = segue.destinationViewController;
+       // TVCLobbyViewController *viewController = segue.destinationViewController;
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        viewController.device = [_devices objectAtIndex:indexPath.row];
+        [appDelegate setDataSource:[[TVCDataSource alloc] initWithDevice:[_devices objectAtIndex:indexPath.row]]];
+        //viewController.device = [_devices objectAtIndex:indexPath.row];
     }
 }
 

@@ -22,6 +22,8 @@
 @property (nonatomic, strong) NSMutableArray * responses;
 @property (nonatomic, strong) NSMutableArray * players;
 
-- (IBAction)guessAction:(id)sender;
+@property (nonatomic, strong) NSMutableDictionary * responseDictionary;
 
+- (IBAction)guessAction:(id)sender;
+-(void) didMakeCorrectGuess;
 @end

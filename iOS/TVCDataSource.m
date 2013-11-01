@@ -8,6 +8,8 @@
 
 #import "TVCDataSource.h"
 #import "TVCPlayer.h"
+#import "TVCLobbyViewController.h"
+#import "TVCGuesserViewController.h"
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
@@ -21,6 +23,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 @property (nonatomic, strong) NSArray* players;
 @property (nonatomic, strong) NSArray* responses;
+@property (nonatomic, strong) NSDictionary* responseDictionary;
 @property (nonatomic, strong) NSMutableDictionary* responseMap;
 
 @end
@@ -28,10 +31,10 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
 @implementation TVCDataSource
 
--(id) init {
+-(id) initWithDevice:(GCKDevice*)device {
     self = [super init];
     if (self) {
-        
+        self.device = device;
         [self startSession];
     
     }
@@ -67,6 +70,15 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
                                                    device:self.device];
 }
 
+- (TVCMessageStream *)getMessageStream {
+    if(_messageStream) {
+        NSLog(@"existing stream");
+        return _messageStream;
+    } else {
+        return [self createMessageStream];
+    }
+}
+
 - (TVCMessageStream *)createMessageStream {
     return [[TVCMessageStream alloc] initWithDelegate:self];
 }
@@ -75,15 +87,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     return [appDelegate userName];
 }
 
-- (BOOL) guessPlayer:(int)player forResponse:(NSString*)response {
-    
-    //Message Stream send guess
-    
-    if ([self.responseMap objectForKey:[NSNumber numberWithInt:player]] == response) {
-        return YES;
-    }
-    return NO;
-}
+
 
 #pragma mark - GCKApplicationSessionDelegate
 
@@ -93,15 +97,16 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     _channel = _session.channel;
     if (!_channel) {
         NSString *message = NSLocalizedString(@"Could not establish channel.", nil);
-        NSLog(message); //[self showErrorMessage:message popViewControllerOnOK:YES];
+        NSLog(@"%@",message); //[self showErrorMessage:message popViewControllerOnOK:YES];
         [_session endSession];
     }
     
     _messageStream = [self createMessageStream];
+
     if ([_channel attachMessageStream:_messageStream]) {
         if (_messageStream.messageSink) {
             if (20 < _channel.sendBufferAvailableBytes) {
-                if ([_messageStream joinGameWithName:[self currentUserName]]) {
+                if (![_messageStream joinGameWithName:[self currentUserName]]) {
                     NSLog(@"Couldn't join game.");
                 }
             } else {
@@ -115,6 +120,8 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         NSLog(@"Couldn't attachMessageStream.");
     }
     
+    [_messageStream sendNextRound]; //TODO: remove
+    
     //_gameStatusLabel.text = NSLocalizedString(@"Waiting for opponent\u2026", nil);
 }
 
@@ -125,7 +132,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
           [error localizedDescription]);
     _messageStream = nil;
     NSString *message = NSLocalizedString(@"Could not start game.", nil);
-    NSLog(message);
+    NSLog(@"ERROR: %@",message);
     //[self showErrorMessage:message popViewControllerOnOK:YES];
 }
 
@@ -136,7 +143,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     _messageStream = nil;
     if (error) {
         NSString *message = NSLocalizedString(@"Lost connection.", nil);
-        NSLog(message);
+        NSLog(@"ERROR: %@",message);
     //    [self showErrorMessage:message popViewControllerOnOK:YES];
     }
 }
@@ -147,16 +154,82 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 // When the game has been joined, update the current player to whichever player
 // we joined as, update the game state to a new game, and keep track of the
 // opponent's name.
-- (void)didJoinGameAsPlayer:(TVCPlayer*)player
-          withPlayers:(NSArray *)players {
-    playerNumber = [player playerNumber];
-    self.players = [NSArray arrayWithArray:players];
+- (void)didJoinGameAsPlayer:(NSInteger)number {
+    playerNumber = number;
+    //self.players = [NSArray arrayWithArray:players];
+    self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber];
 }
 
 // Dispaly an error indicating that the game couldn't be started.
 - (void)didFailToJoinWithErrorMessage:(NSString *)message {
   //  [self showErrorMessage:message popViewControllerOnOK:YES];
 }
+
+- (void) didReceiveGuesser {
+    [self.player setIsGuessing:YES];
+}
+
+- (void) didReceiveResponses:(NSDictionary *)responses {
+    self.responseDictionary = responses;
+    
+    if ([self.player isGuessing]) {
+        NSLog(@"DataSource: didReceiveResponses, Guesser");
+        [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
+            TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+            [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
+        }];
+    } else if([self.player isReader]){
+        NSLog(@"DataSource: didReceiveResponses, Reader");
+        [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
+            TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+            [lobbyViewController segueToReaderViewWithResponses:responses];
+        }];
+        
+    }
+}
+
+//actually probably unecessary, maybe not, in the case of reader leaving
+- (void) didReceiveReader {
+    [self.player setIsReader:YES];
+}
+
+-(void) didReceiveGuessResponse:(BOOL)correct {
+    
+    if (correct) {
+        TVCGuesserViewController* guessViewController = (TVCGuesserViewController*)self.currentViewController;
+        [guessViewController didMakeCorrectGuess];
+
+    } else {
+        [self.player setIsGuessing:NO];
+        [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+    
+    
+}
+
+- (void) didReceiveGameSyncWithPlayers:(NSArray *)players {
+    self.players = [NSMutableArray arrayWithArray:players];
+    
+    for(TVCPlayer* player in self.players) {
+        if(player.playerNumber == playerNumber) {
+            self.player = player;
+        }
+    }    
+}
+
+-(void)didReceiveRoundStartedWithCue:(NSString*)cue {
+    NSLog(@"DataSource: didReceiveRoundStartedWithCue: %@",cue);
+    TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+    [lobbyViewController segueToResponseViewWithCue:cue];
+    
+}
+
+- (void) didReceiveRoundEnded {
+    if (self.currentViewController != self.lobbyViewController) {
+        [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 
 // Display the error message.
 - (void)didReceiveErrorMessage:(NSString *)message {

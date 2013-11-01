@@ -10,12 +10,13 @@
 #import "TVCAppDelegate.h"
 #import "TVCMessageStream.h"
 #import "TVCGame.h"
+#import "TVCDataSource.h"
 
 #import <GCKFramework/GCKFramework.h>
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
-@interface TVCResponseViewController () <GCKApplicationSessionDelegate, TVCMessageStreamDelegate, UIAlertViewDelegate>
+@interface TVCResponseViewController () <UITextViewDelegate>
 {
     // Game state.
     BOOL _isXsTurn;
@@ -25,6 +26,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     // Dongle state and communication.
     GCKApplicationSession *_session;
     GCKApplicationChannel *_channel;
+    TVCDataSource *_dataSource;
     TVCMessageStream *_messageStream;
 }
 
@@ -47,6 +49,9 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    [[appDelegate dataSource] setCurrentViewController:self];
+    self.responseTextView.delegate = self;
+    [self.promptLabel setText:self.promptLabelText];
 }
 
 
@@ -57,38 +62,22 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     // Dispose of any resources that can be recreated.
 }
 
-- (BOOL)isPlayersTurn {
-    
-    
-}
-
-- (TVCPlayer*)player {
-    
-    
-}
-
-- (NSString *)currentUserName {
-    return [appDelegate userName];
-    
-}
-
-- (GCKApplicationSession *)createSession {
-    return [[GCKApplicationSession alloc] initWithContext:appDelegate.context
-                                                   device:self.device];
-}
 
 // Start the remote application session when the view appears.
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self startSession];
+    
+    //[self startSession];
 }
 
 // End the remote application session when the view disappears.
 - (void)viewDidDisappear:(BOOL)animated {
-    [self endSession];
+    //[self endSession];
     [super viewDidDisappear:animated];
 }
 
+
+/*
 // Begin the application session with the current device.
 - (void)startSession {
     NSAssert(!_session, @"Starting a second session");
@@ -96,7 +85,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     
     _session = [self createSession];
     _session.delegate = self;
-    
+    _dataSource = [[TVCDataSource alloc] init];
     [_session startSessionWithApplication:kReceiverApplicationName];
 }
 
@@ -111,7 +100,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 
 - (TVCMessageStream *)createMessageStream {
-    return [[TVCMessageStream alloc] initWithDelegate:self];
+    return [[TVCMessageStream alloc] initWithDelegate:_dataSource];
 }
 
 
@@ -224,9 +213,25 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     
     
 }
-
+*/
 
 - (IBAction)submitAction:(id)sender {
-    NSLog(@"%hhd",[_messageStream joinGameWithName:[self currentUserName]]);
+    NSString *responseString = self.responseTextView.text;
+    NSLog(@"Submit");
+    [[[appDelegate dataSource] getMessageStream] sendResponseWithText:responseString];
+    [self.responseTextView resignFirstResponder];
+    //[self dismissViewControllerAnimated:YES completion:nil];
+    //NSLog(@"%hhd",[_messageStream joinGameWithName:[self currentUserName]]);
 }
+
+#pragma mark UITextField delegate
+
+-(BOOL) textFieldShouldReturn:(UITextField *)textField{
+    
+    [textField resignFirstResponder];
+    return YES;
+}
+
+
+
 @end

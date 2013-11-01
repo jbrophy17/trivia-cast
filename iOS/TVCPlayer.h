@@ -12,8 +12,8 @@
 
 @property (nonatomic, strong) NSString * name;
 @property (nonatomic) NSInteger * score;
-@property (nonatomic) BOOL * isReader;
-@property (nonatomic) BOOL * isGuessing;
+@property (nonatomic) BOOL isReader;
+@property (nonatomic) BOOL isGuessing;
 @property (nonatomic) NSInteger playerNumber;
 
 -(id) initWithName:(NSString*) name andNumber:(NSInteger) number;
