@@ -131,7 +131,8 @@ function submitResponse(channel, response){
     // check if there's already a response from this channel
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].channel == channel){
-            channel.send({ type: 'error', value : ALREADY_SENT_RESPONSE });
+            // update the response
+            game.responses[i].response = response;
             return;
         }
     }
