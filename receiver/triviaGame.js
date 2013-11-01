@@ -106,9 +106,38 @@ function updatePlayerList(){
     var tempList = game.players;
     tempList.sort();
 
+    $('#playerlist').empty();
     for(player in tempList){
         var playerHTML = '<li><em>' + player.score + '</em> ' + player.name + '</li>';
         $('#playerlist').append()
+    }
+
+    $('#notification').slideUp();
+    $('#notification').empty();
+
+    if(game.playerQueue.length > 0){
+        var notificationHTML;
+        if(game.playerQueue.length == 1){
+            notificationHTML = '<strong>' + game.playerQueue[0].name + '</strong>';
+        }
+        else{
+            for(int i = 0; i < game.playerQueue.length; i++){
+                notificationHTML += '<strong>' + game.playerQueue[i].name + '</strong>';
+
+                // if there's one more player left, put oxford comma + 'and'
+                if((i + 2) == game.playerQueue.length){
+                    notificationHTML += ', and ';
+                }
+
+                // if there's more than one player left, just put a comma
+                else if((i + 2) < game.playerQueue.length){
+                    notificationHTML += ', ';
+                }
+            }
+        }
+
+        notificationHTML += ' will join the game after this round.';
+        $('#notification').html(notificationHTML);
     }
 }
 
