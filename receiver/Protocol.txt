@@ -4,7 +4,13 @@ Type:
 
 join - When a player attempts to join the game
 Responds with:
+<<<<<<< HEAD
 	joined - Lists all the players that are in the game
+=======
+
+joined - Lists all the players that are in the game
+clientNum - the player assigned to this client
+>>>>>>> 157dfb6ec76beb9d470f52ff587cbaaae5a29e6a
 
 
 Type:
