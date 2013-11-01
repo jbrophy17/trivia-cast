@@ -65,7 +65,7 @@ function Game() {
     this.players     = new Array();
     this.playerQueue = new Array();
     this.responses   = new Array();
-    this.cues        = new Array("Things that hang", "Things that are poor", "Things that nobody wants");
+    this.cues        = new Array("Things that hang", "Things that are poor", "Things that nobody wants", "Thing that shouldn't be allowed at the dinner table");
     this.cues        = shuffle(this.cues); // randomize each playthrough
 
     this.reader  = 0;
@@ -119,12 +119,11 @@ function updatePlayerList(){
     }
 
     if(game.players.length == 0){
-        var infoHTML = '<p>There aren\'t any players in this game. Queued players will be added when the round starts.</p>';
+        var infoHTML = '<p>There aren\'t any players in this game.<br />Queued players will be added when the round starts.</p>';
         $('#playerlist').append(infoHTML);
     }
 
-    $('#notification').slideUp();
-    $('#notification').empty();
+    hideNotification();
 
     if(game.playerQueue.length > 0){
         var notificationHTML;
@@ -153,17 +152,16 @@ function updatePlayerList(){
 }
 
 function showNotification(text){
-    $('#notification').html(text);
-    $('#notification').slideDown();
+    $('#notification').html('<marquee>' + text + '</marquee>');
+    $('#notificationcontainer').slideDown();
 }
 
 function hideNotification(){
-    $('#notification').slideUp();
+    $('#notificationcontainer').slideUp();
 }
 
 // display start screen
 function startScreen(){
-    hideNotification();
     $('#content h1').html('TriviaCast');
     $('#responses').fadeOut();
     $('#status').fadeOut();
@@ -173,7 +171,7 @@ function startScreen(){
 
 // display screen for a round of the game
 function roundScreen(){
-    hideNotification();
+    updatePlayerList();
     $('#content h1').html(game.currentCue);
     $('#instructions').fadeOut();
     $('#responses').show();
@@ -316,7 +314,7 @@ function submitGuess(channel, guess){
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
         game.responses[responseGuessed].isActive = false;
-        $('#response'+i).animate({ color : '#666', 'padding-left' : '-10px' });
+        $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
     }
     else{
         // if the person is out, you're dumb and your turn is over.
@@ -340,20 +338,22 @@ function showResponses(){
 
 function nextGuesser(){
     // round is over when only reader's and your own responses are left
-    // if(game.responses.length == 2){
-    //     betweenRounds();
-    //     $('h1').html('Round over!');
-    // }
-    if(false){
-// TODO remove this
+    if(game.responses.length <= 2){
+        betweenRounds();
+        $('h1').html('Round over!');
     }
     else{
-        var nextGuesser = game.guesser++;
-        nextGuesser = nextGuesser % game.players.length;
-        game.guesser = nextGuesser;
+        do{
+            var nextGuesser = game.guesser++;
+            nextGuesser = nextGuesser % game.players.length;
+            game.guesser = nextGuesser;
+        }while(game.players[game.guesser].isOut);
 
         // notify next guesser
         game.players[nextGuesser].channel.send({ type : 'guesser' });
+
+        // update UI
+        $('#status').html('<strong>' + game.players[nextGuesser].name + '</strong> is guessing.');
 
         startGuessing();
     }
@@ -378,8 +378,12 @@ function startNextRound(){
 }
 
 function betweenRounds(){
-    game.isBetweenRounds = true;
+    // notify everyone that we're in between rounds
+    for(var i = 0; i < game.players.length; i++){
+        game.players[i].channel.send({ 'type' : 'roundOver' });
+    }
 
+    game.isBetweenRounds = true;
     startScreen();
 }
 
@@ -459,7 +463,7 @@ function initReceiver(){
                 submitResponse(event.target, event.message.response);
                 break;
             case "submitGuess": // user submits a guess
-                tryGuess(event.target, event.message.guess);
+                submitGuess(event.target, event.message);
                 break;
             case "nextRound":
                 startNextRound();
