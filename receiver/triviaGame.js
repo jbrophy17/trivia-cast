@@ -1,6 +1,7 @@
 // error constants
-SENT_BLANK_NAME  = 1;
+SENT_BLANK_NAME        = 1;
 ALREADY_HAVE_RESPONSES = 2;
+WAITING_ON_RESPONSES   = 3;
 
 function Player(name, ID, channel) {
     var that = this;
@@ -269,6 +270,12 @@ function startGuessing(){
 }
 
 function submitGuess(channel, guess){
+    // only allowed if all responses are in
+    if(game.responses.length < game.players.length){
+        channel.send({ error : WAITING_ON_RESPONSES });
+        return;
+    }
+
     var responseGuessed = guess.guessResponseId;
     var playerGuessed   = guess.guessPlayerNumber;
     var guesserID       = getPlayerIdByChannel(channel);
@@ -279,6 +286,7 @@ function submitGuess(channel, guess){
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
         game.responses[responseGuessed].isActive = false;
+        $('#response'+i).animate({ color : '#666' });
     }
     else{
         // if the person is out, you're dumb and your turn is over.
@@ -289,6 +297,14 @@ function submitGuess(channel, guess){
 
         // next guesser's turn
         nextGuesser();
+    }
+}
+
+function showResponses(){
+    $('#responses ul').empty();
+    for(var i = 0; i < game.responses.length; i++){
+        var responseHTML = '<li id="response' + i + '">' + game.responses[i].response + '</li>';
+        $('#responses ul').append(responseHTML);
     }
 }
 
@@ -393,6 +409,7 @@ function initReceiver(){
                 startNextRound();
                 break;
             case "readerIsDone":
+                showResponses();
                 nextGuesser();
                 break;
             default:
