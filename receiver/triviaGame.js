@@ -415,10 +415,16 @@ function newGrind(){
 
     console.debug('Next reader is ' + game.reader);
 
+    // build array of players
+    var playerList = new Object();
+    for(var i = 0; i < game.players.length; i++){
+        playerList[i] = game.players[i].clientSafeVersion();
+    }
+
     // update all clients' user list and scores
     for(var i = 0; i < game.players.length; i++){
         console.debug('sending gameSync to ' + game.players[i].name);
-        game.players[i].channel.send({type : 'gameSync', players : game.players[i].clientSafeVersion(), reader : game.players[game.reader].ID });
+        game.players[i].channel.send({type : 'gameSync', players : playerList, reader : game.players[game.reader].ID });
     }
 
     console.debug('newGrind finished');
