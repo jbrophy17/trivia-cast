@@ -1,17 +1,16 @@
 // error constants
 SENT_BLANK_NAME  = 1;
-ALREADY_SENT_RESPONSE = 2;
-ALREADY_HAVE_RESPONSES = 3;
+ALREADY_HAVE_RESPONSES = 2;
 
 function Player(name, ID, channel) {
     var that = this;
-    this.name      = name;
-    //this.picture = picture;
-    this.ID        = ID;
-    this.channel   = channel;
+    this.name    = name;
+    // this.picture = picture;
+    this.ID      = ID;
+    this.channel = channel;
 
-    this.isOut     = false;
-    this.isGone    = false;
+    this.isOut   = false;
+    this.isGone  = false;
 
     this.score = 0;
 
@@ -55,16 +54,42 @@ function Response(response, responseID, userID, channel){
 function Game() {
     var that= this;
 
-    this.players = new Array();
-    this.responses = new Array();
-    this.cues = new Array("Things that hang", "Things that are poor", "Things that nobody wants");
+    this.players     = new Array();
+    this.playerQueue = new Array();
+    this.responses   = new Array();
+    this.cues        = new Array("Things that hang", "Things that are poor", "Things that nobody wants");
+    this.cues        = shuffle(this.cues); // randomize each playthrough
 
-    this.reader = 0;
+    this.reader  = 0;
     this.guesser = 0;
 
+    this.isBetweenRounds = true;
+
+    this.addPlayer = function(player){
+        while(typeof this.players[player.ID] != 'undefined'){
+            player.ID++;
+        }
+        this.players[player.ID] = player;
+        player.channel.send({ type : 'didJoin', number : player.ID });
+        console.log("Added player " + player.name);
+    }
+
+    this.queuePlayer = function(player){
+        this.playerQueue.push(player);
+        player.channel.send({ type: 'didQueue' });
+        console.log("Queued player " + player.name);
+    }
+
     this.deletePlayer = function(id){
-        console.log("Kicked player " + this.players[i].name);
+        console.log("Deleted player " + this.players[i].name);
         this.players.splice(id, 1);
+    }
+
+    this.getNextCue = function(){
+        var lastIndex = this.cues.length - 1;
+        this.currentCue = this.cues[lastIndex];
+        this.cues.splice(lastIndex, 1);
+        return this.currentCue;
     }
 }
 
@@ -76,6 +101,17 @@ function getPlayerIdByChannel(channel){
     }
 }
 
+// update the list of players on screen
+function updatePlayerList(){
+    var tempList = game.players;
+    tempList.sort();
+
+    for(player in tempList){
+        var playerHTML = '<li><em>' + player.score + '</em> ' + player.name + '</li>';
+        $('#playerlist').append()
+    }
+}
+
 function joinPlayer(channel, name){
     if(name === ""){
         channel.send({ type : 'error', value : SENT_BLANK_NAME });
@@ -84,10 +120,13 @@ function joinPlayer(channel, name){
 
     var newID = game.players.length;
     var newPlayer = new Player(name, newID, channel);
-    game.players[newID] = newPlayer;
-    channel.send({ type : 'didJoin', number : newID });
 
-    console.log("Player joined: " + name);
+    if(game.isBetweenRounds){
+        game.addPlayer(newPlayer);
+    }
+    else{
+        game.queuePlayer(newPlayer);
+    }
 }
 
 function leavePlayer(channel){
@@ -157,6 +196,9 @@ function getAllResponsesJSON(){
 }
 
 function startReading(){
+    // randomize order of responses
+    game.responses = shuffle(game.responses);
+
     // send all responses to the reader.
     game.players[game.reader].channel.send(getAllResponsesJSON());
 }
@@ -208,21 +250,50 @@ function nextGuesser(){
 }
 
 function startNextRound(){
-    // let everyone know the round has started
+    game.isBetweenRounds = false;
 
+    // show next question
+    $('#content h1').html(game.getNextCue());
+
+    // let everyone know the round has started
+    for(var i = 0; i < game.players.length; i++){
+        game.players[i].channel.send({ type : 'roundStarted', cue: game.cues[currentCue] });
+    }
 }
 
 // prepare for next question
 function newGrind(){
-    // clean up the game state
+    game.isBetweenRounds = true;
 
-    // update all clients' user list and scores
-    channel.send({type : 'gameSync', players : playerJSON}); // TODO
+    // delete players who left
+    for(var i = 0; i < game.players.length; i++){
+        if(game.players[i].isGone){
+            game.deletePlayer(i);
+        }
+    }
+
+    // add players who are queued
+    for(player in game.playerQueue){
+        game.addPlayer(player);
+    }
+
+    // clear player queue
+    game.playerQueue = [];
+
+    // update player list
+    updatePlayerList();
+
+    // clear responses
+    game.responses = [];
 
     // notify next reader
+    game.reader++;
+    game.reader = game.reader % game.players.length;
 
-
-    // show next question and get ready for responses
+    // update all clients' user list and scores
+    for(var i = 0; i < game.players.length; i++){
+        game.players[i].channel.send({type : 'gameSync', players : playerJSON, reader : game.reader });
+    }
 }
 
 function initReceiver(){
@@ -284,3 +355,10 @@ $(function(){
     initGame();
     initReceiver();
 });
+
+//+ Jonas Raoni Soares Silva
+//@ http://jsfromhell.com/array/shuffle [v1.0]
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};

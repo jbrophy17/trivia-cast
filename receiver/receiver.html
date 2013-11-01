@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <link rel="stylesheet" type="text/css" href="receiver.css?4">
+        <link rel="stylesheet" type="text/css" href="receiver.css?<?= time(); ?>">
     </head>
 <body>
     <div id="notification"><strong>Butthole Explorer</strong> will join the game after this round.</div>
@@ -11,7 +11,7 @@
 
         <br /><br />
 
-        <h2>Current Players</h3>
+        <h2>Current Scoreboard</h3>
         <ul id="playerlist">
 
         </ul>
@@ -19,5 +19,5 @@
 </body>
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/cast/js/receiver/1.0/cast_receiver.js"></script>
-<script type="text/javascript" src="triviaGame.js?4"></script>
+<script type="text/javascript" src="triviaGame.js?<?= time(); ?>"></script>
 </html>

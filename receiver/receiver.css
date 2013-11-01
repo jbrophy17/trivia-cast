@@ -30,6 +30,16 @@ body {
   font-weight: 900;
   letter-spacing: 1px;
 }
+#playerlist li {
+  background: #FFF;
+  border-bottom: 4px solid #333;
+  padding: 8px;
+}
+#playerlist li em {
+  color: #666;
+  font-family: monospace;
+  padding-right: 10px;
+}
 h1 {
   font-size: 60px;
   margin: 0;
