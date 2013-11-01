@@ -12,6 +12,7 @@
 
 @interface TVCDataSource : NSObject <TVCMessageStreamDelegate, GCKApplicationSessionDelegate>
 @property(nonatomic, strong) GCKDevice *device;
+@property(nonatomic, strong) TVCPlayer *player;
 
 - (BOOL) guessPlayer:(int)player forResponse:(NSString*)response;
 

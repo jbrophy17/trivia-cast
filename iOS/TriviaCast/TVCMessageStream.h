@@ -130,6 +130,12 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (void) didReceiveScore:(NSDictionary*) scores;
 
+/**
+ * Called at the end of each round, when a game sync message is received
+ *
+ * @param players an array of player objects
+ */
+- (void) didReceiveGameSyncWithPlayers:(NSArray*) players;
 
 /**
  * Called when the game has ended.
@@ -145,7 +151,7 @@ typedef NS_ENUM(NSInteger, GameResult) {
 @end
 
 /**
- * A MessageStream implementation for a two-player TicTacToe game.
+ * A MessageStream implementation for trivia cast
  */
 @interface TVCMessageStream : GCKMessageStream
 
@@ -166,6 +172,13 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (BOOL)joinGameWithName:(NSString *)name;
 
+/**
+ * Notifies the receiver that the reader has read all responses
+ *
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+-(BOOL)sendReaderIsDone;
+
 
 /**
  * Sends a Response
@@ -174,6 +187,14 @@ typedef NS_ENUM(NSInteger, GameResult) {
  * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
  */
 - (BOOL)sendResponseWithText:(NSString*)text;
+
+/**
+ * Sends a Guess
+ *
+ * @param text The player and response ID pair you are guessing
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+- (BOOL)sendGuessWithPlayer:(NSInteger*)number andResponseId:(NSInteger*)responseId;
 
 /**
  * Leaves the current game. If a game is in progress this will forfeit the game.
