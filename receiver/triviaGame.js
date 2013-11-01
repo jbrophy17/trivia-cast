@@ -103,13 +103,13 @@ function getPlayerIdByChannel(channel){
 
 // update the list of players on screen
 function updatePlayerList(){
-    var tempList = game.players;
-    tempList.sort();
-
     $('#playerlist').empty();
-    for(player in tempList){
-        var playerHTML = '<li><em>' + player.score + '</em> ' + player.name + '</li>';
-        $('#playerlist').append()
+    console.debug('updatePlayerList()');
+    console.debug(game.players);
+    for(var i = 0; i < game.players.length; i++){
+        console.debug(game.players[i]);
+        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].name + '</li>';
+        $('#playerlist').append(playerHTML);
     }
 
     $('#notification').slideUp();
@@ -121,7 +121,7 @@ function updatePlayerList(){
             notificationHTML = '<strong>' + game.playerQueue[0].name + '</strong>';
         }
         else{
-            for(int i = 0; i < game.playerQueue.length; i++){
+            for(var i = 0; i < game.playerQueue.length; i++){
                 notificationHTML += '<strong>' + game.playerQueue[i].name + '</strong>';
 
                 // if there's one more player left, put oxford comma + 'and'
@@ -137,8 +137,34 @@ function updatePlayerList(){
         }
 
         notificationHTML += ' will join the game after this round.';
-        $('#notification').html(notificationHTML);
+        showNotification(notificationHTML);
     }
+}
+
+function showNotification(text){
+    $('#notification').html(text);
+    $('#notification').slideDown();
+}
+
+function hideNotification(){
+    $('#notification').slideUp();
+}
+
+// display start screen
+function startScreen(){
+    hideNotification();
+    $('#content h1').html('TriviaCast');
+    $('#responses').fadeOut();
+    updatePlayerList();
+    $('#scoreboard').fadeIn();
+}
+
+// display screen for a round of the game
+function roundScreen(){
+    hideNotification();
+    $('#content h1').html(game.currentCue);
+    $('#responses').show();
+    $('#scoreboard').fadeOut();
 }
 
 function joinPlayer(channel, name){
@@ -183,6 +209,9 @@ function leavePlayer(channel){
     if(game.reader == playerID || game.guesser == playerID){
         nextGuesser();
     }
+
+    // if this is the last player, go to start screen and schedule exit
+    newGrind();
 
     return; // only one player per channel
 }
@@ -254,7 +283,7 @@ function submitGuess(channel, guess){
     else{
         // if the person is out, you're dumb and your turn is over.
         if(game.players[playerGuessed].isOut){
-            // TODO shame notification
+            showNotification(game.players[guesserID].name + " guessed someone who was out. Time for a break?");
         }
         channel.send({ type : 'guessResponse', value : false });
 
@@ -284,7 +313,7 @@ function startNextRound(){
     game.isBetweenRounds = false;
 
     // show next question
-    $('#content h1').html(game.getNextCue());
+    roundScreen();
 
     // let everyone know the round has started
     for(var i = 0; i < game.players.length; i++){
@@ -295,6 +324,8 @@ function startNextRound(){
 // prepare for next question
 function newGrind(){
     game.isBetweenRounds = true;
+
+    startScreen();
 
     // delete players who left
     for(var i = 0; i < game.players.length; i++){
