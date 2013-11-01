@@ -61,6 +61,11 @@ function Game() {
 
     this.reader = 0;
     this.guesser = 0;
+
+    this.deletePlayer = function(id){
+        console.log("Kicked player " + this.players[i].name);
+        this.players.splice(id, 1);
+    }
 }
 
 function getPlayerIdByChannel(channel){
@@ -80,23 +85,34 @@ function joinPlayer(channel, name){
     var newID = game.players.length;
     var newPlayer = new Player(name, newID, channel);
     game.players[newID] = newPlayer;
-    channel.send({ number : newID });
+    channel.send({ type : 'didJoin', number : newID });
+
+    console.log("Player joined: " + name);
 }
 
 function leavePlayer(channel){
     // find player, set them as out for the round and set didLeave = true so they're removed before next round
-    var i = getPlayerIdByChannel(channel);
-    game.players[i].didGetOut();
-    game.players[i].didLeave();
+    var playerID = getPlayerIdByChannel(channel);
+    game.players[playerID].didGetOut();
+    game.players[playerID].didLeave();
 
     // if they haven't submitted a response yet, leave immediately
-    // TODO
+    var responseReceived = false;
 
-    // if they're currently reader, display all responses on screen with a message
-    // TODO
+    for(var i = 0; i < responses.length; i++){
+        if(responses[i].userID == playerID){
+            responseReceived = true;
+        }
+    }
 
-    // if they're currently guessing, advance to the next player
-    // TODO
+    if(!responseReceived){
+        game.deletePlayer(playerID);
+    }
+
+    // if they're currently reader or currently guessing, advance to the first or next guesser
+    if(game.reader == playerID || game.guesser == playerID){
+        nextGuesser();
+    }
 
     return; // only one player per channel
 }
@@ -157,7 +173,7 @@ function submitGuess(channel, guess){
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
     if(game.responses[responseGuessed].userID == playerGuessed){
         channel.send({ type : 'guessResponse', value : true });
-        game.players[guesserID}.incrementScore();
+        game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
         game.responses[responseGuessed].isActive = false;
     }
@@ -192,7 +208,7 @@ function nextGuesser(){
 
 function startNextRound(){
     // let everyone know the round has started
-    
+
 }
 
 // prepare for next question
@@ -223,20 +239,21 @@ function initReceiver(){
     channelHandler.addEventListener(cast.receiver.Channel.EventType.ERROR, onError.bind(this));
 
     function onMessage(event) {
-        console.log('message received: ' + event);
+        console.log('type = ' + event.message.type);
+        console.log(event);
 
-        switch(event.type){
+        switch(event.message.type){
             case "join":
-                joinPlayer(event.target, event.name);
+                joinPlayer(event.target, event.message.name);
                 break;
             case "leave":
                 leavePlayer(event.target);
                 break;
             case "submitResponse": // user submits a response
-                storeResponse(event.target, event.response);
+                storeResponse(event.target, event.message.response);
                 break;
             case "submitGuess": // user submits a guess
-                tryGuess(event.target, event.guess);
+                tryGuess(event.target, event.message.guess);
                 break;
             case "nextRound":
                 startNextRound();
@@ -245,7 +262,7 @@ function initReceiver(){
                 nextGuesser();
                 break;
             default:
-                console.warn("Invalid type: " + event.type);
+                console.warn("Invalid type: " + event.message.type);
         }
     }
 
