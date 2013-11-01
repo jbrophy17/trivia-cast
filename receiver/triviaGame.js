@@ -312,6 +312,7 @@ function nextGuesser(){
     // round is over when only reader's and your own responses are left
     if(game.responses.length == 2){
         newGrind();
+        $('h1').html('Round over!');
     }
     else{
         var nextGuesser = game.guesser++;
