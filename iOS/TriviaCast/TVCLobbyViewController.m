@@ -11,6 +11,7 @@
 #import "TVCResponseViewController.h"
 #import "TVCReaderViewController.h"
 #import "TVCGuesserViewController.h"
+#import "TVCPlayer.h"
 
 @interface TVCLobbyViewController ()
 
@@ -39,6 +40,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [[appDelegate dataSource] setCurrentViewController:self];
+    [self.navigationController.navigationItem setHidesBackButton:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,7 +50,6 @@
 }
 
 -(void) segueToResponseViewWithCue:(NSString *)cue {
-    NSLog(@"got cue: %@", cue);
     UIStoryboard *storyboard = self.storyboard;
     TVCResponseViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"responseViewController"];
     
@@ -56,6 +57,8 @@
     viewController.promptLabelText = cue;
     //NSLog(@"vc label: %@",viewController.promptLabel.text);
     [self presentViewController:viewController animated:YES completion:nil];
+    
+    [self.roundStartButton setHidden:YES];
     //[self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -69,8 +72,18 @@
     for(id key in responseDictionary) {
         [keyHold addObject:key];
     }
+    
+    NSMutableArray * updatedPlayers = [NSMutableArray array];
+    
     viewController.responses = [NSMutableArray arrayWithArray:keyHold];
-    viewController.players = [NSMutableArray arrayWithArray:players];
+    
+    
+    for (TVCPlayer* p in players) {
+        if(p.playerNumber != [[appDelegate dataSource] player].playerNumber) {
+            [updatedPlayers addObject:p];
+        }
+    }
+    viewController.players = [NSMutableArray arrayWithArray:updatedPlayers];
     viewController.responseDictionary = [NSMutableDictionary dictionaryWithDictionary:responseDictionary];
     [self presentViewController:viewController animated:YES completion:nil];
 }
@@ -79,6 +92,11 @@
     
     [[[appDelegate dataSource] getMessageStream] sendNextRound];
     
+}
+
+- (IBAction)quitAction:(id)sender {
+    [[[appDelegate dataSource] getMessageStream] leaveGame];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(void) segueToReaderViewWithResponses:(NSDictionary *)responseDictionary {

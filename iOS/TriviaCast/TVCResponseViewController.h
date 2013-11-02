@@ -13,7 +13,7 @@
 @class TVCPlayer;
 @class TVCMessageStream;
 
-@interface TVCResponseViewController : UIViewController
+@interface TVCResponseViewController : UIViewController 
 
 @property(nonatomic, strong) GCKDevice *device;
 @property (weak, nonatomic) IBOutlet UILabel *promptLabel;

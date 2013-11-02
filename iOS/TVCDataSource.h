@@ -22,4 +22,7 @@
 
 - (TVCMessageStream *)getMessageStream;
 
+- (BOOL) isReader;
+- (BOOL) isGuesser;
+
 @end

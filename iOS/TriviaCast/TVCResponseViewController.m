@@ -16,7 +16,7 @@
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
-@interface TVCResponseViewController () <UITextViewDelegate>
+@interface TVCResponseViewController () 
 {
     // Game state.
     BOOL _isXsTurn;
@@ -50,7 +50,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     [[appDelegate dataSource] setCurrentViewController:self];
-    self.responseTextView.delegate = self;
+   // self.responseTextView.delegate = self;
     [self.promptLabel setText:self.promptLabelText];
 }
 
@@ -66,7 +66,19 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 // Start the remote application session when the view appears.
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    if ([[appDelegate dataSource] isReader]) {
+        [self.iconImageView setImage:[UIImage imageNamed:@"readerIcon.png"]];
+        NSLog(@"reader");
+    } else if ([[appDelegate dataSource] isGuesser]) {
+        [self.iconImageView setImage:[UIImage imageNamed:@"guesserIcon.png"]];
+        NSLog(@"guesser");
+    } else {
+        NSLog(@"none");
+        [self.iconImageView setImage:nil];
+    }
+    UIImage * testImg = [UIImage imageNamed:@"readerIcon.png"];
     
+    [self.iconImageView setImage:testImg];
     //[self startSession];
 }
 
@@ -225,13 +237,39 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 
 #pragma mark UITextField delegate
+/*
+- (void)textViewDidBeginEditing:(UITextField *)textField
+{
+    NSLog(@"editing");
+    [self animateTextField: textField up: YES];
+}
 
--(BOOL) textFieldShouldReturn:(UITextField *)textField{
+
+- (void)textViewDidEndEditing:(UITextField *)textField
+{
+    [self animateTextField: textField up: NO];
+}
+
+- (void) animateTextField: (UITextField*) textField up: (BOOL) up
+{
+    const int movementDistance = 80; // tweak as needed
+    const float movementDuration = 0.3f; // tweak as needed
+    
+    int movement = (up ? -movementDistance : movementDistance);
+    
+    [UIView beginAnimations: @"anim" context: nil];
+    [UIView setAnimationBeginsFromCurrentState: YES];
+    [UIView setAnimationDuration: movementDuration];
+    self.view.frame = CGRectOffset(self.view.frame, 0, movement);
+    [UIView commitAnimations];
+}
+
+-(BOOL) textViewShouldReturn:(UITextField *)textField{
     
     [textField resignFirstResponder];
     return YES;
 }
-
+*/
 
 
 @end
