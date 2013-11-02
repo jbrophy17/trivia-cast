@@ -77,9 +77,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         NSLog(@"none");
         [self.iconImageView setImage:nil];
     }
-    UIImage * testImg = [UIImage imageNamed:@"readerIcon.png"];
     
-    [self.iconImageView setImage:testImg];
     //[self startSession];
 }
 
