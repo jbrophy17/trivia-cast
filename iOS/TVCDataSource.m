@@ -182,6 +182,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 
 -(void) didReceiveResponsesHelper:(NSDictionary *)responses {
+    responses = (NSDictionary*)responses;
     if ([self.player isGuessing]) {
         NSLog(@"DataSource: didReceiveResponses, Guesser");
         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
