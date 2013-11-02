@@ -55,7 +55,6 @@
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [[appDelegate dataSource] setCurrentViewController:self];
-    [[[appDelegate dataSource] getMessageStream] sendReaderIsDone];
 }
 
 - (void)loadScrollView {
