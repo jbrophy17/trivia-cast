@@ -76,6 +76,12 @@ typedef NS_ENUM(NSInteger, GameResult) {
 - (void)didReceiveRoundEnded;
 
 /**
+ * Called when the server received the response
+ *
+ */
+- (void) responseWasReceived;
+
+/**
  * Called when the game sends out responses
  *
  * The two arrays correspond to eachother by index (i.e. the player number in index 0

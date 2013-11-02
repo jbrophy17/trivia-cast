@@ -236,6 +236,13 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     }
 }
 
+- (void)responseWasReceived {
+    if (self.currentViewController != self.lobbyViewController) {
+        [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
+        
+    }
+}
+
 
 // Display the error message.
 - (void)didReceiveErrorMessage:(NSString *)message {

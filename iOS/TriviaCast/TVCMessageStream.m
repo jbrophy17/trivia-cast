@@ -38,6 +38,7 @@ static NSString * const valueTypeGuessResponse = @"guessResponse";
 static NSString * const valueTypeSyncGame = @"gameSync";
 static NSString * const valueTypeRoundStarted = @"roundStarted";
 static NSString * const valueTypeRoundOver = @"roundOver";
+static NSString * const valueTypeResponseReceived = @"responseReceived";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -229,6 +230,11 @@ static NSString * const kValuePlayerX = @"X";
         }
        
         [self.delegate didReceiveResponses:responseIdDictionary];
+        return;
+    }
+    
+    if([type isEqualToString:valueTypeResponseReceived]) {
+        [self.delegate responseWasReceived];
         return;
     }
     

@@ -237,6 +237,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     NSLog(@"Submit");
     [[[appDelegate dataSource] getMessageStream] sendResponseWithText:responseString];
     [self.responseTextView resignFirstResponder];
+    
     //[self dismissViewControllerAnimated:YES completion:nil];
     //NSLog(@"%hhd",[_messageStream joinGameWithName:[self currentUserName]]);
 }
