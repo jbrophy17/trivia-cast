@@ -213,8 +213,6 @@ function joinPlayer(channel, name){
     var newPlayer = new Player(name, newID, channel);
 
     game.queuePlayer(newPlayer);
-
-    updatePlayerList();
 }
 
 function leavePlayer(channel){
@@ -373,10 +371,12 @@ function nextGuesser(){
     }
     else{
         do{
-            var nextGuesser = game.guesser++;
+            var nextGuesser = game.guesser + 1;
             nextGuesser = nextGuesser % game.players.length;
             game.guesser = nextGuesser;
         }while(game.players[game.guesser].isOut);
+
+        console.debug('guesser is now ' + game.guesser);
 
         // notify next guesser
         game.players[nextGuesser].channel.send({ type : 'guesser' });
