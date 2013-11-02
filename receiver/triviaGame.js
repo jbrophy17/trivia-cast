@@ -75,12 +75,14 @@ function Game() {
     this.currentCue      = '';
 
     this.addPlayer = function(player){
-        while(typeof this.players[player.ID] != 'undefined'){
-            player.ID++;
+        var i = 0;
+        while(typeof this.players[i] != 'undefined'){
+            i++;
         }
-        this.players[player.ID] = player;
+        player.ID = i;
+        this.players[i] = player;
         player.channel.send({ type : 'didJoin', number : player.ID });
-        console.log("Added player " + player.name);
+        console.log("Added player " + player.name + " in ID " + player.ID);
     }
 
     this.queuePlayer = function(player){
@@ -103,7 +105,7 @@ function Game() {
     }
 
     this.deletePlayer = function(id){
-        console.log("Deleted player " + this.players[i].name);
+        console.log("Deleted player " + this.players[id].name);
         this.players.splice(id, 1);
     }
 
@@ -141,9 +143,9 @@ function updatePlayerList(){
     hideNotification();
 
     if(game.playerQueue.length > 0){
-        var notificationHTML;
+        var notificationHTML = '';
         if(game.playerQueue.length == 1){
-            notificationHTML = '<strong>' + game.playerQueue[0].name + '</strong>';
+            notificationHTML += '<strong>' + game.playerQueue[0].name + '</strong>';
         }
         else{
             for(var i = 0; i < game.playerQueue.length; i++){
@@ -161,7 +163,9 @@ function updatePlayerList(){
             }
         }
 
-        notificationHTML += ' will join the game after this round.';
+        notificationHTML += ' will join the game at the start of the next round.';
+
+        console.debug('notificationHTML = ' + notificationHTML);
         showNotification(notificationHTML);
     }
 }
@@ -173,6 +177,7 @@ function showNotification(text){
 
 function hideNotification(){
     $('#notificationcontainer').slideUp();
+    $('#notification').empty();
 }
 
 // display start screen
@@ -272,6 +277,8 @@ function submitResponse(channel, response){
 
     game.responses.push(newResponse);
 
+    channel.send({ 'type' : 'responseReceived' });
+
     $('#status').html('Waiting for responses... ' + game.responses.length + '/' + game.players.length);
 
     // if all responses are in, move to reading phase
@@ -324,20 +331,26 @@ function submitGuess(channel, guess){
     var playerGuessed   = guess.guessPlayerNumber;
     var guesserID       = getPlayerIndexByChannel(channel);
 
+    console.debug('responseGuessed = ' + responseGuessed + ', playerGuessed = ' + playerGuessed + ', guesserID = ' + guesserID);
+    console.debug(guess);
+
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
     if(game.responses[responseGuessed].userID == playerGuessed){
-        channel.send({ type : 'guessResponse', value : true });
+        channel.send({ type : 'guessResponse', 'value' : true });
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
         game.responses[responseGuessed].isActive = false;
         $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        console.log(game.players[guesserID].name + ' correctly guessed ' + game.responses[responseGuessed].response);
     }
     else{
         // if the person is out, you're dumb and your turn is over.
         if(game.players[playerGuessed].isOut){
             showNotification(game.players[guesserID].name + " guessed someone who was out. Time for a break?");
         }
-        channel.send({ type : 'guessResponse', value : false });
+        channel.send({ type : 'guessResponse', 'value' : false });
+
+        console.log(game.players[guesserID].name + ' incorrectly guessed ' + game.responses[responseGuessed].response);
 
         // next guesser's turn
         nextGuesser();
@@ -347,7 +360,7 @@ function submitGuess(channel, guess){
 function showResponses(){
     $('#responses ul').empty();
     for(var i = 0; i < game.responses.length; i++){
-        var responseHTML = '<li id="response' + i + '">' + game.responses[i].response + '</li>';
+        var responseHTML = '<li id="response' + i + '">' + game.responses[i].response + '</li><br />';
         $('#responses ul').append(responseHTML);
     }
 }
@@ -391,6 +404,8 @@ function startNextRound(){
     for(var i = 0; i < game.players.length; i++){
         game.players[i].channel.send({ type : 'roundStarted', cue: game.currentCue });
     }
+
+    updatePlayerList();
 }
 
 function betweenRounds(){
@@ -415,8 +430,12 @@ function newGrind(){
     console.debug('processing player queue');
     // add players who are queued
     for(var i = 0; i < game.playerQueue.length; i++){
+        console.debug('enqueuing player ' + i);
         game.addPlayer(game.playerQueue[i]);
+        console.debug('enqueued player ' + i);
     }
+
+    console.debug('player queue processed');
 
     // clear player queue
     game.playerQueue = [];
@@ -426,6 +445,8 @@ function newGrind(){
 
     // clear responses
     game.responses = [];
+
+    console.debug('picking next reader');
 
     // pick next reader
     if(game.players.length > 0){
@@ -463,6 +484,7 @@ function initReceiver(){
 
     channelHandler.addEventListener(cast.receiver.Channel.EventType.MESSAGE, onMessage.bind(this));
     channelHandler.addEventListener(cast.receiver.Channel.EventType.ERROR, onError.bind(this));
+    channelHandler.addEventListener(cast.receiver.Channel.EventType.CLOSED, onClose.bind(this));
 
     function onMessage(event) {
         console.log('type = ' + event.message.type);
@@ -496,6 +518,13 @@ function initReceiver(){
     function onError(event){
         console.error('error received');
         console.debug(event);
+    }
+
+    function onClose(event){
+        console.log('Channel disconnected for player');
+        console.debug(event);
+
+        leavePlayer(event.target);
     }
 }
 
