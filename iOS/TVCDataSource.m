@@ -176,13 +176,16 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
 - (void) didReceiveResponses:(NSDictionary *)responses {
     self.responseDictionary = responses;
-    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(didReceiveResponsesHelper:) userInfo:responses repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerFired:) userInfo:responses repeats:NO];
+}
 
-
+- (void)timerFired:(NSTimer *)timer
+{
+    NSDictionary *responses = [timer userInfo];
+    [self didReceiveResponsesHelper:responses];
 }
 
 -(void) didReceiveResponsesHelper:(NSDictionary *)responses {
-    responses = (NSDictionary*)responses;
     if ([self.player isGuessing]) {
         NSLog(@"DataSource: didReceiveResponses, Guesser");
         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
