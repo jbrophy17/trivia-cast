@@ -21,5 +21,6 @@
 -(void) segueToGuesserViewWithResponses:(NSDictionary *)responseDictionary andPlayers:(NSArray*)players;
 
 - (IBAction)startRoundAction:(id)sender;
+- (IBAction)quitAction:(id)sender;
 
 @end

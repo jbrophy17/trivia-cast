@@ -42,6 +42,13 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     return self;
 }
 
+-(BOOL) isReader {
+    return [self.player isReader];
+}
+
+-(BOOL) isGuesser {
+    return [self.player isGuessing];
+}
 
 // Begin the application session with the current device.
 - (void)startSession {
@@ -225,6 +232,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 - (void) didReceiveRoundEnded {
     if (self.currentViewController != self.lobbyViewController) {
         [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
+        [self.lobbyViewController.roundStartButton setHidden:NO];
     }
 }
 

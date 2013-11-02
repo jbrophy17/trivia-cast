@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DC007F6617F15B4800342963 /* guesserIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6217F15B4800342963 /* guesserIcon.png */; };
-		DC007F6717F15B4800342963 /* guesserIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6317F15B4800342963 /* guesserIcon@2x.png */; };
-		DC007F6817F15B4800342963 /* readerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6417F15B4800342963 /* readerIcon.png */; };
-		DC007F6917F15B4800342963 /* readerIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC007F6517F15B4800342963 /* readerIcon@2x.png */; };
 		DC007F6D17F1EEF700342963 /* TVCPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC007F6C17F1EEF700342963 /* TVCPickerView.m */; };
 		DC007F6F17F241BF00342963 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC007F6E17F241BF00342963 /* QuartzCore.framework */; };
 		DC007F7117F2889100342963 /* defaultProfile.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DC007F7017F2889100342963 /* defaultProfile.jpg */; };
 		DC0807E71810350E003F7E1D /* GCKFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */; };
+		DC38689918256ED100E22E92 /* guesserIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689518256ED100E22E92 /* guesserIcon.png */; };
+		DC38689A18256ED100E22E92 /* guesserIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689618256ED100E22E92 /* guesserIcon@2x.png */; };
+		DC38689F1825722700E22E92 /* readerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689D1825722700E22E92 /* readerIcon.png */; };
+		DC3868A01825722700E22E92 /* readerIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689E1825722700E22E92 /* readerIcon@2x.png */; };
 		DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24ED817EA966100C1615F /* UIKit.framework */; };
 		DCE24EDB17EA966100C1615F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDA17EA966100C1615F /* Foundation.framework */; };
 		DCE24EDD17EA966100C1615F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDC17EA966100C1615F /* CoreGraphics.framework */; };
@@ -59,14 +59,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		DC007F6217F15B4800342963 /* guesserIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guesserIcon.png; sourceTree = "<group>"; };
-		DC007F6317F15B4800342963 /* guesserIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guesserIcon@2x.png"; sourceTree = "<group>"; };
-		DC007F6417F15B4800342963 /* readerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readerIcon.png; sourceTree = "<group>"; };
-		DC007F6517F15B4800342963 /* readerIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "readerIcon@2x.png"; sourceTree = "<group>"; };
 		DC007F6B17F1EEF700342963 /* TVCPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCPickerView.h; sourceTree = "<group>"; };
 		DC007F6C17F1EEF700342963 /* TVCPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCPickerView.m; sourceTree = "<group>"; };
 		DC007F6E17F241BF00342963 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		DC007F7017F2889100342963 /* defaultProfile.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = defaultProfile.jpg; sourceTree = "<group>"; };
+		DC38689518256ED100E22E92 /* guesserIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guesserIcon.png; sourceTree = "<group>"; };
+		DC38689618256ED100E22E92 /* guesserIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guesserIcon@2x.png"; sourceTree = "<group>"; };
+		DC38689D1825722700E22E92 /* readerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readerIcon.png; sourceTree = "<group>"; };
+		DC38689E1825722700E22E92 /* readerIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "readerIcon@2x.png"; sourceTree = "<group>"; };
 		DCE24ED517EA966100C1615F /* TriviaCast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TriviaCast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE24ED817EA966100C1615F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCE24EDA17EA966100C1615F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -206,11 +206,11 @@
 		DCE24EDF17EA966100C1615F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DC38689D1825722700E22E92 /* readerIcon.png */,
+				DC38689E1825722700E22E92 /* readerIcon@2x.png */,
+				DC38689518256ED100E22E92 /* guesserIcon.png */,
+				DC38689618256ED100E22E92 /* guesserIcon@2x.png */,
 				DC007F7017F2889100342963 /* defaultProfile.jpg */,
-				DC007F6217F15B4800342963 /* guesserIcon.png */,
-				DC007F6317F15B4800342963 /* guesserIcon@2x.png */,
-				DC007F6417F15B4800342963 /* readerIcon.png */,
-				DC007F6517F15B4800342963 /* readerIcon@2x.png */,
 				DCF84F7717F14B1400E52B11 /* guessButton.png */,
 				DCF84F7817F14B1400E52B11 /* guessButton@2x.png */,
 				DCE24F1717EA968A00C1615F /* sampleInput.txt */,
@@ -336,6 +336,11 @@
 				CLASSPREFIX = TVC;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = smokeHau5;
+				TargetAttributes = {
+					DCE24ED417EA966100C1615F = {
+						DevelopmentTeam = CM6N9W8BGS;
+					};
+				};
 			};
 			buildConfigurationList = DCE24ED017EA966100C1615F /* Build configuration list for PBXProject "TriviaCast" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -361,19 +366,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCE24EE317EA966100C1615F /* InfoPlist.strings in Resources */,
-				DC007F6617F15B4800342963 /* guesserIcon.png in Resources */,
-				DC007F6717F15B4800342963 /* guesserIcon@2x.png in Resources */,
 				DCE24EEB17EA966100C1615F /* Default.png in Resources */,
+				DC3868A01825722700E22E92 /* readerIcon@2x.png in Resources */,
 				DCE24EED17EA966100C1615F /* Default@2x.png in Resources */,
 				DC007F7117F2889100342963 /* defaultProfile.jpg in Resources */,
 				DCE24EEF17EA966100C1615F /* Default-568h@2x.png in Resources */,
 				DCE24EF217EA966100C1615F /* MainStoryboard_iPhone.storyboard in Resources */,
+				DC38689A18256ED100E22E92 /* guesserIcon@2x.png in Resources */,
 				DCF84F7917F14B1400E52B11 /* guessButton.png in Resources */,
 				DCF84F7A17F14B1400E52B11 /* guessButton@2x.png in Resources */,
-				DC007F6817F15B4800342963 /* readerIcon.png in Resources */,
 				DCE24EF517EA966100C1615F /* MainStoryboard_iPad.storyboard in Resources */,
+				DC38689F1825722700E22E92 /* readerIcon.png in Resources */,
+				DC38689918256ED100E22E92 /* guesserIcon.png in Resources */,
 				DCE24F1E17EA968A00C1615F /* sampleInput.txt in Resources */,
-				DC007F6917F15B4800342963 /* readerIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -541,6 +546,9 @@
 		DCE24F1117EA966100C1615F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SRCROOT)/../../Desktop\\\"",
@@ -553,6 +561,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -561,6 +570,9 @@
 		DCE24F1217EA966100C1615F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SRCROOT)/../../Desktop\\\"",
@@ -573,6 +585,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
