@@ -239,9 +239,14 @@ static NSString * const kValuePlayerX = @"X";
     }
     
     if([type isEqualToString:valueTypeGuessResponse]) {
-        BOOL correct = [payload gck_boolForKey:keyValue];
+        NSInteger correct = [payload gck_integerForKey:keyValue];
         
-        [self.delegate didReceiveGuessResponse:correct];
+        if(correct == 1) {
+        
+            [self.delegate didReceiveGuessResponse:YES];
+        } else {
+            [self.delegate didReceiveGuessResponse:NO];
+        }
         return;
     }
     

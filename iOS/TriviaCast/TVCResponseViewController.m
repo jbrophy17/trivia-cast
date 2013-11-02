@@ -28,6 +28,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     GCKApplicationChannel *_channel;
     TVCDataSource *_dataSource;
     TVCMessageStream *_messageStream;
+    
 }
 
 @property (nonatomic) TVCPlayer * player;
@@ -88,6 +89,10 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     [super viewDidDisappear:animated];
 }
 
+- (void) shouldDisplayOverlay:(BOOL) value {
+    
+    
+}
 
 /*
 // Begin the application session with the current device.
