@@ -65,7 +65,7 @@ function Game() {
     this.players     = new Array();
     this.playerQueue = new Array();
     this.responses   = new Array();
-    this.cues        = new Array("Things that hang", "Things that are poor", "Things that nobody wants", "Thing that shouldn't be allowed at the dinner table");
+    this.cues        = prompts;
     this.cues        = shuffle(this.cues); // randomize each playthrough
 
     this.reader  = 0;
@@ -87,6 +87,19 @@ function Game() {
         this.playerQueue.push(player);
         player.channel.send({ type: 'didQueue' });
         console.log("Queued player " + player.name);
+        updatePlayerList();
+    }
+
+    this.deQueuePlayerByChannel = function(channel){
+        for(var i = 0; i < this.playerQueue.length; i++){
+            if(this.playerQueue[i].channel == channel){
+                this.playerQueue.splice(i, 1);
+                updatePlayerList();
+                return;
+            }
+        }
+
+        console.error('Failed to dequeue player by channel');
     }
 
     this.deletePlayer = function(id){
@@ -102,12 +115,14 @@ function Game() {
     }
 }
 
-function getPlayerIdByChannel(channel){
+function getPlayerIndexByChannel(channel){
     for(var i = 0; i < game.players.length; i++){
         if(game.players[i].channel == channel){
             return i;
         }
     }
+
+    console.error('Failed to find player index by channel');
 }
 
 // update the list of players on screen
@@ -198,8 +213,16 @@ function joinPlayer(channel, name){
 }
 
 function leavePlayer(channel){
+    // if this player is queued, just dequeue them
+    for(var i = 0; i < game.playerQueue.length; i++){
+        if(game.playerQueue[i].channel == channel){
+            game.deQueuePlayerByChannel(channel);
+            return;
+        }
+    }
+
     // find player, set them as out for the round and set didLeave = true so they're removed before next round
-    var playerID = getPlayerIdByChannel(channel);
+    var playerID = getPlayerIndexByChannel(channel);
     game.players[playerID].didGetOut();
     game.players[playerID].didLeave();
 
@@ -209,33 +232,26 @@ function leavePlayer(channel){
         isLastPlayer = true;
     }
 
-    // if they haven't submitted a response yet, leave immediately
-    var responseReceived = false;
-
-    for(var i = 0; i < responses.length; i++){
-        if(responses[i].userID == playerID){
-            responseReceived = true;
-        }
-    }
-
-    if(!responseReceived){
-        game.deletePlayer(playerID);
-    }
-
     // if they're currently reader or currently guessing, advance to the first or next guesser
-    if(game.reader == playerID || game.guesser == playerID){
+    if(game.reader == playerID){
+        startGuessing();
+    }
+    if(game.guesser == playerID){
         nextGuesser();
     }
 
     if(isLastPlayer){
-        newGrind();
+        betweenRounds();
     }
+
+    game.deletePlayer(playerID);
+    updatePlayerList();
 
     return; // only one player per channel
 }
 
 function submitResponse(channel, response){
-    var userID      = getPlayerIdByChannel(channel);
+    var userID      = getPlayerIndexByChannel(channel);
     var responseID  = game.responses.length;
     var newResponse = new Response(response, responseID, userID, channel);
 
@@ -306,7 +322,7 @@ function submitGuess(channel, guess){
 
     var responseGuessed = guess.guessResponseId;
     var playerGuessed   = guess.guessPlayerNumber;
-    var guesserID       = getPlayerIdByChannel(channel);
+    var guesserID       = getPlayerIndexByChannel(channel);
 
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
     if(game.responses[responseGuessed].userID == playerGuessed){
