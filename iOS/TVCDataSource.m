@@ -176,24 +176,29 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
 - (void) didReceiveResponses:(NSDictionary *)responses {
     self.responseDictionary = responses;
-    
+    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(didReceiveResponsesHelper:) userInfo:responses repeats:NO];
+
+
+}
+
+-(void) didReceiveResponsesHelper:(NSDictionary *)responses {
     if ([self.player isGuessing]) {
         NSLog(@"DataSource: didReceiveResponses, Guesser");
         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
         [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
-       /* [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
-            TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-            [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
-        }];*/
+        /* [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
+         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+         [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
+         }];*/
     } else if([self.player isReader]){
         NSLog(@"DataSource: didReceiveResponses, Reader");
         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
         [lobbyViewController segueToReaderViewWithResponses:responses];
         
         /*[self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
-            TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-            [lobbyViewController segueToReaderViewWithResponses:responses];
-        }];*/
+         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+         [lobbyViewController segueToReaderViewWithResponses:responses];
+         }];*/
         
     }
 }
