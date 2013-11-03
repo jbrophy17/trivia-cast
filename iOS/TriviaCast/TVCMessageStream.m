@@ -259,6 +259,8 @@ static NSString * const kValuePlayerX = @"X";
     if([type isEqualToString:valueTypeSyncGame]) {
         NSDictionary* players = [payload gck_dictionaryForKey:keyPlayers];
         NSInteger readerID = [payload gck_integerForKey:keyReader];
+        NSInteger guesserID = [payload gck_integerForKey:valueTypeSetGuesser];
+        
         NSMutableArray *returnPlayers = [NSMutableArray array];
         for(id key in players) {
             NSDictionary * holdDictionary = [players gck_dictionaryForKey:key];
@@ -271,6 +273,8 @@ static NSString * const kValuePlayerX = @"X";
             
             if (holdPlayer.playerNumber == readerID) {
                 [holdPlayer setIsReader:YES];
+            } else if (holdPlayer.playerNumber == guesserID) {
+                [holdPlayer setIsGuessing:YES];
             }
             
             [returnPlayers addObject:holdPlayer];
