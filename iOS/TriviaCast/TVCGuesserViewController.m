@@ -235,7 +235,9 @@
     NSNumber* responseID = (NSNumber*)[self.responseDictionary objectForKey:[self.responses objectAtIndex:self.pageControl.currentPage]];
     NSInteger holdInt = responseID.integerValue;
     guessedPlayer = player;
-    [[[appDelegate dataSource] getMessageStream] sendGuessWithPlayer:&player andResponseId:&holdInt];
+    TVCPlayer * playerToReturn = [[[appDelegate dataSource]players] objectAtIndex:player];
+    int playerID = playerToReturn.playerNumber;
+    [[[appDelegate dataSource] getMessageStream] sendGuessWithPlayer:&playerID  andResponseId:&holdInt];
     
 }
 

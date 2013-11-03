@@ -15,6 +15,7 @@
 @interface TVCDataSource : NSObject <TVCMessageStreamDelegate, GCKApplicationSessionDelegate>
 @property(nonatomic, strong) GCKDevice *device;
 @property(nonatomic, strong) TVCPlayer *player;
+@property (nonatomic, strong) NSArray* players;
 @property(nonatomic, strong) UIViewController *currentViewController;
 @property(nonatomic, strong) TVCLobbyViewController *lobbyViewController;
 @property(nonatomic) NSInteger * currentGuess;

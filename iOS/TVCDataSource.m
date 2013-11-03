@@ -21,7 +21,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     TVCMessageStream *_messageStream;
     int playerNumber;
 }
-@property (nonatomic, strong) NSArray* players;
+
 @property (nonatomic, strong) NSArray* responses;
 @property (nonatomic, strong) NSDictionary* responseDictionary;
 @property (nonatomic, strong) NSMutableDictionary* responseMap;
