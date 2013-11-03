@@ -14,10 +14,7 @@ function Player(name, ID, channel) {
     // this.picture = picture;
     this.ID      = ID;
     this.channel = channel;
-
     this.isOut   = false;
-    this.isGone  = false;
-
     this.score = 0;
 
     this.getScore = function() {
@@ -34,10 +31,6 @@ function Player(name, ID, channel) {
 
     this.didGetOut = function(){
         this.isOut = true;
-    }
-
-    this.didLeave = function(){
-        this.isGone = true;
     }
 
     this.clientSafeVersion = function(){
@@ -549,13 +542,6 @@ function betweenRounds(){
 
 // prepare for next question
 function newGrind(){
-    // delete players who left
-    for(var i = 0; i < game.players.length; i++){
-        if(game.players[i].isGone){
-            game.deletePlayer(i);
-        }
-    }
-
     console.debug('processing player queue');
     // add players who are queued
     for(var i = 0; i < game.playerQueue.length; i++){
@@ -588,9 +574,10 @@ function newGrind(){
     console.debug('Next reader is ' + game.reader);
     console.debug('Next guesser is ' + game.guesser);
 
-    // build array of players
+    // build array of players and set their isOut to false
     var playerList = new Object();
     for(var i = 0; i < game.players.length; i++){
+        game.players[i].isOut = false;
         playerList[i] = game.players[i].clientSafeVersion();
     }
 
