@@ -1,5 +1,5 @@
 // error constants
-SENT_BLANK_toString()        = 1;
+SENT_BLANK_NAME        = 1;
 ALREADY_HAVE_RESPONSES = 2;
 WAITING_ON_RESPONSES   = 3;
 NOT_ENOUGH_PLAYERS     = 4;
