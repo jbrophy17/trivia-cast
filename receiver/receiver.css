@@ -6,6 +6,25 @@ body {
   width: 1280px;
   font-family: 'Lato', sans-serif;
 }
+#splashscreen {
+  position: absolute;
+  z-index: 1000;
+  background: #000;
+  height: 100%;
+  width: 1225px;
+}
+#splashscreen h1 {
+  color: #CCC;
+  font-size: 190px;
+  text-align: center;
+  padding-top: 158px;
+}
+#splashscreen p {
+  color: #666;
+  font-size: 68px;
+  margin: 0;
+  text-align: center;
+}
 #content {
   background: #A6C8BC;
   margin: auto;
