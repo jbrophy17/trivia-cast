@@ -183,6 +183,15 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (BOOL)joinGameWithName:(NSString *)name;
 
+
+/**
+ * Sends updated settings to server
+ *
+ * @param name Your player name
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+- (BOOL) updateSettingsWithName:(NSString*)name;
+
 /**
  * Indicates the next round should start.
  *

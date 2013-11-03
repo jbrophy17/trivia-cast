@@ -8,6 +8,7 @@
 
 #import "TVCSettingsViewController.h"
 #import "TVCAppDelegate.h"
+#import "TVCDataSource.h"
 
 
 @interface TVCSettingsViewController () 
@@ -46,6 +47,8 @@
     if ([self.nameInput hasText]) {
         NSString * name = [self.nameInput text];
         [appDelegate setUserName:name];
+        
+        [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:name];
         
     }
     [self dismissViewControllerAnimated:YES completion:nil];

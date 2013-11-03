@@ -103,6 +103,7 @@
     int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     self.pageControl.currentPage = page;
 	
+    NSLog(@"GuesserView current page: %i", page);
     // A possible optimization would be to unload the views+controllers which are no longer visible
 }
 
@@ -232,11 +233,16 @@
 #pragma mark TVCPickerViewDelegate methods
 
 - (void) didSelectPlayer:(int)player {
+    NSLog(@"responseDict: %@", self.responseDictionary);
+    
     NSNumber* responseID = (NSNumber*)[self.responseDictionary objectForKey:[self.responses objectAtIndex:self.pageControl.currentPage]];
     NSInteger holdInt = responseID.integerValue;
     guessedPlayer = player;
-    TVCPlayer * playerToReturn = [[[appDelegate dataSource]players] objectAtIndex:player];
+    TVCPlayer * playerToReturn = [self.players objectAtIndex:player];
     int playerID = playerToReturn.playerNumber;
+    
+    NSLog(@"player index: %i with ID: %i and response %@ with responseID %i", player,playerID,[self.responses objectAtIndex:self.pageControl.currentPage], responseID.integerValue);
+    
     [[[appDelegate dataSource] getMessageStream] sendGuessWithPlayer:&playerID  andResponseId:&holdInt];
     
 }

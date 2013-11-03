@@ -72,6 +72,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)refresh:(id)sender {
+    [appDelegate.deviceManager startScan];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView

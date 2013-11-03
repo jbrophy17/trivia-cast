@@ -39,6 +39,8 @@ static NSString * const valueTypeSyncGame = @"gameSync";
 static NSString * const valueTypeRoundStarted = @"roundStarted";
 static NSString * const valueTypeRoundOver = @"roundOver";
 static NSString * const valueTypeResponseReceived = @"responseReceived";
+static NSString * const valueTypeUpdateSettings = @"updateSettings";
+static NSString * const valueTypeSettingsUpdated = @"settingsUpdated";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -133,6 +135,14 @@ static NSString * const kValuePlayerX = @"X";
     [payload gck_setStringValue:valueTypeJoin forKey:keyType];
     [payload gck_setStringValue:name forKey:keyName];
 
+    return [self sendMessage:payload];
+}
+
+- (BOOL) updateSettingsWithName:(NSString*)name {
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    [payload gck_setStringValue:valueTypeUpdateSettings forKey:keyType];
+    [payload gck_setStringValue:name forKey:keyName];
+    
     return [self sendMessage:payload];
 }
 

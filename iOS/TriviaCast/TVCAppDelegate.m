@@ -27,6 +27,7 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     self.context = [[GCKContext alloc] initWithUserAgent:@"com.bears.triviaCast"];
     self.deviceManager = [[GCKDeviceManager alloc] initWithContext:self.context];
     //_dataSource = [[TVCDataSource alloc] init];
+    [UIApplication sharedApplication].idleTimerDisabled = YES;
     return YES;
 }
 							
