@@ -518,7 +518,12 @@ function showResponses(){
     $('#responses ul').empty();
     for(var i = 0; i < game.responses.length; i++){
         var responseHTML = '<li id="response' + i + '">' + game.responses[i].toString() + '</li><br />';
-        $('#responses ul').append(responseHTML);
+        if(i % 2 == 0){
+            $('#responses #leftside ul').append(responseHTML);
+        }
+        else{
+            $('#responses #rightside ul').append(responseHTML);
+        }
     }
 }
 
@@ -743,6 +748,8 @@ function initReceiver(){
     function onError(event){
         console.error('error received');
         console.debug(event);
+
+        leavePlayer(event.target);
     }
 
     function onClose(event){
