@@ -126,8 +126,16 @@ function Game() {
 }
 
 function getPlayerIndexByChannel(channel){
+    // first check players
     for(var i = 0; i < game.players.length; i++){
         if(game.players[i].channel == channel){
+            return i;
+        }
+    }
+
+    // now check queue
+    for(var i = 0; i < game.playerQueue.length; i++){
+        if(game.playerQueue[i].channel == channel){
             return i;
         }
     }
@@ -551,8 +559,24 @@ function newGrind(){
 
 function updatePlayer(channel, info){
     var playerID = getPlayerIndexByChannel(channel);
-    game.players[playerID].name = info.name;
+
+    // find out if we're queued
+    var isQueued = false;
+    for(var i = 0; i < game.playerQueue.length; i++){
+        if(game.playerQueue[i].channel == channel){
+            isQueued = true;
+        }
+    }
+
+    if(isQueued){
+        game.playerQueue[playerID].name = info.name;
+    }
+    else{
+        game.players[playerID].name = info.name;
+    }
+
     channel.send({ type : 'settingsUpdated' });
+    updatePlayerList();
 }
 
 function initReceiver(){
