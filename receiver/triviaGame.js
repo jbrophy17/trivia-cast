@@ -112,7 +112,7 @@ function Game() {
     this.errors = new Object();
     this.errors[NOT_ENOUGH_PLAYERS] = 'You can start the game once there are at least three players.';
 
-    this.addPlayer = function(player){
+    this.addPlayer = function(player, noUpdate){
         var i = 0;
         while(typeof this.players[i] != 'undefined'){
             i++;
@@ -121,6 +121,10 @@ function Game() {
         this.players[i] = player;
         player.channel.send({ type : 'didJoin', number : player.ID });
         console.log("Added player " + player.toString() + " in ID " + player.ID);
+
+        if(typeof noUpdate != "undefined" && noUpdate){
+            return;
+        }
         updatePlayerList();
     }
 
@@ -519,10 +523,10 @@ function showResponses(){
     for(var i = 0; i < game.responses.length; i++){
         var responseHTML = '<li id="response' + i + '">' + game.responses[i].toString() + '</li><br />';
         if(i % 2 == 0){
-            $('#responses #leftside ul').append(responseHTML);
+            $('#responses #leftcol ul').append(responseHTML);
         }
         else{
-            $('#responses #rightside ul').append(responseHTML);
+            $('#responses #rightcol ul').append(responseHTML);
         }
     }
 }
@@ -629,7 +633,7 @@ function newGrind(){
     // add players who are queued
     for(var i = 0; i < game.playerQueue.length; i++){
         console.debug('enqueuing player ' + i);
-        game.addPlayer(game.playerQueue[i]);
+        game.addPlayer(game.playerQueue[i], true);
         console.debug('enqueued player ' + i);
     }
 
