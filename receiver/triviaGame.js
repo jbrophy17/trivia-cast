@@ -464,7 +464,7 @@ function submitGuess(channel, guess){
 
     // check for other identical responses
     for(var i = 0; i < game.responses.length; i++){
-        if(game.responses[rgIndex].isTheSameAs(game.responses[i])){
+        if(game.responses[rgIndex].isTheSameAs(game.responses[i]) && game.responses[i].isActive){
             console.debug("found that " + game.responses[rgIndex].toString() + " is the same as " + game.responses[i].toString());
             correctAnswers.push(game.responses[i].userID);
         }
