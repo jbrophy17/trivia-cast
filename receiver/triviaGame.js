@@ -425,12 +425,12 @@ function submitGuess(channel, guess){
 
     // only allowed if not the reader or the current player
     if(playerGuessed == game.players[game.reader].ID){
-        channel.send({ error : GUESSED_READER });
+        channel.send({ type : 'error', value : GUESSED_READER });
         console.warn('Invalid guess: tried to guess the reader');
         return;
     }
     if(playerGuessed == guesserID){
-        channel.send({ error : GUESSED_SELF });
+        channel.send({ type : 'error', : GUESSED_SELF });
         console.warn('Invalid guess: tried to guess themself');
         return;
     }
@@ -539,6 +539,7 @@ function startNextRound(){
         console.warn('Tried to start a new round during a round.');
         for(var i = 0; i < game.players.length; i++){
             game.players[i].channel.send({ type : 'error', value : ROUND_IN_PROGRESS });
+            return;
         }
     }
 
