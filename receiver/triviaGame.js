@@ -477,7 +477,19 @@ function submitGuess(channel, guess){
         channel.send({ type : 'guessResponse', 'value' : true });
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
-        game.responses[rgIndex].isActive = false;
+
+        // need to find which response to delete if there are multiple
+        var deleteIndex = rgIndex;
+        if(correctAnswers.length > 1){
+            for(var i = 0; i < game.responses.length; i++){
+                if(game.responses[i].userID == playerGuessed){
+                    deleteIndex = i;
+                    break;
+                }
+            }
+        }
+
+        game.responses[deleteIndex].isActive = false;
         $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         prependStatus(guesserID, "correctly");
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
