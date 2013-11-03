@@ -232,7 +232,7 @@ function updatePlayerList(){
             }
         }
 
-        notificationHTML += ' will join the game at the start of the next round.';
+        notificationHTML += ' will join the game when the next round starts.';
 
         console.debug('notificationHTML = ' + notificationHTML);
         showNotification(notificationHTML);
