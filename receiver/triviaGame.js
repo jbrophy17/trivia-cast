@@ -4,16 +4,19 @@ ALREADY_HAVE_RESPONSES = 2;
 WAITING_ON_RESPONSES   = 3;
 NOT_ENOUGH_PLAYERS     = 4;
 ROUND_IN_PROGRESS      = 5;
+GUESSED_READER         = 6;
+GUESSED_SELF           = 7;
+
+// when debug mode is on, all Response and Player objects are printed with
+// all human-useful member variables. Not great for competitive play.
+DEBUG = true;
 
 function Player(name, ID, channel) {
     this.name    = name;
     // this.picture = picture;
     this.ID      = ID;
     this.channel = channel;
-
     this.isOut   = false;
-    this.isGone  = false;
-
     this.score = 0;
 
     this.getScore = function() {
@@ -32,10 +35,6 @@ function Player(name, ID, channel) {
         this.isOut = true;
     }
 
-    this.didLeave = function(){
-        this.isGone = true;
-    }
-
     this.clientSafeVersion = function(){
         var thisObj   = new Object();
         thisObj.name  = this.name;
@@ -44,6 +43,16 @@ function Player(name, ID, channel) {
         return thisObj;
     }
 
+    this.toString = function(){
+        var string = '';
+        string = this.name;
+
+        if(DEBUG){
+            string += ' [ID ' + this.ID + ', score ' + this.score + ']';
+        }
+
+        return string;
+    }
 }
 
 function Response(response, responseID, userID, channel){
@@ -59,16 +68,38 @@ function Response(response, responseID, userID, channel){
         thisObj.responseID = this.responseID;
         return thisObj;
     }
+
+    this.toString = function(){
+        var string = '';
+        string = this.response;
+
+        if(DEBUG){
+            string += ' [responseID ' + this.responseID + ', userID ' + this.userID + ', active ' + this.isActive + ']';
+        }
+
+        return string;
+    }
+
+    // compare two responses ignoring punctuation and capitalization
+    this.isTheSameAs = function(otherResponse){
+        var thisTemp = this.response.toLowerCase();
+        var thatTemp = otherResponse.response.toLowerCase();
+
+        thisTemp = thisTemp.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+        thatTemp = thatTemp.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+
+        console.debug("comparing '" + thisTemp + "' to '" + thatTemp + "'");
+
+        return thisTemp == thatTemp;
+    }
 }
 
 function Game() {
-    var that= this;
-
-    this.players     = new Array();
-    this.playerQueue = new Array();
-    this.responses   = new Array();
-    this.cues        = prompts;
-    this.cues        = shuffle(this.cues); // randomize each playthrough
+    this.players       = new Array();
+    this.playerQueue   = new Array();
+    this.responses     = new Array();
+    this.cues          = prompts;
+    this.cues          = shuffle(this.cues); // randomize each playthrough
 
     this.reader  = -1;
     this.guesser = 0;
@@ -88,14 +119,14 @@ function Game() {
         player.ID = i;
         this.players[i] = player;
         player.channel.send({ type : 'didJoin', number : player.ID });
-        console.log("Added player " + player.name + " in ID " + player.ID);
+        console.log("Added player " + player.toString() + " in ID " + player.ID);
         updatePlayerList();
     }
 
     this.queuePlayer = function(player){
         this.playerQueue.push(player);
         player.channel.send({ type: 'didQueue' });
-        console.log("Queued player " + player.name);
+        console.log("Queued player " + player.toString());
         updatePlayerList();
     }
 
@@ -112,7 +143,7 @@ function Game() {
     }
 
     this.deletePlayer = function(id){
-        console.log("Deleted player " + this.players[id].name);
+        console.log("Deleted player " + this.players[id].toString());
         this.players.splice(id, 1);
         updatePlayerList();
     }
@@ -154,12 +185,23 @@ function updatePlayerList(){
 
     $('#playerlist').empty();
     for(var i = 0; i < game.players.length; i++){
-        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].name + '</li><br>';
+        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].toString() + '</li><br>';
         $('#playerlist').append(playerHTML);
     }
 
     if(game.players.length == 0){
-        var infoHTML = '<p>There aren\'t any players in this game.<br />Queued players will be added when the round starts.</p>';
+        var infoHTML = "<li><p><strong>There aren't any players in this game";
+
+        if(game.playerQueue.length > 0){
+            if(game.playerQueue.length == 1){
+                infoHTML += ', but there is one queued to join';
+            }
+            else{
+                infoHTML += ', but there are ' + game.playerQueue.length + ' queued to join';
+            }
+        }
+        
+        infoHTML += '.</strong><br />Queued players will be added when the next round starts.</p></li>';
         $('#playerlist').append(infoHTML);
     }
 
@@ -168,11 +210,11 @@ function updatePlayerList(){
     if(game.playerQueue.length > 0){
         var notificationHTML = '';
         if(game.playerQueue.length == 1){
-            notificationHTML += '<strong>' + game.playerQueue[0].name + '</strong>';
+            notificationHTML += '<strong>' + game.playerQueue[0].toString() + '</strong>';
         }
         else{
             for(var i = 0; i < game.playerQueue.length; i++){
-                notificationHTML += '<strong>' + game.playerQueue[i].name + '</strong>';
+                notificationHTML += '<strong>' + game.playerQueue[i].toString() + '</strong>';
 
                 // if there's more than one player left, put a comma
                 if((i + 2) < game.playerQueue.length){
@@ -350,7 +392,7 @@ function startReading(){
 function startGuessing(){
     // send guesser all responses
     var responseJSON = getAllResponsesJSON();
-    console.debug('sending responses to guesser ' + game.players[game.guesser].name);
+    console.debug('sending responses to guesser ' + game.players[game.guesser].toString());
     console.debug(responseJSON);
     game.players[game.guesser].channel.send({ type : 'receiveResponses', responses : responseJSON });
 }
@@ -378,8 +420,20 @@ function submitGuess(channel, guess){
 
     var responseGuessed = guess.guessResponseId;
     var playerGuessed   = guess.guessPlayerNumber;
-    var guesserID       = getPlayerIndexByChannel(channel);
+    var guesserID       = game.players[getPlayerIndexByChannel(channel)].ID;
     var rgIndex         = -1;
+
+    // only allowed if not the reader or the current player
+    if(playerGuessed == game.players[game.reader].ID){
+        channel.send({ error : GUESSED_READER });
+        console.warn('Invalid guess: tried to guess the reader');
+        return;
+    }
+    if(playerGuessed == guesserID){
+        channel.send({ error : GUESSED_SELF });
+        console.warn('Invalid guess: tried to guess themself');
+        return;
+    }
 
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].responseID == responseGuessed){
@@ -394,34 +448,48 @@ function submitGuess(channel, guess){
     console.debug('responseGuessed = ' + responseGuessed + ', playerGuessed = ' + playerGuessed + ', guesserID = ' + guesserID);
     console.debug(guess);
 
+    var correctAnswers = new Array();
+
+    // check for other identical responses
+    for(var i = 0; i < game.responses.length; i++){
+        if(game.responses[rgIndex].isTheSameAs(game.responses[i])){
+            console.debug("found that " + game.responses[rgIndex].toString() + " is the same as " + game.responses[i].toString());
+            correctAnswers.push(game.responses[i].userID);
+        }
+    }
+
+    console.debug(correctAnswers);
+
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
-    if(game.responses[rgIndex].userID == playerGuessed){
+    if(correctAnswers.indexOf(playerGuessed) != -1){
         channel.send({ type : 'guessResponse', 'value' : true });
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
         game.responses[rgIndex].isActive = false;
         $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
-        console.log(game.players[guesserID].name + ' correctly guessed that ' + game.players[playerGuessed].name + ' submitted ' + game.responses[rgIndex].response);
+        $('#status').prepend('<strong>' + game.players[guesserID].toString() + '</strong> guessed correctly. ');
+        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
     }
     else{
         // if the person is out, you're dumb and your turn is over.
         if(typeof game.players[playerGuessed] != "undefined" && game.players[playerGuessed].isOut){
-            showNotification(game.players[guesserID].name + " guessed someone who was out. Time for a break?");
+            showNotification(game.players[guesserID].toString() + " guessed someone who was out. Time for a break?");
         }
         channel.send({ type : 'guessResponse', 'value' : false });
 
-        console.log(game.players[guesserID].name + ' incorrectly guessed that ' + game.players[playerGuessed].name + ' submitted ' + game.responses[rgIndex].response);
+        console.log(game.players[guesserID].toString() + ' incorrectly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
 
         // next guesser's turn
         nextGuesser();
+        $('#status').prepend('<strong>' + game.players[guesserID].toString() + '</strong> guessed incorrectly. ');
     }
 }
 
 function showResponses(){
     $('#responses ul').empty();
     for(var i = 0; i < game.responses.length; i++){
-        var responseHTML = '<li id="response' + i + '">' + game.responses[i].response + '</li><br />';
+        var responseHTML = '<li id="response' + i + '">' + game.responses[i].toString() + '</li><br />';
         $('#responses ul').append(responseHTML);
     }
 }
@@ -431,7 +499,19 @@ function advanceGuesser(){
         var nextGuesser = game.guesser + 1;
         nextGuesser = nextGuesser % game.players.length;
         game.guesser = nextGuesser;
+        console.debug("advancing guesser, about to check " + game.guesser);
+
+        if(typeof game.players[game.guesser] == "undefined"){
+            console.debug("looking for guesser, found undefined player. trying again.")
+        }
+        if(game.players[game.guesser].isOut){
+            console.debug("looking for guesser but found someone who is out: " + game.players[game.guesser].toString());
+        }
+        if(game.guesser == game.reader){
+            console.debug("looking for guesser, found the reader, trying again");
+        }
     }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.guesser == game.reader);
+    console.debug("new guesser set to " + game.guesser);
 }
 
 function nextGuesser(force){
@@ -448,7 +528,7 @@ function nextGuesser(force){
     }
 
     // update UI
-    $('#status').html('<strong>' + game.players[game.guesser].name + '</strong> is guessing.');
+    $('#status').html('<strong>' + game.players[game.guesser].toString() + '</strong> is guessing.');
 
     startGuessing();
 }
@@ -503,13 +583,6 @@ function betweenRounds(){
 
 // prepare for next question
 function newGrind(){
-    // delete players who left
-    for(var i = 0; i < game.players.length; i++){
-        if(game.players[i].isGone){
-            game.deletePlayer(i);
-        }
-    }
-
     console.debug('processing player queue');
     // add players who are queued
     for(var i = 0; i < game.playerQueue.length; i++){
@@ -542,15 +615,16 @@ function newGrind(){
     console.debug('Next reader is ' + game.reader);
     console.debug('Next guesser is ' + game.guesser);
 
-    // build array of players
+    // build array of players and set their isOut to false
     var playerList = new Object();
     for(var i = 0; i < game.players.length; i++){
+        game.players[i].isOut = false;
         playerList[i] = game.players[i].clientSafeVersion();
     }
 
     // update all clients' user list and scores
     for(var i = 0; i < game.players.length; i++){
-        console.debug('sending gameSync to ' + game.players[i].name);
+        console.debug('sending gameSync to ' + game.players[i].toString());
         game.players[i].channel.send({type : 'gameSync', players : playerList, reader : game.players[game.reader].ID, guesser : game.players[game.guesser].ID });
     }
 

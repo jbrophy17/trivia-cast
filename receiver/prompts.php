@@ -1,6 +1,6 @@
 <?php
 Header("Content-type: application/javascript");
-define('filename', "listOfThings.txt");
+define('filename', "newList.txt");
 
 if(file_exists(filename)){
 	$fileOfThings = file_get_contents(filename);
