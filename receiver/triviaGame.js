@@ -426,7 +426,7 @@ function submitGuess(channel, guess){
         game.players[playerGuessed].didGetOut();
         game.responses[rgIndex].isActive = false;
         $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
-        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].response);
+        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
     }
     else{
@@ -436,7 +436,7 @@ function submitGuess(channel, guess){
         }
         channel.send({ type : 'guessResponse', 'value' : false });
 
-        console.log(game.players[guesserID].toString() + ' incorrectly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].response);
+        console.log(game.players[guesserID].toString() + ' incorrectly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
 
         // next guesser's turn
         nextGuesser();
@@ -446,7 +446,7 @@ function submitGuess(channel, guess){
 function showResponses(){
     $('#responses ul').empty();
     for(var i = 0; i < game.responses.length; i++){
-        var responseHTML = '<li id="response' + i + '">' + game.responses[i].response + '</li><br />';
+        var responseHTML = '<li id="response' + i + '">' + game.responses[i].toString() + '</li><br />';
         $('#responses ul').append(responseHTML);
     }
 }
