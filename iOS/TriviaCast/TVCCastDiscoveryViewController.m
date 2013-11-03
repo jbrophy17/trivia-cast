@@ -35,6 +35,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSLog(@"view did load Discovery");
     if (!_devices) {
         _devices = [[NSMutableArray alloc] init];
     }
@@ -43,6 +44,7 @@
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    NSLog(@"view will appear Discovery");
     _devices = [appDelegate.deviceManager.devices mutableCopy];
     [appDelegate.deviceManager addListener:self];
     [appDelegate.deviceManager startScan];
@@ -51,7 +53,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+    NSLog(@"view did appear Discovery");
     NSString *userName = [appDelegate userName];
     if (!userName || [userName length] == 0) {
         

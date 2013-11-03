@@ -49,6 +49,13 @@ typedef NS_ENUM(NSInteger, GameResult) {
 @property(nonatomic) NSInteger * currentGuess;
 
 /**
+ * Called when the app is in the background to test if the socket is still open
+ *
+ * @returns YES if the datasource is connected and NO otherwise
+ */
+- (BOOL) isValid;
+
+/**
  * Called when a game has been successfully joined.
  *
  * @param player The symbol that was assigned to this player.

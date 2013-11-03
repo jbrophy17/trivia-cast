@@ -41,6 +41,7 @@ static NSString * const valueTypeRoundOver = @"roundOver";
 static NSString * const valueTypeResponseReceived = @"responseReceived";
 static NSString * const valueTypeUpdateSettings = @"updateSettings";
 static NSString * const valueTypeSettingsUpdated = @"settingsUpdated";
+static NSString * const valueTypeError = @"error";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -362,13 +363,10 @@ static NSString * const kValuePlayerX = @"X";
         
         [self.delegate didReceiveMoveByPlayer:player atRow:row column:column isFinal:isFinal];
     } */
-    else if ([type isEqualToString:kValueEventError]) {
-        NSString *errorMessage = [payload gck_stringForKey:kKeyMessage];
-        if (!_joined) {
-            [self.delegate didFailToJoinWithErrorMessage:errorMessage];
-        } else {
-            [self.delegate didReceiveErrorMessage:errorMessage];
-        }
+    if ([type isEqualToString:valueTypeError]) {
+        NSInteger errorCode = [payload gck_integerForKey:keyValue];
+        
+          [self.delegate didReceiveErrorMessage:[NSString stringWithFormat:@"Error Code: %i",errorCode]];
     } /* else if ([event isEqualToString:kValueEventEndgame]) {
         NSString *stateValue = [payload gck_stringForKey:kKeyEndState];
         

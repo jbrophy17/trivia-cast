@@ -31,6 +31,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+     NSLog(@"view did load");
     [[appDelegate dataSource] setCurrentViewController:self];
     [[appDelegate dataSource] setLobbyViewController:self];
     //self.dataSource = [[TVCDataSource alloc] initWithDevice:self.device];
@@ -39,6 +40,7 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+     NSLog(@"view will appear");
     [[appDelegate dataSource] setCurrentViewController:self];
     [self.navigationController.navigationItem setHidesBackButton:YES];
 }

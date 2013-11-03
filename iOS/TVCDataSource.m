@@ -156,6 +156,14 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
 #pragma mark - TVCMessageStreamDelegate
 
+-(BOOL) isValid {
+    if (_messageStream) {
+        return YES;
+    }
+    
+    return NO;
+}
+
 // When the game has been joined, update the current player to whichever player
 // we joined as, update the game state to a new game, and keep track of the
 // opponent's name.
