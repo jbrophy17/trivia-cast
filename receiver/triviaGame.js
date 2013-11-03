@@ -411,6 +411,11 @@ function checkRoundOver(){
     }
 }
 
+// whatTheyGuessed is normally "correctly" or "incorrectly", but creativity can be applied
+function prependStatus(playerIndex, whatTheyGuessed){
+    $('#status').prepend('<strong>' + game.players[player].toString() + '</strong> guessed ' + whatTheyGuessed + '.<br />');
+}
+
 function submitGuess(channel, guess){
     // only allowed if all responses are in
     if(game.responses.length < game.players.length){
@@ -427,11 +432,15 @@ function submitGuess(channel, guess){
     if(playerGuessed == game.players[game.reader].ID){
         channel.send({ type : 'error', value : GUESSED_READER });
         console.warn('Invalid guess: tried to guess the reader');
+        nextGuesser();
+        prependStatus(guesserID, "the reader");
         return;
     }
     if(playerGuessed == guesserID){
         channel.send({ type : 'error', value : GUESSED_SELF });
         console.warn('Invalid guess: tried to guess themself');
+        nextGuesser();
+        prependStatus(guesserID, "themselves, like a fucking idiot");
         return;
     }
 
@@ -467,14 +476,20 @@ function submitGuess(channel, guess){
         game.players[playerGuessed].didGetOut();
         game.responses[rgIndex].isActive = false;
         $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
-        $('#status').prepend('<strong>' + game.players[guesserID].toString() + '</strong> guessed correctly. ');
+        prependStatus(guesserID, "correctly");
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
     }
     else{
+        prependStatus(guesserID, "incorrectly");
+
+        // if player doesn't exist
+        if(typeof game.players[playerGuessed] != "undefined"){
+            prependStatus(guesserID, "a player that doesn't exist (or maybe just left)");
+        }
         // if the person is out, you're dumb and your turn is over.
-        if(typeof game.players[playerGuessed] != "undefined" && game.players[playerGuessed].isOut){
-            showNotification(game.players[guesserID].toString() + " guessed someone who was out. Time for a break?");
+        else if(game.players[playerGuessed].isOut){
+            prependStatus(guesserID, "someone who was already out");
         }
         channel.send({ type : 'guessResponse', 'value' : false });
 
@@ -482,7 +497,6 @@ function submitGuess(channel, guess){
 
         // next guesser's turn
         nextGuesser();
-        $('#status').prepend('<strong>' + game.players[guesserID].toString() + '</strong> guessed incorrectly. ');
     }
 }
 
