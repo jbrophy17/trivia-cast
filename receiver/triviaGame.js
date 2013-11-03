@@ -84,16 +84,26 @@ function Response(response, responseID, userID, channel){
 
         return string;
     }
+
+    // compare two responses ignoring punctuation and capitalization
+    this.isTheSameAs = function(otherResponse){
+        var thisTemp = this.response.toLowerCase();
+        var thatTemp = otherResponse.response.toLowerCase();
+
+        thisTemp = thisTemp.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+        thatTemp = thatTemp.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+
+        return thisTemp == thatTemp;
+    }
 }
 
 function Game() {
-    var that= this;
-
-    this.players     = new Array();
-    this.playerQueue = new Array();
-    this.responses   = new Array();
-    this.cues        = prompts;
-    this.cues        = shuffle(this.cues); // randomize each playthrough
+    this.players       = new Array();
+    this.playerQueue   = new Array();
+    this.responses     = new Array();
+    this.sameResponses = new sameResponseTracker(); // used to track identical responses
+    this.cues          = prompts;
+    this.cues          = shuffle(this.cues); // randomize each playthrough
 
     this.reader  = -1;
     this.guesser = 0;
@@ -419,8 +429,17 @@ function submitGuess(channel, guess){
     console.debug('responseGuessed = ' + responseGuessed + ', playerGuessed = ' + playerGuessed + ', guesserID = ' + guesserID);
     console.debug(guess);
 
+    var correctAnswers = new Array();
+
+    // check for other identical responses
+    for(var i = 0; i < game.responses.length; i++){
+        if(game.responses[responseGuessed].isTheSameAs(game.responses[i])){
+            correctAnswers.push(game.responses[i].responseID);
+        }
+    }
+
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
-    if(game.responses[rgIndex].userID == playerGuessed){
+    if(correctAnswers.indexOf(playerGuessed) != -1){
         channel.send({ type : 'guessResponse', 'value' : true });
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
