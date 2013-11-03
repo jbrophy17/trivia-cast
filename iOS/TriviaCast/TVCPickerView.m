@@ -9,17 +9,28 @@
 #import "TVCPickerView.h"
 #import "TVCPlayer.h"
 
-@implementation TVCPickerView
+@implementation TVCPickerView {
+    float buttonWidth;
+}
 
 - (id)initWithFrame:(CGRect)frame Players:(NSArray *)players Pictures:(NSArray *)pictures andOffset:(double)offset
 {
     self = [super initWithFrame:frame];
     if (self) {
+         buttonWidth = 44;
         self.players = players;
-        self.offset = offset;
+        self.offset = offset + buttonWidth;
         self.pictures = pictures;
+       
         
-        self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width - buttonWidth, 0, buttonWidth, buttonWidth)];
+        
+        [self.closeButton addTarget:self action:@selector(closeButtonPressed:) forControlEvents:UIControlEventTouchDown];
+        [self.closeButton setBackgroundColor:[UIColor colorWithRed:.5 green:0 blue:0 alpha:1]];
+        [self.closeButton setTitle:@"x" forState:UIControlStateNormal];
+        
+        
+        self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, buttonWidth, frame.size.width, frame.size.height)];
         [self.scrollView setScrollEnabled:NO];
         int countx = 0;
         int maxX = 1;
@@ -47,7 +58,7 @@
             }
             
             
-            CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+            //CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
             
             
             UIButton * name = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -117,7 +128,7 @@
         [self.scrollView setShowsVerticalScrollIndicator:NO];
         
         self.scrollView.delegate = self;
-        CGRect PCFrame = CGRectMake(self.frame.size.width / 2.0 - 25 , self.frame.size.height - 20, 50, 10);
+        CGRect PCFrame = CGRectMake(self.frame.size.width / 2.0 - 25 , self.frame.size.height - 20 + buttonWidth, 50, 10);
         self.pageControl = [[UIPageControl alloc] initWithFrame:PCFrame];
         self.pageControl.numberOfPages = ceil([self.players count] / 4.0 );
         self.pageControl.currentPage = 0;
@@ -129,6 +140,7 @@
         //[self.pageControl setCurrentPageIndicatorTintColor:[UIColor redColor]];
         [self addSubview:self.scrollView];
         [self addSubview:self.pageControl];
+        [self addSubview:self.closeButton];
         
     }
     return self;
@@ -187,6 +199,8 @@
     [self displayPicker:NO];
     [self.delegate didSelectPlayer:self.selectedPlayer];
 }
-
+-(IBAction) closeButtonPressed:(id)sender {
+    [self.delegate didPressCloseButton];
+}
 
 @end

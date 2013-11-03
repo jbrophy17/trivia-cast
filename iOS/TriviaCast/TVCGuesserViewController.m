@@ -7,6 +7,7 @@
 //
 
 #import "TVCGuesserViewController.h"
+#import "TVCPlayer.h"
 
 @interface TVCGuesserViewController ()
 {
@@ -32,9 +33,18 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
     //testing
-    //self.responses = [NSMutableArray arrayWithArray: @[@"Jeff's Asshole", @"Bears", @"Niggers"]];
-    //self.players = [NSMutableArray arrayWithArray: @[@"test 1", @"test 2", @"test 3", @"test 4", @"test 5", @"test 6", @"test 7", @"test 8", @"test 9", @"test 10"]];
-	
+   /* self.responses = [NSMutableArray arrayWithArray: @[@"Jeff's Asshole", @"Bears", @"Niggers"]];
+    TVCPlayer *p1 = [[TVCPlayer alloc] initWithName:@"name1" andNumber:0];
+    TVCPlayer *p2 = [[TVCPlayer alloc] initWithName:@"name2" andNumber:1];
+    TVCPlayer *p3 = [[TVCPlayer alloc] initWithName:@"name3" andNumber:2];
+    TVCPlayer *p4 = [[TVCPlayer alloc] initWithName:@"name4" andNumber:3];
+    TVCPlayer *p5 = [[TVCPlayer alloc] initWithName:@"name5" andNumber:5];
+    TVCPlayer *p6 = [[TVCPlayer alloc] initWithName:@"name6" andNumber:6];
+    TVCPlayer *p7 = [[TVCPlayer alloc] initWithName:@"name7" andNumber:7];
+    TVCPlayer *p8 = [[TVCPlayer alloc] initWithName:@"name8" andNumber:8];
+    
+    self.players = [NSMutableArray arrayWithArray: @[p1,p2,p3,p4,p5,p6,p7,p8]];
+	*/
     // a page is the width of the scroll view
     
     self.scrollView.showsHorizontalScrollIndicator = NO;
@@ -226,9 +236,12 @@
     NSInteger holdInt = responseID.integerValue;
     guessedPlayer = player;
     [[[appDelegate dataSource] getMessageStream] sendGuessWithPlayer:&player andResponseId:&holdInt];
-       
     
-    
+}
+
+- (void) didPressCloseButton {
+    [self.scrollView setScrollEnabled:YES];
+    [pickerView displayPicker:NO];
 }
 
 -(void) didMakeCorrectGuess {

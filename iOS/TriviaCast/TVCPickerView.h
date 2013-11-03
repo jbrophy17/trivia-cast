@@ -11,6 +11,7 @@
 @protocol TVCPickerViewDelegate
 
 - (void) didSelectPlayer:(int) player;
+- (void) didPressCloseButton;
 
 @end
 
@@ -18,6 +19,7 @@
 @interface TVCPickerView : UIView <UIScrollViewDelegate>
 @property (nonatomic, strong) UIScrollView * scrollView;
 @property (nonatomic, strong) UIPageControl * pageControl;
+@property (nonatomic, strong) UIButton * closeButton;
 @property (nonatomic, strong) NSArray * players;
 @property (nonatomic, strong) NSArray * pictures;
 @property (nonatomic) double offset;
@@ -28,5 +30,6 @@
 - (void) displayPicker: (BOOL) show;
 
 -(IBAction)playerSelected:(id)sender;
+-(IBAction)closeButtonPressed:(id)sender;
 
 @end
