@@ -4,6 +4,8 @@ ALREADY_HAVE_RESPONSES = 2;
 WAITING_ON_RESPONSES   = 3;
 NOT_ENOUGH_PLAYERS     = 4;
 ROUND_IN_PROGRESS      = 5;
+GUESSED_READER         = 6;
+GUESSED_SELF           = 7;
 
 // when debug mode is on, all Response and Player objects are printed with
 // all human-useful member variables. Not great for competitive play.
@@ -86,6 +88,8 @@ function Response(response, responseID, userID, channel){
         thisTemp = thisTemp.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
         thatTemp = thatTemp.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
 
+        console.debug("comparing '" + thisTemp + "' to '" + thatTemp + "'");
+
         return thisTemp == thatTemp;
     }
 }
@@ -94,7 +98,6 @@ function Game() {
     this.players       = new Array();
     this.playerQueue   = new Array();
     this.responses     = new Array();
-    this.sameResponses = new sameResponseTracker(); // used to track identical responses
     this.cues          = prompts;
     this.cues          = shuffle(this.cues); // randomize each playthrough
 
@@ -187,7 +190,18 @@ function updatePlayerList(){
     }
 
     if(game.players.length == 0){
-        var infoHTML = '<p>There aren\'t any players in this game.<br />Queued players will be added when the round starts.</p>';
+        var infoHTML = "<li><p><strong>There aren't any players in this game";
+
+        if(game.playerQueue.length > 0){
+            if(game.playerQueue.length == 1){
+                infoHTML += ', but there is one queued to join';
+            }
+            else{
+                infoHTML += ', but there are ' + game.playerQueue.length + ' queued to join';
+            }
+        }
+        
+        infoHTML += '.</strong><br />Queued players will be added when the next round starts.</p></li>';
         $('#playerlist').append(infoHTML);
     }
 
@@ -406,8 +420,20 @@ function submitGuess(channel, guess){
 
     var responseGuessed = guess.guessResponseId;
     var playerGuessed   = guess.guessPlayerNumber;
-    var guesserID       = getPlayerIndexByChannel(channel);
+    var guesserID       = game.players[getPlayerIndexByChannel(channel)].ID;
     var rgIndex         = -1;
+
+    // only allowed if not the reader or the current player
+    if(playerGuessed == game.players[game.reader].ID){
+        channel.send({ error : GUESSED_READER });
+        console.warn('Invalid guess: tried to guess the reader');
+        return;
+    }
+    if(playerGuessed == guesserID){
+        channel.send({ error : GUESSED_SELF });
+        console.warn('Invalid guess: tried to guess themself');
+        return;
+    }
 
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].responseID == responseGuessed){
@@ -427,9 +453,12 @@ function submitGuess(channel, guess){
     // check for other identical responses
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[rgIndex].isTheSameAs(game.responses[i])){
-            correctAnswers.push(game.responses[i].responseID);
+            console.debug("found that " + game.responses[rgIndex].toString() + " is the same as " + game.responses[i].toString());
+            correctAnswers.push(game.responses[i].userID);
         }
     }
+
+    console.debug(correctAnswers);
 
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
     if(correctAnswers.indexOf(playerGuessed) != -1){
@@ -470,7 +499,19 @@ function advanceGuesser(){
         var nextGuesser = game.guesser + 1;
         nextGuesser = nextGuesser % game.players.length;
         game.guesser = nextGuesser;
+        console.debug("advancing guesser, about to check " + game.guesser);
+
+        if(typeof game.players[game.guesser] == "undefined"){
+            console.debug("looking for guesser, found undefined player. trying again.")
+        }
+        if(game.players[game.guesser].isOut){
+            console.debug("looking for guesser but found someone who is out: " + game.players[game.guesser].toString());
+        }
+        if(game.guesser == game.reader){
+            console.debug("looking for guesser, found the reader, trying again");
+        }
     }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.guesser == game.reader);
+    console.debug("new guesser set to " + game.guesser);
 }
 
 function nextGuesser(force){
