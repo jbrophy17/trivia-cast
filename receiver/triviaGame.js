@@ -430,7 +430,7 @@ function submitGuess(channel, guess){
         return;
     }
     if(playerGuessed == guesserID){
-        channel.send({ type : 'error', : GUESSED_SELF });
+        channel.send({ type : 'error', value : GUESSED_SELF });
         console.warn('Invalid guess: tried to guess themself');
         return;
     }
