@@ -433,7 +433,7 @@ function submitGuess(channel, guess){
 
     // check for other identical responses
     for(var i = 0; i < game.responses.length; i++){
-        if(game.responses[responseGuessed].isTheSameAs(game.responses[i])){
+        if(game.responses[rgIndex].isTheSameAs(game.responses[i])){
             correctAnswers.push(game.responses[i].responseID);
         }
     }
@@ -445,6 +445,7 @@ function submitGuess(channel, guess){
         game.players[playerGuessed].didGetOut();
         game.responses[rgIndex].isActive = false;
         $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        $('#status').prepend('<strong>' + game.players[guesserID].toString() + '</strong> guessed correctly. ');
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
     }
@@ -459,6 +460,7 @@ function submitGuess(channel, guess){
 
         // next guesser's turn
         nextGuesser();
+        $('#status').prepend('<strong>' + game.players[guesserID].toString() + '</strong> guessed incorrectly. ');
     }
 }
 
