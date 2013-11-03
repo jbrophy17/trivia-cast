@@ -307,7 +307,6 @@ function leavePlayer(channel){
         return;
     }
     game.players[playerID].didGetOut();
-    game.players[playerID].didLeave();
 
     var isLastPlayer = false;
     // is this the last player?
