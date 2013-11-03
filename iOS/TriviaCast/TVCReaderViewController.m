@@ -85,9 +85,7 @@
     int page = floor((self.scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
     self.pageControl.currentPage = page;
 	
-    if(!finishedReading && page == [self.responses count]) {
-        [[[appDelegate dataSource] getMessageStream] sendReaderIsDone];
-    }
+    
     // A possible optimization would be to unload the views+controllers which are no longer visible
 }
 
@@ -103,6 +101,11 @@
 
 - (IBAction)changePage:(id)sender {
     int page = self.pageControl.currentPage;
+    
+    if(!finishedReading && page == [self.responses count]) {
+        [[[appDelegate dataSource] getMessageStream] sendReaderIsDone];
+        finishedReading = YES;
+    }
     
 	// update the scroll view to the appropriate page
     CGRect frame = self.scrollView.frame;
