@@ -51,6 +51,15 @@ body {
 #responses {
   margin-top: 30px;
 }
+#leftcol {
+  float: left;
+  padding-right: 120px;
+  max-width: 440px;
+}
+#rightcol {
+  float: left;
+  max-width: 440px;
+}
 #instructions {
   margin-top: 10px;
   font-size: 30px;
