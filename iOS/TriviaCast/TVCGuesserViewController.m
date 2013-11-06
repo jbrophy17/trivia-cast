@@ -235,7 +235,15 @@
 - (void) didSelectPlayer:(int)player {
     NSLog(@"responseDict: %@", self.responseDictionary);
     
-    NSNumber* responseID = (NSNumber*)[self.responseDictionary objectForKey:[self.responses objectAtIndex:self.pageControl.currentPage]];
+  //  NSNumber* responseID = (NSNumber*)[self.responseDictionary objectForKey:[self.responses objectAtIndex:self.pageControl.currentPage]];
+    NSNumber* responseID;
+    for(id key in self.responseDictionary) {
+        if ([[self.responseDictionary objectForKey:key] isEqualToString:[self.responses objectAtIndex:self.pageControl.currentPage]]) {
+            responseID = key;
+            break;
+        }
+    }
+    
     NSInteger holdInt = responseID.integerValue;
     guessedPlayer = player;
     TVCPlayer * playerToReturn = [self.players objectAtIndex:player];

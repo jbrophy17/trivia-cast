@@ -49,6 +49,7 @@
     [appDelegate.deviceManager addListener:self];
     [appDelegate.deviceManager startScan];
     [self.tableView reloadData];
+    NSLog(@"devices: %i",[_devices count]);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -78,6 +79,20 @@
     [appDelegate.deviceManager startScan];
 }
 
+-(void) initialLaunch {
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(timerFired:) userInfo:nil repeats:NO];
+}
+
+- (void)timerFired:(NSTimer *)timer
+{
+    if ([_devices count] == 1) {
+        [appDelegate setDataSource:[[TVCDataSource alloc] initWithDevice:[_devices objectAtIndex:0]]];
+        UIStoryboard *storyboard = self.storyboard;
+        TVCLobbyViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"lobbyViewController"];
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -105,6 +120,7 @@
 
 - (void)scanStopped {
     // No-op
+    NSLog(@"devices: %i",[_devices count]);
 }
 
 - (void)deviceDidComeOnline:(GCKDevice *)device {

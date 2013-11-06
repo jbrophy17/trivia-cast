@@ -32,6 +32,7 @@
 {
     [super viewDidLoad];
      NSLog(@"view did load");
+    self.missedCue = NO;
     [[appDelegate dataSource] setCurrentViewController:self];
     [[appDelegate dataSource] setLobbyViewController:self];
     //self.dataSource = [[TVCDataSource alloc] initWithDevice:self.device];
@@ -43,6 +44,7 @@
      NSLog(@"view will appear");
     [[appDelegate dataSource] setCurrentViewController:self];
     [self.navigationController.navigationItem setHidesBackButton:YES];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -61,6 +63,7 @@
     [self presentViewController:viewController animated:YES completion:nil];
     
     [self.roundStartButton setHidden:YES];
+    [self.descriptionLabel setText:@"Please wait for all responses to be submitted"];
     //[self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -72,9 +75,11 @@
     // Configure the new view controller here.
     NSMutableArray * keyHold = [NSMutableArray array];
     for(id key in responseDictionary) {
-        [keyHold addObject:key];
+         NSLog(@"key: %@",key);
+       // [keyHold addObject:[responseDictionary objectForKey:key]];
+        [keyHold addObject:[NSString stringWithString:[responseDictionary objectForKey:key]]];
     }
-    
+    NSLog(@"length of responses: %i",[keyHold count]);
     NSMutableArray * updatedPlayers = [NSMutableArray array];
     
     viewController.responses = [NSMutableArray arrayWithArray:keyHold];
@@ -108,8 +113,10 @@
     // Configure the new view controller here.
     NSMutableArray * keyHold = [NSMutableArray array];
     for(id key in responseDictionary) {
-        [keyHold addObject:key];
+        NSLog(@"key: %@",key);
+        [keyHold addObject:[NSString stringWithString:[responseDictionary objectForKey:key]]];
     }
+        NSLog(@"length of responses: %i",[keyHold count]);
     viewController.responses = [NSMutableArray arrayWithArray:keyHold];
     //NSLog(@"vc label: %@",viewController.promptLabel.text);
     [self presentViewController:viewController animated:YES completion:nil];

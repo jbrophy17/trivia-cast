@@ -26,6 +26,7 @@
 
 - (NSString *)userName;
 - (void)setUserName:(NSString *)userName;
+- (NSString *)applicationDocumentDirectory;
 
 @end
 

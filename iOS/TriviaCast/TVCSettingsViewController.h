@@ -8,13 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "TVCPlayer.h"
+#import "TVCCameraViewController.h"
 
-@interface TVCSettingsViewController : UIViewController <UITextFieldDelegate>
+@interface TVCSettingsViewController : UIViewController <UITextFieldDelegate,UIGestureRecognizerDelegate, TVCCameraViewControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UITextField * nameInput;
 @property (strong, nonatomic) IBOutlet UIButton * submitButton;
 @property (strong, nonatomic) IBOutlet UIImageView * profileImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *maskImageView;
 
 - (IBAction)submitAction:(id)sender;
-
+- (void)selectPicture;
+- (void) setPicture:(UIImage*)image;
 @end

@@ -15,6 +15,10 @@
 @property (nonatomic, strong) GCKDevice * device;
 @property (nonatomic, strong) TVCDataSource * dataSource;
 @property (weak, nonatomic) IBOutlet UIButton *roundStartButton;
+@property (nonatomic) BOOL missedCue;
+@property (nonatomic, strong) NSString * cue;
+
+@property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 
 - (void) segueToResponseViewWithCue:(NSString*)cue;
 -(void) segueToReaderViewWithResponses:(NSDictionary *)responseDictionary;

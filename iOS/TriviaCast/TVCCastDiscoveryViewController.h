@@ -12,5 +12,6 @@
 @interface TVCCastDiscoveryViewController : UITableViewController
 
 - (IBAction)refresh:(id)sender;
+- (void) initialLaunch;
 
 @end

@@ -237,9 +237,10 @@ static NSString * const kValuePlayerX = @"X";
             NSString * response = [holdDict gck_stringForKey:keyResponse];
             NSInteger responseID = [holdDict gck_integerForKey:keyResponseId];
            
-            [responseIdDictionary setObject:[NSNumber numberWithInt:responseID] forKey:response];
+            [responseIdDictionary setObject:response forKey:[NSString stringWithFormat:@"%i",responseID]];
         }
        
+        NSLog(@"responseDictionary: %@", responseIdDictionary);
         [self.delegate didReceiveResponses:responseIdDictionary];
         return;
     }

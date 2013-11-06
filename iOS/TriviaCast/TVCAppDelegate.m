@@ -10,6 +10,7 @@
 
 #import <GCKFramework/GCKFramework.h>
 #import "TVCDataSource.h"
+#import "TVCCastDiscoveryViewController.h"
 
 static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 
@@ -29,9 +30,42 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     self.deviceManager = [[GCKDeviceManager alloc] initWithContext:self.context];
     //_dataSource = [[TVCDataSource alloc] init];
     [UIApplication sharedApplication].idleTimerDisabled = YES;
+    
+    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(self.window.frame.size.width /2 -15, self.window.frame.size.height * (3.0/4.0), 30, 30)];
+    [activity setBackgroundColor:[UIColor clearColor]];
+    [activity setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
+    
+    UIImageView*imageView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"splashScreen.png"]];
+    [imageView setFrame:self.window.frame];
+    [imageView setBackgroundColor:[UIColor redColor]];
+    [imageView addSubview:activity];
+    [activity startAnimating];
+    UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);
+    TVCCastDiscoveryViewController* viewController = (TVCCastDiscoveryViewController*)navVC.visibleViewController;
+    [[navVC view] addSubview:imageView];
+    [[navVC view] bringSubviewToFront:imageView];
+    [viewController initialLaunch];
+    // as usual
+    [self.window makeKeyAndVisible];
+    
+    //now fade out splash image
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(timerFired:) userInfo:imageView repeats:NO];
+    
+    
+    
+    
     return YES;
 }
-							
+
+
+- (void)timerFired:(NSTimer *)timer
+{
+    UIView *imageView = [timer userInfo];
+    
+    [UIView transitionWithView:self.window duration:0.5f options:UIViewAnimationOptionTransitionNone animations:^(void){imageView.alpha=0.0f;} completion:^(BOOL finished){[imageView removeFromSuperview];}];
+}
+
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -110,6 +144,13 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 - (void)setUserName:(NSString *)userName {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults setValue:userName forKey:kUserDefaultsKeyUserName];
+}
+
+- (NSString *)applicationDocumentDirectory {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
+    NSString *docs = [paths objectAtIndex:0];
+    
+    return docs;
 }
 
 @end

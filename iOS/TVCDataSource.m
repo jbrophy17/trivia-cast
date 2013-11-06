@@ -229,6 +229,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
     } else {
         [self.player setIsGuessing:NO];
+        [[self.lobbyViewController descriptionLabel] setText:@"You guessed Incorrectly"];
         [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
@@ -247,8 +248,13 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
 -(void)didReceiveRoundStartedWithCue:(NSString*)cue {
     NSLog(@"DataSource: didReceiveRoundStartedWithCue: %@",cue);
-    TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-    [lobbyViewController segueToResponseViewWithCue:cue];
+    if (self.currentViewController != self.lobbyViewController) {
+        [self.lobbyViewController setMissedCue:YES];
+        [self.lobbyViewController setCue:cue];
+    } else {
+        TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+        [lobbyViewController segueToResponseViewWithCue:cue];
+    }
     
 }
 
@@ -257,6 +263,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
         [self.lobbyViewController.roundStartButton setHidden:NO];
     }
+    [[self.lobbyViewController descriptionLabel] setText:@"Start the round once everyone has joined"];
 }
 
 - (void)responseWasReceived {

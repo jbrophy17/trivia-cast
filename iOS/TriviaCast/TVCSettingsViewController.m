@@ -9,6 +9,7 @@
 #import "TVCSettingsViewController.h"
 #import "TVCAppDelegate.h"
 #import "TVCDataSource.h"
+#import "TVCLobbyViewController.h"
 
 
 @interface TVCSettingsViewController () 
@@ -34,7 +35,47 @@
     if (userName && userName.length > 0) {
         [self.nameInput setText:userName];
     }
+    
+    [self.profileImageView setUserInteractionEnabled:YES];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectPicture)];
+    [tap setNumberOfTouchesRequired:1];
+    [tap setNumberOfTapsRequired:1];
+    [tap setDelegate:self];
+    [self.profileImageView addGestureRecognizer:tap];
+    
+    NSString* path = [[appDelegate applicationDocumentDirectory] stringByAppendingFormat:@"/profilePic.jpg"];
+    UIImage* profileImage = [UIImage imageWithContentsOfFile:path];
+    
+    if (!profileImage) {
+        profileImage = [UIImage imageNamed:@"defaultProfile.jpg"];
+    }
+    
+    //[self setPicture:[UIImage imageNamed:@"defaultProfile.jpg"]];
+    [self.profileImageView setImage:profileImage];
+    /*[self.profileImageView setImage:[UIImage imageNamed:@"defaultProfile.jpg"]];
+    
+    
+    CGRect imageRect = CGRectMake(0, 0, self.profileImageView.frame.size.width, self.profileImageView.frame.size.height);
+    
+    UIGraphicsBeginImageContextWithOptions(self.profileImageView.frame.size, NO, 0.0);
+    // Create the clipping path and add it
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:imageRect];
+    [path addClip];
+    
+    
+    [[UIImage imageNamed:@"defaultProfile.jpg"] drawInRect:imageRect];
+    UIImage *roundedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    self.profileImageView.image = roundedImage;
+    //[self.profileImageView setFrame:imageFrame];
+    */
 	// Do any additional setup after loading the view.
+}
+
+- (void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [[appDelegate dataSource] setCurrentViewController:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -51,7 +92,29 @@
         [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:name];
         
     }
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    NSString* path = [[appDelegate applicationDocumentDirectory] stringByAppendingFormat:@"/profilePic.jpg"];
+    NSData* imageData = [NSData dataWithData:UIImageJPEGRepresentation(self.profileImageView.image, 1.0)];
+    NSError *writeError = nil;
+    
+    if([imageData writeToFile:path options:NSDataWritingAtomic error:&writeError]) {
+    
+        if(writeError!=nil) {
+            NSLog(@"%@: Error saving image: %@", [self class], [writeError localizedDescription]);
+        }
+    } else {
+        NSLog(@"Error unable to write to file");
+    }
+    
+    
+    
+    
+    [self dismissViewControllerAnimated:YES completion:^(void){
+        
+        if ([[[appDelegate dataSource] lobbyViewController] missedCue]) {
+            [[appDelegate dataSource] didReceiveRoundStartedWithCue:[[[appDelegate dataSource] lobbyViewController] cue]];
+        }
+    }];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -92,6 +155,108 @@
     [UIView setAnimationDuration: movementDuration];
     self.view.frame = CGRectOffset(self.view.frame, 0, movement);
     [UIView commitAnimations];
+}
+
+-(void)selectPicture {
+    UIStoryboard *storyboard = self.storyboard;
+    TVCCameraViewController *camVC = [storyboard instantiateViewControllerWithIdentifier:@"cameraViewController"];
+    camVC.delegate = self;
+    [self presentViewController:camVC animated:YES completion:nil];
+   /* UIImagePickerController * imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    imagePicker.delegate = self;
+    imagePicker.showsCameraControls = NO;
+    [self presentViewController:imagePicker animated:YES completion:nil];*/
+    
+}
+
+-(void) sendImageToServer {
+    // Dictionary that holds post parameters. You can set your post parameters that your server accepts or programmed to accept.
+    NSMutableDictionary* _params = [[NSMutableDictionary alloc] init];
+    [_params setObject:@"1.0" forKey:@"ver"];
+    [_params setObject:@"en" forKey:@"lan"];
+    [_params setObject:[NSString stringWithFormat:@"%d", [[[appDelegate dataSource] player] playerNumber]] forKey:@"playerID"];
+    //[_params setObject:[NSString stringWithFormat:@"%@",title] forKey:@"title"];
+    
+    // the boundary string : a random string, that will not repeat in post data, to separate post data fields.
+    NSString *BoundaryConstant = @"--SLEaslSVhTYSUEWe349";
+    
+    // string constant for the post parameter 'file'. My server uses this name: `file`. Your's may differ
+    NSString* FileParamConstant = @"file";
+    
+    // the server url to which the image (or the media) is uploaded. Use your server url here
+    NSURL* requestURL = [NSURL URLWithString:@""];
+    
+    
+    // create request
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    [request setHTTPShouldHandleCookies:NO];
+    [request setTimeoutInterval:30];
+    [request setHTTPMethod:@"POST"];
+    
+    // set Content-Type in HTTP header
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", BoundaryConstant];
+    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+    
+    // post body
+    NSMutableData *body = [NSMutableData data];
+    
+    // add params (all params are strings)
+    for (NSString *param in _params) {
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", param] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", [_params objectForKey:param]] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+    // add image data
+    NSData *imageData = UIImageJPEGRepresentation(self.profileImageView.image, 1.0);
+    if (imageData) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"image.jpg\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Type: image/jpeg\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:imageData];
+        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+    [body appendData:[[NSString stringWithFormat:@"%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    // setting the body of the post to the reqeust
+    [request setHTTPBody:body];
+    
+    // set the content-length
+    NSString *postLength = [NSString stringWithFormat:@"%d", [body length]];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    
+    // set URL
+    [request setURL:requestURL];
+}
+
+//overkill
+-(void) setPicture:(UIImage *)image {
+   // [self.profileImageView setImage:[UIImage imageNamed:@"defaultProfile.jpg"]];
+    
+    NSLog(@"[%f,%f]",image.size.width, image.size.height);
+    
+    CGRect imageRect = CGRectMake(0, 0, image.size.width, image.size.width);
+    
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
+    // Create the clipping path and add it
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:imageRect];
+    [path addClip];
+    
+    
+    [image drawInRect:imageRect];
+    UIImage *roundedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    self.profileImageView.image = roundedImage;
+}
+
+#pragma mark TVCCameraViewControllerDelegate methods
+
+-(void) didCaptureImage:(UIImage *)image {
+    [self.profileImageView setImage:image];
 }
 
 @end

@@ -15,6 +15,13 @@
 		DC38689A18256ED100E22E92 /* guesserIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689618256ED100E22E92 /* guesserIcon@2x.png */; };
 		DC38689F1825722700E22E92 /* readerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689D1825722700E22E92 /* readerIcon.png */; };
 		DC3868A01825722700E22E92 /* readerIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689E1825722700E22E92 /* readerIcon@2x.png */; };
+		DCA511F618278605004F3F66 /* TVCCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA511F518278605004F3F66 /* TVCCameraViewController.m */; };
+		DCA511F9182787F6004F3F66 /* TVCCameraSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA511F8182787F6004F3F66 /* TVCCameraSessionManager.m */; };
+		DCA511FB18278A00004F3F66 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA511FA18278A00004F3F66 /* AVFoundation.framework */; };
+		DCA511FD18278A06004F3F66 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA511FC18278A06004F3F66 /* CoreMedia.framework */; };
+		DCA511FF18278D93004F3F66 /* circleMask2.png in Resources */ = {isa = PBXBuildFile; fileRef = DCA511FE18278D93004F3F66 /* circleMask2.png */; };
+		DCA5120118286B88004F3F66 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA5120018286B88004F3F66 /* ImageIO.framework */; };
+		DCA5120318286B90004F3F66 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA5120218286B90004F3F66 /* CoreVideo.framework */; };
 		DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24ED817EA966100C1615F /* UIKit.framework */; };
 		DCE24EDB17EA966100C1615F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDA17EA966100C1615F /* Foundation.framework */; };
 		DCE24EDD17EA966100C1615F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDC17EA966100C1615F /* CoreGraphics.framework */; };
@@ -67,6 +74,15 @@
 		DC38689618256ED100E22E92 /* guesserIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guesserIcon@2x.png"; sourceTree = "<group>"; };
 		DC38689D1825722700E22E92 /* readerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readerIcon.png; sourceTree = "<group>"; };
 		DC38689E1825722700E22E92 /* readerIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "readerIcon@2x.png"; sourceTree = "<group>"; };
+		DCA511F418278605004F3F66 /* TVCCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCCameraViewController.h; sourceTree = "<group>"; };
+		DCA511F518278605004F3F66 /* TVCCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCCameraViewController.m; sourceTree = "<group>"; };
+		DCA511F7182787F6004F3F66 /* TVCCameraSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCCameraSessionManager.h; sourceTree = "<group>"; };
+		DCA511F8182787F6004F3F66 /* TVCCameraSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCCameraSessionManager.m; sourceTree = "<group>"; };
+		DCA511FA18278A00004F3F66 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		DCA511FC18278A06004F3F66 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		DCA511FE18278D93004F3F66 /* circleMask2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circleMask2.png; sourceTree = "<group>"; };
+		DCA5120018286B88004F3F66 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		DCA5120218286B90004F3F66 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		DCE24ED517EA966100C1615F /* TriviaCast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TriviaCast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE24ED817EA966100C1615F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCE24EDA17EA966100C1615F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -123,6 +139,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCA5120318286B90004F3F66 /* CoreVideo.framework in Frameworks */,
+				DCA5120118286B88004F3F66 /* ImageIO.framework in Frameworks */,
+				DCA511FD18278A06004F3F66 /* CoreMedia.framework in Frameworks */,
+				DCA511FB18278A00004F3F66 /* AVFoundation.framework in Frameworks */,
 				DC0807E71810350E003F7E1D /* GCKFramework.framework in Frameworks */,
 				DC007F6F17F241BF00342963 /* QuartzCore.framework in Frameworks */,
 				DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */,
@@ -175,6 +195,10 @@
 		DCE24ED717EA966100C1615F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DCA5120218286B90004F3F66 /* CoreVideo.framework */,
+				DCA5120018286B88004F3F66 /* ImageIO.framework */,
+				DCA511FC18278A06004F3F66 /* CoreMedia.framework */,
+				DCA511FA18278A00004F3F66 /* AVFoundation.framework */,
 				DC007F6E17F241BF00342963 /* QuartzCore.framework */,
 				DCE24F2E17EB85AE00C1615F /* GCKFramework.framework */,
 				DCE24ED817EA966100C1615F /* UIKit.framework */,
@@ -206,6 +230,7 @@
 		DCE24EDF17EA966100C1615F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DCA511FE18278D93004F3F66 /* circleMask2.png */,
 				DC38689D1825722700E22E92 /* readerIcon.png */,
 				DC38689E1825722700E22E92 /* readerIcon@2x.png */,
 				DC38689518256ED100E22E92 /* guesserIcon.png */,
@@ -255,6 +280,8 @@
 				DCE24F1D17EA968A00C1615F /* TVCResponse.m */,
 				DCF2038F17F3457F00B2D093 /* TVCDataSource.h */,
 				DCF2039017F3457F00B2D093 /* TVCDataSource.m */,
+				DCA511F7182787F6004F3F66 /* TVCCameraSessionManager.h */,
+				DCA511F8182787F6004F3F66 /* TVCCameraSessionManager.m */,
 			);
 			name = Models;
 			path = ..;
@@ -275,6 +302,8 @@
 				DCF84F6E17F0005F00E52B11 /* TVCReaderViewController.m */,
 				DCF84F7017F01AFB00E52B11 /* TVCGuesserViewController.h */,
 				DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */,
+				DCA511F418278605004F3F66 /* TVCCameraViewController.h */,
+				DCA511F518278605004F3F66 /* TVCCameraViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -366,6 +395,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCE24EE317EA966100C1615F /* InfoPlist.strings in Resources */,
+				DCA511FF18278D93004F3F66 /* circleMask2.png in Resources */,
 				DCE24EEB17EA966100C1615F /* Default.png in Resources */,
 				DC3868A01825722700E22E92 /* readerIcon@2x.png in Resources */,
 				DCE24EED17EA966100C1615F /* Default@2x.png in Resources */,
@@ -421,7 +451,9 @@
 				DCE24F2017EA968A00C1615F /* TVCPlayer.m in Sources */,
 				DC007F6D17F1EEF700342963 /* TVCPickerView.m in Sources */,
 				DCE24F2117EA968A00C1615F /* TVCResponse.m in Sources */,
+				DCA511F9182787F6004F3F66 /* TVCCameraSessionManager.m in Sources */,
 				DCF2039117F3457F00B2D093 /* TVCDataSource.m in Sources */,
+				DCA511F618278605004F3F66 /* TVCCameraViewController.m in Sources */,
 				DCE24F2717EB6FB300C1615F /* TVCCastDiscoveryViewController.m in Sources */,
 				DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */,
 				DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="Pze-4W-k2M">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="Pze-4W-k2M">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
@@ -60,10 +60,10 @@
             </objects>
             <point key="canvasLocation" x="-744" y="-113"/>
         </scene>
-        <!--Lobby View Controller-->
+        <!--Lobby View Controller - The Lobby-->
         <scene sceneID="beN-O4-H9S">
             <objects>
-                <viewController id="4bf-1A-86a" customClass="TVCLobbyViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="lobbyViewController" id="4bf-1A-86a" customClass="TVCLobbyViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="oqw-ei-3yH">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -78,8 +78,8 @@
                                     <action selector="startRoundAction:" destination="4bf-1A-86a" eventType="touchUpInside" id="Rdr-F8-8tG"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Lobby" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LJM-y4-yWc">
-                                <rect key="frame" x="119" y="75" width="82" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start the round once everyone has joined" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LJM-y4-yWc">
+                                <rect key="frame" x="20" y="238" width="280" height="91"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -88,7 +88,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="TIW-gT-2lF">
+                    <navigationItem key="navigationItem" title="The Lobby" id="TIW-gT-2lF">
                         <barButtonItem key="leftBarButtonItem" title="Quit" id="QTR-Kt-QlF">
                             <connections>
                                 <action selector="quitAction:" destination="4bf-1A-86a" id="agh-GK-ZVn"/>
@@ -101,6 +101,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="descriptionLabel" destination="LJM-y4-yWc" id="xl7-b0-iwa"/>
                         <outlet property="roundStartButton" destination="QRP-vL-jLG" id="ilx-eI-GHU"/>
                     </connections>
                 </viewController>
@@ -257,20 +258,20 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="ZOP-6M-OFA">
-                                <rect key="frame" x="20" y="335" width="280" height="30"/>
+                                <rect key="frame" x="20" y="377" width="280" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                             </textField>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Your Name:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lmc-kV-rco">
-                                <rect key="frame" x="20" y="306" width="91" height="21"/>
+                                <rect key="frame" x="20" y="348" width="91" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="5Ba-Fc-nig">
-                                <rect key="frame" x="138" y="373" width="44" height="44"/>
+                                <rect key="frame" x="138" y="415" width="44" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Save">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -279,15 +280,19 @@
                                     <action selector="submitAction:" destination="2" eventType="touchUpInside" id="oi4-de-kbi"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" id="isb-xN-J3R">
-                                <rect key="frame" x="38" y="20" width="245" height="245"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" id="isb-xN-J3R">
+                                <rect key="frame" x="0.0" y="20" width="320" height="320"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circleMask2.png" id="kkg-ja-VVS">
+                                <rect key="frame" x="0.0" y="20" width="320" height="320"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="maskImageView" destination="kkg-ja-VVS" id="2pa-8X-VR3"/>
                         <outlet property="nameInput" destination="ZOP-6M-OFA" id="ayh-Qm-qGK"/>
                         <outlet property="profileImageView" destination="isb-xN-J3R" id="exw-nc-7an"/>
                         <outlet property="submitButton" destination="5Ba-Fc-nig" id="xW0-uC-1Fq"/>
@@ -297,8 +302,76 @@
             </objects>
             <point key="canvasLocation" x="142" y="-534"/>
         </scene>
+        <!--Camera View Controller-->
+        <scene sceneID="wj1-L5-7UX">
+            <objects>
+                <viewController storyboardIdentifier="cameraViewController" id="vpG-cA-JLD" customClass="TVCCameraViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rAt-q4-fWD">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="5Ug-Cd-4GQ">
+                                <rect key="frame" x="19" y="518" width="48" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelAction:" destination="vpG-cA-JLD" eventType="touchUpInside" id="yyO-CC-Q1f"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="TQm-Z4-GMa">
+                                <rect key="frame" x="253" y="518" width="48" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Library">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="libraryAction:" destination="vpG-cA-JLD" eventType="touchUpInside" id="UR4-F6-Ieb"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="vn9-KT-d3G">
+                                <rect key="frame" x="143" y="518" width="35" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Click">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cameraAction:" destination="vpG-cA-JLD" eventType="touchUpInside" id="NaZ-D8-1OU"/>
+                                </connections>
+                            </button>
+                            <imageView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circleMask2.png" id="ucH-Kp-9le">
+                                <rect key="frame" x="0.0" y="58" width="320" height="320"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="5dA-Ko-yc8">
+                                <rect key="frame" x="141" y="20" width="38" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Selfie">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="reverseCameraAction:" destination="vpG-cA-JLD" eventType="touchUpInside" id="hfv-ZZ-psk"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="cameraButton" destination="vn9-KT-d3G" id="TWa-IZ-mxy"/>
+                        <outlet property="cancelButton" destination="5Ug-Cd-4GQ" id="kaP-sK-mYe"/>
+                        <outlet property="libraryButton" destination="TQm-Z4-GMa" id="6PA-n4-2On"/>
+                        <outlet property="maskImageVIew" destination="ucH-Kp-9le" id="IeV-tc-dMN"/>
+                        <outlet property="reverseCameraButton" destination="5dA-Ko-yc8" id="eQE-eI-KfQ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yhF-RC-KGC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="142" y="-1201"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="circleMask2.png" width="566" height="566"/>
         <image name="guessButton.png" width="122" height="122"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
@@ -307,6 +380,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="KhV-Td-AW5"/>
+        <segue reference="24z-Tg-t9f"/>
     </inferredMetricsTieBreakers>
 </document>
