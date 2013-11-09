@@ -6,10 +6,11 @@ NOT_ENOUGH_PLAYERS     = 4;
 ROUND_IN_PROGRESS      = 5;
 GUESSED_READER         = 6;
 GUESSED_SELF           = 7;
+INVALID_TYPE           = 8;
 
 // when debug mode is on, all Response and Player objects are printed with
 // all human-useful member variables. Not great for competitive play.
-DEBUG = true;
+DEBUG = false;
 
 // used to exit the game after inactivity
 idleTime = 0;
@@ -59,10 +60,10 @@ function Player(name, channel, pictureURL) {
         return thisObj;
     }
 
-    this.toString = function(){
+    this.toString = function(noImage){
         var string = '';
 
-        if(this.pictureURL.length > 0){
+        if(this.pictureURL.length > 0 && typeof noImage == "undefined"){
             string += '<img src="' + this.pictureURL + '" class="prof-pic"> ';
         }
         string += this.name;
@@ -250,11 +251,11 @@ function updatePlayerList(){
     if(game.playerQueue.length > 0){
         var notificationHTML = '';
         if(game.playerQueue.length == 1){
-            notificationHTML += '<strong>' + game.playerQueue[0].toString() + '</strong>';
+            notificationHTML += '<strong>' + game.playerQueue[0].toString(true) + '</strong>';
         }
         else{
             for(var i = 0; i < game.playerQueue.length; i++){
-                notificationHTML += '<strong>' + game.playerQueue[i].toString() + '</strong>';
+                notificationHTML += '<strong>' + game.playerQueue[i].toString(true) + '</strong>';
 
                 // if there's more than one player left, put a comma
                 if((i + 2) < game.playerQueue.length){
@@ -474,7 +475,7 @@ function prependStatus(playerIndex, whatTheyGuessed){
 function submitGuess(channel, guess){
     // only allowed if all responses are in
     if(game.responses.length < game.players.length){
-        channel.send({ error : WAITING_ON_RESPONSES });
+        channel.send({ type : 'error', value : WAITING_ON_RESPONSES });
         return;
     }
 
@@ -733,6 +734,11 @@ function newGrind(){
 function updatePlayer(channel, info){
     var playerID = getPlayerIndexByChannel(channel);
 
+    var url = '';
+    if("pictureURL" in info){
+        var url = info.pictureURL;
+    }
+
     // find out if we're queued
     var isQueued = false;
     for(var i = 0; i < game.playerQueue.length; i++){
@@ -743,9 +749,11 @@ function updatePlayer(channel, info){
 
     if(isQueued){
         game.playerQueue[playerID].name = info.name;
+        game.playerQueue[playerID].pictureURL = url;
     }
     else{
         game.players[playerID].name = info.name;
+        game.players[playerID].pictureURL = url;
     }
 
     channel.send({ type : 'settingsUpdated' });
@@ -797,6 +805,7 @@ function initReceiver(){
                 updatePlayer(event.target, event.message);
                 break;
             default:
+                event.target.send({ type: 'error', value : INVALID_TYPE });
                 console.warn("Invalid type: " + event.message.type);
         }
     }
