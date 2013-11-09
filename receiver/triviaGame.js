@@ -9,15 +9,29 @@ GUESSED_SELF           = 7;
 
 // when debug mode is on, all Response and Player objects are printed with
 // all human-useful member variables. Not great for competitive play.
-DEBUG = false;
+DEBUG = true;
 
-function Player(name, ID, channel) {
-    this.name    = name;
-    // this.picture = picture;
-    this.ID      = ID;
-    this.channel = channel;
-    this.isOut   = false;
-    this.score = 0;
+// used to exit the game after inactivity
+idleTime = 0;
+IDLE_MAX = 15;
+
+function Player(name, channel, pictureURL) {
+    this.name       = name;
+    this.ID         = -1;
+    this.channel    = channel;
+    this.isOut      = false;
+    this.score      = 0;
+
+    if(typeof pictureURL != "undefined"){
+        this.pictureURL = pictureURL;
+    }
+    else{
+        this.pictureURL = '';
+    }
+
+    this.setPictureURL = function(url){
+        this.pictureURL = url;
+    }
 
     this.getScore = function() {
         return this.score;
@@ -37,19 +51,24 @@ function Player(name, ID, channel) {
     }
 
     this.clientSafeVersion = function(){
-        var thisObj   = new Object();
-        thisObj.name  = this.name;
-        thisObj.ID    = this.ID;
-        thisObj.score = this.score;
+        var thisObj        = new Object();
+        thisObj.name       = this.name;
+        thisObj.pictureURL = this.pictureURL;
+        thisObj.ID         = this.ID;
+        thisObj.score      = this.score;
         return thisObj;
     }
 
     this.toString = function(){
         var string = '';
-        string = this.name;
+
+        if(this.pictureURL.length > 0){
+            string += '<img src="' + this.pictureURL + '" class="prof-pic"> ';
+        }
+        string += this.name;
 
         if(DEBUG){
-            string += ' [ID ' + this.ID + ', score ' + this.score + ']';
+            string += ' [ID ' + this.ID + ', score ' + this.score + ', pictureURL ' + this.pictureURL + ']';
         }
 
         return string;
@@ -169,6 +188,11 @@ function Game() {
         for(var i = 0; i < this.players.length; i++){
             this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.reader].ID, guesser : this.players[this.guesser].ID });
         }
+    }
+
+    this.advanceReader = function(){
+        game.reader++;
+        game.reader = game.reader % game.players.length;
     }
 }
 
@@ -295,14 +319,23 @@ function roundScreen(){
 
 }
 
-function joinPlayer(channel, name){
-    if(name === ""){
+function joinPlayer(channel, response){
+    if(response.name === ""){
         channel.send({ type : 'error', value : SENT_BLANK_NAME });
+        console.warn('Received blank name');
         return;
     }
 
-    var newID = game.players.length;
-    var newPlayer = new Player(name, newID, channel);
+    if("pictureURL" in response){
+        console.debug('making newPlayer with picture');
+        var newPlayer = new Player(response.name, channel, response.pictureURL);
+        console.debug('made newPlayer');
+    }
+    else{
+        console.debug('making newPlayer with no picture');
+        var newPlayer = new Player(response.name, channel);
+        console.debug('made newPlayer');
+    }
 
     game.queuePlayer(newPlayer);
 }
@@ -333,14 +366,23 @@ function leavePlayer(channel){
     }
 
     // if they're currently reader or currently guessing, advance to the first or next guesser
-    if(game.reader == playerID && !game.isBetweenRounds){
-        nextGuesser();
+    if(game.reader == playerID){
+        if(!game.isBetweenRounds){
+            nextGuesser();
+        }
+
+        game.advanceReader();        
     }
-    if(game.guesser == playerID && !game.isBetweenRounds){
-        nextGuesser(true);
+    if(game.guesser == playerID){
+        if(!game.isBetweenRounds){
+            nextGuesser(true);
+        }
+
+        advanceGuesser();
     }
 
     game.deletePlayer(playerID);
+    game.sendGameSync();
 
     return;
 }
@@ -673,8 +715,7 @@ function newGrind(){
 
     if(game.players.length > 1){
         // pick next reader
-        game.reader++;
-        game.reader = game.reader % game.players.length;
+        game.advanceReader();
 
         // pick next guesser
         advanceGuesser();
@@ -730,9 +771,11 @@ function initReceiver(){
         console.log('type = ' + event.message.type);
         console.log(event);
 
+        touch();
+
         switch(event.message.type){
             case "join":
-                joinPlayer(event.target, event.message.name);
+                joinPlayer(event.target, event.message);
                 break;
             case "leave":
                 leavePlayer(event.target);
@@ -790,10 +833,35 @@ function hideSplash(){
     window.clearTimeout(splashTimeout);
 }
 
+function touch(){
+    idleTime = 0;
+    $('#idlewarning').fadeOut();
+}
+
+function checkIdle(){
+    // only exit if nobody's in the game (queued doesn't count)
+    if(game.players.length > 0){
+        return;
+    }
+
+    idleTime++;
+
+    if(idleTime > IDLE_MAX){
+        window.close();
+    }
+    else if(idleTime > (IDLE_MAX * .75)){
+        // warn if 75% of the way to exit
+        $('#idlewarning').fadeIn();
+    }
+}
+
 // initialize
 $(function(){
     initGame();
     initReceiver();
+
+    // exit game after inactivity
+    var idleInterval = setInterval(checkIdle, 60000); // 1 minute
 });
 
 //+ Jonas Raoni Soares Silva
