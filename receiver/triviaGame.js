@@ -323,7 +323,9 @@ function leavePlayer(channel){
     var isLastPlayer = false;
     // is this the last player?
     if(game.players.length == 1){
-        isLastPlayer = true;
+        newGrind();
+        betweenRounds();
+        return;
     }
 
     // if they're currently reader or currently guessing, advance to the first or next guesser
@@ -332,11 +334,6 @@ function leavePlayer(channel){
     }
     if(game.guesser == playerID && !game.isBetweenRounds){
         nextGuesser(true);
-    }
-
-    if(isLastPlayer){
-        newGrind();
-        betweenRounds();
     }
 
     game.deletePlayer(playerID);
