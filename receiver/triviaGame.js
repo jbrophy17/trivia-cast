@@ -6,18 +6,33 @@ NOT_ENOUGH_PLAYERS     = 4;
 ROUND_IN_PROGRESS      = 5;
 GUESSED_READER         = 6;
 GUESSED_SELF           = 7;
+INVALID_TYPE           = 8;
 
 // when debug mode is on, all Response and Player objects are printed with
 // all human-useful member variables. Not great for competitive play.
 DEBUG = false;
 
-function Player(name, ID, channel) {
-    this.name    = name;
-    // this.picture = picture;
-    this.ID      = ID;
-    this.channel = channel;
-    this.isOut   = false;
-    this.score = 0;
+// used to exit the game after inactivity
+idleTime = 0;
+IDLE_MAX = 15;
+
+function Player(name, channel, pictureURL) {
+    this.name       = name;
+    this.ID         = -1;
+    this.channel    = channel;
+    this.isOut      = false;
+    this.score      = 0;
+
+    if(typeof pictureURL != "undefined"){
+        this.pictureURL = pictureURL;
+    }
+    else{
+        this.pictureURL = '';
+    }
+
+    this.setPictureURL = function(url){
+        this.pictureURL = url;
+    }
 
     this.getScore = function() {
         return this.score;
@@ -37,19 +52,24 @@ function Player(name, ID, channel) {
     }
 
     this.clientSafeVersion = function(){
-        var thisObj   = new Object();
-        thisObj.name  = this.name;
-        thisObj.ID    = this.ID;
-        thisObj.score = this.score;
+        var thisObj        = new Object();
+        thisObj.name       = this.name;
+        thisObj.pictureURL = this.pictureURL;
+        thisObj.ID         = this.ID;
+        thisObj.score      = this.score;
         return thisObj;
     }
 
-    this.toString = function(){
+    this.toString = function(noImage){
         var string = '';
-        string = this.name;
+
+        if(this.pictureURL.length > 0 && typeof noImage == "undefined"){
+            string += '<img src="' + this.pictureURL + '" class="prof-pic"> ';
+        }
+        string += this.name;
 
         if(DEBUG){
-            string += ' [ID ' + this.ID + ', score ' + this.score + ']';
+            string += ' [ID ' + this.ID + ', score ' + this.score + ', pictureURL ' + this.pictureURL + ']';
         }
 
         return string;
@@ -159,6 +179,22 @@ function Game() {
         this.cues.splice(lastIndex, 1);
         return this.currentCue;
     }
+
+    this.sendGameSync = function(){
+        // update all clients' user list and scores
+        var playerList = new Object();
+        for(var i = 0; i < this.players.length; i++){
+            playerList[i] = this.players[i].clientSafeVersion();
+        }
+        for(var i = 0; i < this.players.length; i++){
+            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.reader].ID, guesser : this.players[this.guesser].ID });
+        }
+    }
+
+    this.advanceReader = function(){
+        game.reader++;
+        game.reader = game.reader % game.players.length;
+    }
 }
 
 function getPlayerIndexByChannel(channel){
@@ -215,11 +251,11 @@ function updatePlayerList(){
     if(game.playerQueue.length > 0){
         var notificationHTML = '';
         if(game.playerQueue.length == 1){
-            notificationHTML += '<strong>' + game.playerQueue[0].toString() + '</strong>';
+            notificationHTML += '<strong>' + game.playerQueue[0].toString(true) + '</strong>';
         }
         else{
             for(var i = 0; i < game.playerQueue.length; i++){
-                notificationHTML += '<strong>' + game.playerQueue[i].toString() + '</strong>';
+                notificationHTML += '<strong>' + game.playerQueue[i].toString(true) + '</strong>';
 
                 // if there's more than one player left, put a comma
                 if((i + 2) < game.playerQueue.length){
@@ -284,14 +320,23 @@ function roundScreen(){
 
 }
 
-function joinPlayer(channel, name){
-    if(name === ""){
+function joinPlayer(channel, response){
+    if(response.name === ""){
         channel.send({ type : 'error', value : SENT_BLANK_NAME });
+        console.warn('Received blank name');
         return;
     }
 
-    var newID = game.players.length;
-    var newPlayer = new Player(name, newID, channel);
+    if("pictureURL" in response){
+        console.debug('making newPlayer with picture');
+        var newPlayer = new Player(response.name, channel, response.pictureURL);
+        console.debug('made newPlayer');
+    }
+    else{
+        console.debug('making newPlayer with no picture');
+        var newPlayer = new Player(response.name, channel);
+        console.debug('made newPlayer');
+    }
 
     game.queuePlayer(newPlayer);
 }
@@ -316,23 +361,29 @@ function leavePlayer(channel){
     var isLastPlayer = false;
     // is this the last player?
     if(game.players.length == 1){
-        isLastPlayer = true;
+        newGrind();
+        betweenRounds();
+        return;
     }
 
     // if they're currently reader or currently guessing, advance to the first or next guesser
-    if(game.reader == playerID && !game.isBetweenRounds){
-        nextGuesser();
-    }
-    if(game.guesser == playerID && !game.isBetweenRounds){
-        nextGuesser(true);
-    }
+    if(game.reader == playerID){
+        if(!game.isBetweenRounds){
+            nextGuesser();
+        }
 
-    if(isLastPlayer){
-        newGrind();
-        betweenRounds();
+        game.advanceReader();        
+    }
+    if(game.guesser == playerID){
+        if(!game.isBetweenRounds){
+            nextGuesser(true);
+        }
+
+        advanceGuesser();
     }
 
     game.deletePlayer(playerID);
+    game.sendGameSync();
 
     return;
 }
@@ -424,7 +475,7 @@ function prependStatus(playerIndex, whatTheyGuessed){
 function submitGuess(channel, guess){
     // only allowed if all responses are in
     if(game.responses.length < game.players.length){
-        channel.send({ error : WAITING_ON_RESPONSES });
+        channel.send({ type : 'error', value : WAITING_ON_RESPONSES });
         return;
     }
 
@@ -474,13 +525,18 @@ function submitGuess(channel, guess){
         }
     }
 
-    console.debug(correctAnswers);
+    console.debug("correctAnswers contents:");
+    for(var i = 0; i < correctAnswers.length; i++){
+        console.debug(correctAnswers[i]);
+    }
 
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
     if(correctAnswers.indexOf(playerGuessed) != -1){
         channel.send({ type : 'guessResponse', 'value' : true });
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
+
+        game.sendGameSync();
 
         // need to find which response to delete if there are multiple
         var deleteIndex = rgIndex;
@@ -494,7 +550,7 @@ function submitGuess(channel, guess){
         }
 
         game.responses[deleteIndex].isActive = false;
-        $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        $('#response' + responseGuessed).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         prependStatus(guesserID, "correctly");
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
@@ -521,7 +577,7 @@ function submitGuess(channel, guess){
 function showResponses(){
     $('#responses ul').empty();
     for(var i = 0; i < game.responses.length; i++){
-        var responseHTML = '<li id="response' + i + '">' + game.responses[i].toString() + '</li><br />';
+        var responseHTML = '<li id="response' + game.responses[i].responseID + '">' + game.responses[i].toString() + '</li><br />';
         if(i % 2 == 0){
             $('#responses #leftcol ul').append(responseHTML);
         }
@@ -660,17 +716,12 @@ function newGrind(){
 
     if(game.players.length > 1){
         // pick next reader
-        game.reader++;
-        game.reader = game.reader % game.players.length;
+        game.advanceReader();
 
         // pick next guesser
         advanceGuesser();
 
-        // update all clients' user list and scores
-        for(var i = 0; i < game.players.length; i++){
-            console.debug('sending gameSync to ' + game.players[i].toString());
-            game.players[i].channel.send({type : 'gameSync', players : playerList, reader : game.players[game.reader].ID, guesser : game.players[game.guesser].ID });
-        }
+        game.sendGameSync();
     }
     else{
         console.warn("Didn't pick new reader/guesser, newGrind() called with not enough players");
@@ -683,6 +734,11 @@ function newGrind(){
 function updatePlayer(channel, info){
     var playerID = getPlayerIndexByChannel(channel);
 
+    var url = '';
+    if("pictureURL" in info){
+        var url = info.pictureURL;
+    }
+
     // find out if we're queued
     var isQueued = false;
     for(var i = 0; i < game.playerQueue.length; i++){
@@ -693,9 +749,11 @@ function updatePlayer(channel, info){
 
     if(isQueued){
         game.playerQueue[playerID].name = info.name;
+        game.playerQueue[playerID].pictureURL = url;
     }
     else{
         game.players[playerID].name = info.name;
+        game.players[playerID].pictureURL = url;
     }
 
     channel.send({ type : 'settingsUpdated' });
@@ -721,9 +779,11 @@ function initReceiver(){
         console.log('type = ' + event.message.type);
         console.log(event);
 
+        touch();
+
         switch(event.message.type){
             case "join":
-                joinPlayer(event.target, event.message.name);
+                joinPlayer(event.target, event.message);
                 break;
             case "leave":
                 leavePlayer(event.target);
@@ -745,6 +805,7 @@ function initReceiver(){
                 updatePlayer(event.target, event.message);
                 break;
             default:
+                event.target.send({ type: 'error', value : INVALID_TYPE });
                 console.warn("Invalid type: " + event.message.type);
         }
     }
@@ -769,7 +830,7 @@ function initGame(){
     newGrind();
 
     // set timeout to hide splash screen
-    splashTimeout = window.setTimeout(hideSplash, 4000);
+    splashTimeout = window.setTimeout(hideSplash, 5000);
 
     if(DEBUG){
         hideSplash();
@@ -781,10 +842,35 @@ function hideSplash(){
     window.clearTimeout(splashTimeout);
 }
 
+function touch(){
+    idleTime = 0;
+    $('#idlewarning').fadeOut();
+}
+
+function checkIdle(){
+    // only exit if nobody's in the game (queued doesn't count)
+    if(game.players.length > 0){
+        return;
+    }
+
+    idleTime++;
+
+    if(idleTime > IDLE_MAX){
+        window.close();
+    }
+    else if(idleTime > (IDLE_MAX * .75)){
+        // warn if 75% of the way to exit
+        $('#idlewarning').fadeIn();
+    }
+}
+
 // initialize
 $(function(){
     initGame();
     initReceiver();
+
+    // exit game after inactivity
+    var idleInterval = setInterval(checkIdle, 60000); // 1 minute
 });
 
 //+ Jonas Raoni Soares Silva

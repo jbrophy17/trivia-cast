@@ -8,7 +8,7 @@ body{
     font-family: 'Lato', sans-serif;
 }
 
-#splashscreen{
+#splashscreen, #idlewarning{
     position: absolute;
     z-index: 1000;
     background: #000;
@@ -27,6 +27,18 @@ body{
         font-size: 68px;
         margin: 0;
         text-align: center;
+    }
+}
+
+#idlewarning{
+    display: none;
+
+    h1{
+        padding-top: 40px;
+    }
+
+    p{
+        margin-top: 19px;
     }
 }
 
