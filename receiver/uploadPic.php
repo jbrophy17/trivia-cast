@@ -21,7 +21,7 @@ if(!isset($_FILES['file'])){
 }
 
 // error
-if(isset($_FILES['file']['error'])){
+if($_FILES['file']['error'] > 0){
 	$output['error'] = $_FILES['file']['error'];
 	debugLog(print_r($output, true));
 	die(json_encode($output));
