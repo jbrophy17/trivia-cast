@@ -162,8 +162,12 @@ function Game() {
 
     this.sendGameSync = function(){
         // update all clients' user list and scores
-        for(var i = 0; i < game.players.length; i++){
-            game.players[i].channel.send({type : 'gameSync', players : playerList, reader : game.players[game.reader].ID, guesser : game.players[game.guesser].ID });
+        var playerList = new Object();
+        for(var i = 0; i < this.players.length; i++){
+            playerList[i] = this.players[i].clientSafeVersion();
+        }
+        for(var i = 0; i < this.players.length; i++){
+            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.reader].ID, guesser : this.players[this.guesser].ID });
         }
     }
 }
@@ -478,7 +482,10 @@ function submitGuess(channel, guess){
         }
     }
 
-    console.debug(correctAnswers);
+    console.debug("correctAnswers contents:");
+    for(var i = 0; i < correctAnswers.length; i++){
+        console.debug(correctAnswers[i]);
+    }
 
     // if you're right, you get a point, a response is pulled, and you can keep guessing.
     if(correctAnswers.indexOf(playerGuessed) != -1){
@@ -500,7 +507,7 @@ function submitGuess(channel, guess){
         }
 
         game.responses[deleteIndex].isActive = false;
-        $('#response' + guesserID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        $('#response' + responseGuessed).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         prependStatus(guesserID, "correctly");
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
@@ -527,7 +534,7 @@ function submitGuess(channel, guess){
 function showResponses(){
     $('#responses ul').empty();
     for(var i = 0; i < game.responses.length; i++){
-        var responseHTML = '<li id="response' + i + '">' + game.responses[i].toString() + '</li><br />';
+        var responseHTML = '<li id="response' + game.responses[i].responseID + '">' + game.responses[i].toString() + '</li><br />';
         if(i % 2 == 0){
             $('#responses #leftcol ul').append(responseHTML);
         }
@@ -771,7 +778,7 @@ function initGame(){
     newGrind();
 
     // set timeout to hide splash screen
-    splashTimeout = window.setTimeout(hideSplash, 4000);
+    splashTimeout = window.setTimeout(hideSplash, 5000);
 
     if(DEBUG){
         hideSplash();
