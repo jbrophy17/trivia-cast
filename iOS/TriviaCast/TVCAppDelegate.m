@@ -37,7 +37,7 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     
     UIImageView*imageView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"splashScreen.png"]];
     [imageView setFrame:self.window.frame];
-    [imageView setBackgroundColor:[UIColor redColor]];
+    [imageView setBackgroundColor:[UIColor whiteColor]];
     [imageView addSubview:activity];
     [activity startAnimating];
     UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);

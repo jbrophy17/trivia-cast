@@ -60,7 +60,7 @@
             </objects>
             <point key="canvasLocation" x="-744" y="-113"/>
         </scene>
-        <!--Lobby View Controller - The Lobby-->
+        <!--Lobby View Controller-->
         <scene sceneID="beN-O4-H9S">
             <objects>
                 <viewController storyboardIdentifier="lobbyViewController" id="4bf-1A-86a" customClass="TVCLobbyViewController" sceneMemberID="viewController">
@@ -69,8 +69,9 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="QRP-vL-jLG">
-                                <rect key="frame" x="120" y="518" width="82" height="30"/>
+                                <rect key="frame" x="105" y="504" width="110" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Next Round">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -78,17 +79,42 @@
                                     <action selector="startRoundAction:" destination="4bf-1A-86a" eventType="touchUpInside" id="Rdr-F8-8tG"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start the round once everyone has joined" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LJM-y4-yWc">
-                                <rect key="frame" x="20" y="238" width="280" height="91"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start the round once everyone has joined" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LJM-y4-yWc">
+                                <rect key="frame" x="20" y="122" width="220" height="46"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="trivia" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1RS-id-nPR">
+                                <rect key="frame" x="20" y="85" width="73" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                                <color key="textColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cast" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Sk7-sY-TYW">
+                                <rect key="frame" x="91" y="85" width="73" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                                <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="gwt-9j-rLr">
+                                <rect key="frame" x="248" y="75" width="61" height="61"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="KLL-2V-O2a">
+                                <rect key="frame" x="248" y="144" width="61" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="The Lobby" id="TIW-gT-2lF">
+                    <navigationItem key="navigationItem" id="TIW-gT-2lF">
                         <barButtonItem key="leftBarButtonItem" title="Quit" id="QTR-Kt-QlF">
                             <connections>
                                 <action selector="quitAction:" destination="4bf-1A-86a" id="agh-GK-ZVn"/>
@@ -101,7 +127,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="currentScoreLabel" destination="KLL-2V-O2a" id="qca-Ny-dcL"/>
                         <outlet property="descriptionLabel" destination="LJM-y4-yWc" id="xl7-b0-iwa"/>
+                        <outlet property="profileThumbnailImageView" destination="gwt-9j-rLr" id="Ms5-3c-Qm2"/>
                         <outlet property="roundStartButton" destination="QRP-vL-jLG" id="ilx-eI-GHU"/>
                     </connections>
                 </viewController>

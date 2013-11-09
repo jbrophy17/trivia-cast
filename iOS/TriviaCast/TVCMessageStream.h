@@ -165,6 +165,7 @@ typedef NS_ENUM(NSInteger, GameResult) {
 - (void) didReceiveGameSyncWithPlayers:(NSArray*) players;
 
 
+
 @end
 
 /**
@@ -195,9 +196,10 @@ typedef NS_ENUM(NSInteger, GameResult) {
  * Sends updated settings to server
  *
  * @param name Your player name
+ * @param url The url of the profile pic
  * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
  */
-- (BOOL) updateSettingsWithName:(NSString*)name;
+- (BOOL) updateSettingsWithName:(NSString*)name andURL:(NSString*) url;
 
 /**
  * Indicates the next round should start.

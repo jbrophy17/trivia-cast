@@ -46,7 +46,7 @@
             frame.origin.y = (frame.size.height) * county;
             
             countx++;
-            NSLog(@"count x: %d", countx);
+           
             if (countx > maxX) {
                 county++;
                 countx = maxX - 1;
@@ -104,7 +104,8 @@
             */
             //UIButton * name = [[UIButton alloc] initWithFrame:frame];
             //[name setTitle:str forState:UIControlStateNormal];
-            
+            [[name titleLabel] setLineBreakMode:NSLineBreakByCharWrapping];
+            [[name titleLabel] setNumberOfLines:0];
             [name setTitle:player.name forState:UIControlStateNormal];
             [name addSubview:imgView];
             // [name setTextAlignment:NSTextAlignmentCenter];

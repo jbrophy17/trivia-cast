@@ -19,6 +19,8 @@
 @property(nonatomic, strong) UIViewController *currentViewController;
 @property(nonatomic, strong) TVCLobbyViewController *lobbyViewController;
 @property(nonatomic) NSInteger * currentGuess;
+@property(nonatomic) NSInteger currentScore;
+
 -(id) initWithDevice:(GCKDevice*) device;
 
 - (TVCMessageStream *)getMessageStream;

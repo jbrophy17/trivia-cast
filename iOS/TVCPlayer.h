@@ -8,14 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
-@interface TVCPlayer : NSObject
+typedef void(^imageSetCompletion)(BOOL);
+
+@interface TVCPlayer : NSObject <NSURLConnectionDelegate>
 
 @property (nonatomic, strong) NSString * name;
 @property (nonatomic) NSInteger * score;
 @property (nonatomic) BOOL isReader;
 @property (nonatomic) BOOL isGuessing;
 @property (nonatomic) NSInteger playerNumber;
+@property (nonatomic,readonly) UIImage* profilePicture;
+@property BOOL updatePicture;
 
 -(id) initWithName:(NSString*) name andNumber:(NSInteger) number;
+-(void) setImageUrlString:(NSString*)imageUrlString completion:(imageSetCompletion) comp;
 
 @end

@@ -22,6 +22,7 @@
 		DCA511FF18278D93004F3F66 /* circleMask2.png in Resources */ = {isa = PBXBuildFile; fileRef = DCA511FE18278D93004F3F66 /* circleMask2.png */; };
 		DCA5120118286B88004F3F66 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA5120018286B88004F3F66 /* ImageIO.framework */; };
 		DCA5120318286B90004F3F66 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA5120218286B90004F3F66 /* CoreVideo.framework */; };
+		DCA51206182B5434004F3F66 /* TVCScoreView.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA51205182B5434004F3F66 /* TVCScoreView.m */; };
 		DCE24ED917EA966100C1615F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24ED817EA966100C1615F /* UIKit.framework */; };
 		DCE24EDB17EA966100C1615F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDA17EA966100C1615F /* Foundation.framework */; };
 		DCE24EDD17EA966100C1615F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE24EDC17EA966100C1615F /* CoreGraphics.framework */; };
@@ -83,6 +84,8 @@
 		DCA511FE18278D93004F3F66 /* circleMask2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circleMask2.png; sourceTree = "<group>"; };
 		DCA5120018286B88004F3F66 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		DCA5120218286B90004F3F66 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		DCA51204182B5434004F3F66 /* TVCScoreView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCScoreView.h; sourceTree = "<group>"; };
+		DCA51205182B5434004F3F66 /* TVCScoreView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCScoreView.m; sourceTree = "<group>"; };
 		DCE24ED517EA966100C1615F /* TriviaCast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TriviaCast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE24ED817EA966100C1615F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCE24EDA17EA966100C1615F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -169,6 +172,8 @@
 			children = (
 				DC007F6B17F1EEF700342963 /* TVCPickerView.h */,
 				DC007F6C17F1EEF700342963 /* TVCPickerView.m */,
+				DCA51204182B5434004F3F66 /* TVCScoreView.h */,
+				DCA51205182B5434004F3F66 /* TVCScoreView.m */,
 			);
 			name = "Custom Views";
 			sourceTree = "<group>";
@@ -450,6 +455,7 @@
 				DCE24F1F17EA968A00C1615F /* TVCGame.m in Sources */,
 				DCE24F2017EA968A00C1615F /* TVCPlayer.m in Sources */,
 				DC007F6D17F1EEF700342963 /* TVCPickerView.m in Sources */,
+				DCA51206182B5434004F3F66 /* TVCScoreView.m in Sources */,
 				DCE24F2117EA968A00C1615F /* TVCResponse.m in Sources */,
 				DCA511F9182787F6004F3F66 /* TVCCameraSessionManager.m in Sources */,
 				DCF2039117F3457F00B2D093 /* TVCDataSource.m in Sources */,

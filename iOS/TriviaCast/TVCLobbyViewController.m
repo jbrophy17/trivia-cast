@@ -12,6 +12,7 @@
 #import "TVCReaderViewController.h"
 #import "TVCGuesserViewController.h"
 #import "TVCPlayer.h"
+#import "TVCScoreView.h"
 
 @interface TVCLobbyViewController ()
 
@@ -41,9 +42,21 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-     NSLog(@"view will appear");
     [[appDelegate dataSource] setCurrentViewController:self];
     [self.navigationController.navigationItem setHidesBackButton:YES];
+    
+    NSString* path = [[appDelegate applicationDocumentDirectory] stringByAppendingFormat:@"/profilePic.jpg"];
+    UIImage* profileImage = [UIImage imageWithContentsOfFile:path];
+    
+    if (!profileImage) {
+        profileImage = [UIImage imageNamed:@"defaultProfile.jpg"];
+    }
+    
+    [self.profileThumbnailImageView setImage:profileImage];
+    
+    
+    [self.currentScoreLabel setText:[NSString stringWithFormat:@"%i", [[self dataSource] currentScore]]];
+  
 
 }
 
@@ -122,5 +135,31 @@
     [self presentViewController:viewController animated:YES completion:nil];
     //[self.navigationController pushViewController:viewController animated:YES];
 }
+
+-(void) updateScoreList {
+    for(TVCPlayer *curP in [[appDelegate dataSource] players]) {
+        if (curP.playerNumber != [[[appDelegate dataSource] player] playerNumber]) {
+            
+            UIImageView* imgView = (UIImageView*)[self.imageDict objectForKey:[NSNumber numberWithInt:curP.playerNumber]];
+            if (!imgView) {
+                imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"defaultProfile.jpg"]];
+                
+                [self.imageDict setObject:imgView forKey:[NSNumber numberWithInt:curP.playerNumber]];
+            }
+            
+            TVCScoreView * holdScore = [[TVCScoreView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
+            [holdScore setProfileThumbnail: imgView];
+            [[holdScore scoreLabel] setText:[NSString stringWithFormat:@"%i",*curP.score]];
+            [[holdScore nameLabel] setText:curP.name];
+             [self.view addSubview:holdScore];
+            
+        }
+        
+        
+        
+    }
+    NSLog(@"imageDict: %@", self.imageDict);
+}
+
 
 @end

@@ -10,7 +10,7 @@
 #import "TVCPlayer.h"
 #import "TVCCameraViewController.h"
 
-@interface TVCSettingsViewController : UIViewController <UITextFieldDelegate,UIGestureRecognizerDelegate, TVCCameraViewControllerDelegate>
+@interface TVCSettingsViewController : UIViewController <UITextFieldDelegate,UIGestureRecognizerDelegate, TVCCameraViewControllerDelegate,NSURLConnectionDelegate>
 
 @property (strong, nonatomic) IBOutlet UITextField * nameInput;
 @property (strong, nonatomic) IBOutlet UIButton * submitButton;

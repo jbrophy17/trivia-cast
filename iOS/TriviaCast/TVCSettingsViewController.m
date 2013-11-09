@@ -12,7 +12,10 @@
 #import "TVCLobbyViewController.h"
 
 
-@interface TVCSettingsViewController () 
+@interface TVCSettingsViewController () {
+    NSMutableData *urlData;
+    NSString * nameHold;
+}
 
 @end
 
@@ -89,7 +92,9 @@
         NSString * name = [self.nameInput text];
         [appDelegate setUserName:name];
         
-        [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:name];
+        //[[[appDelegate dataSource] getMessageStream] updateSettingsWithName:name];
+        nameHold = name;
+        [self sendImageToServer];
         
     }
     
@@ -179,20 +184,20 @@
     //[_params setObject:[NSString stringWithFormat:@"%@",title] forKey:@"title"];
     
     // the boundary string : a random string, that will not repeat in post data, to separate post data fields.
-    NSString *BoundaryConstant = @"--SLEaslSVhTYSUEWe349";
+    NSString *BoundaryConstant = @"---------------------------14737809831466499882746641449";
     
     // string constant for the post parameter 'file'. My server uses this name: `file`. Your's may differ
     NSString* FileParamConstant = @"file";
     
     // the server url to which the image (or the media) is uploaded. Use your server url here
-    NSURL* requestURL = [NSURL URLWithString:@""];
+    NSURL* requestURL = [NSURL URLWithString:@"http://www.jeffastephens.com/trivia-cast/uploadPic.php"];
     
     
     // create request
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     [request setHTTPShouldHandleCookies:NO];
-    [request setTimeoutInterval:30];
+    [request setTimeoutInterval:120];
     [request setHTTPMethod:@"POST"];
     
     // set Content-Type in HTTP header
@@ -204,19 +209,19 @@
     
     // add params (all params are strings)
     for (NSString *param in _params) {
-        [body appendData:[[NSString stringWithFormat:@"%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", param] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"%@\r\n", [_params objectForKey:param]] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", [_params objectForKey:param]] dataUsingEncoding:NSUTF8StringEncoding]];
     }
     
     // add image data
     NSData *imageData = UIImageJPEGRepresentation(self.profileImageView.image, 1.0);
     if (imageData) {
-        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"image.jpg\"\r\n", FileParamConstant] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Type: image/jpeg\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:imageData];
-        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
     }
     
     [body appendData:[[NSString stringWithFormat:@"%@--\r\n", BoundaryConstant] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -229,7 +234,12 @@
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     
     // set URL
+    NSLog(@"sent");
+    NSLog(@"%@", requestURL);
     [request setURL:requestURL];
+    
+    [[NSURLConnection connectionWithRequest:request delegate:self] start];
+    
 }
 
 //overkill
@@ -257,6 +267,45 @@
 
 -(void) didCaptureImage:(UIImage *)image {
     [self.profileImageView setImage:image];
+}
+
+#pragma mark NSURLConnectionDelegate methods
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    NSLog(@"error");
+}
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+   urlData = [[NSMutableData alloc] init];
+    NSLog(@"response: %@", response);
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    [urlData appendData:data];
+    NSLog(@"data: %@", data);
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    NSError *jsonParsingError = nil;
+    id object = [NSJSONSerialization JSONObjectWithData:urlData options:0 error:&jsonParsingError];
+    
+    if (jsonParsingError) {
+        NSLog(@"JSON ERROR: %@", [jsonParsingError localizedDescription]);
+    } else if ([object isKindOfClass:[NSDictionary class]]) {
+        NSMutableDictionary *dict = (NSMutableDictionary*) (object);
+        int error = [dict gck_integerForKey:@"error"] ;
+        
+        if (error != 0) {
+            NSLog(@"url errorcode: %i", error);
+        } else {
+            NSLog(@"OBJECT: %@", dict);
+            NSString* urlString = [dict gck_stringForKey:@"filename"];
+            NSLog(@"got url from request: %@", urlString);
+#warning @"TODO: write completion block for receiving the url"
+            [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:nameHold andURL:urlString];
+            [[[appDelegate dataSource] player] setImageUrlString:urlString completion:nil];
+        }
+    }
 }
 
 @end

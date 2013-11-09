@@ -35,6 +35,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     self = [super init];
     if (self) {
         self.device = device;
+        self.currentScore = 0;
         [self startSession];
     
     }
@@ -242,8 +243,11 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     for(TVCPlayer* player in self.players) {
         if(player.playerNumber == playerNumber) {
             self.player = player;
+            self.currentScore = *(player.score);
         }
-    }    
+    }
+    [[appDelegate dataSource] setPlayers:players];
+    [[[appDelegate dataSource] lobbyViewController] updateScoreList];
 }
 
 -(void)didReceiveRoundStartedWithCue:(NSString*)cue {
@@ -287,94 +291,5 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         [self.responseMap setObject:[responses objectAtIndex:i] forKey:[NSNumber numberWithInt:num]];
     }
 }
-/*
-// When the move is received, update the board state with the move, and update
-// the game state so that it is the other player's turn.
-- (void)didReceiveMoveByPlayer:(TicTacToePlayer)player
-                         atRow:(NSInteger)row
-                        column:(NSInteger)column
-                       isFinal:(BOOL)isFinal {
-    _isWaitingForMoveToBeSent = NO;
-    TicTacToeSquareState newState = ((player == kPlayerX)
-                                     ? kTicTacToeSquareStateX
-                                     : kTicTacToeSquareStateO);
-    _isXsTurn = !(player == kPlayerX);
-    [self.boardState setState:newState forSquareAtRow:(NSUInteger)row column:(NSUInteger)column];
-    [_ticTacToeView setNeedsDisplay];
-}
- */
-
-/*
-// Update the game board to show the winning strikethrough if there is a winner,
-// and show an alert indicating if the player won, lost, or the game was a draw.
-- (void)didEndGameWithResult:(GameResult)result
-             winningLocation:(NSInteger)winningLocation {
-    switch (result) {
-        case kResultYouWon:
-        case kResultYouLost: {
-            _isGameInProgress = NO;
-            TicTacToeWinType winType;
-            NSInteger index;
-            [[self class] decodeWinningLocationFrom:winningLocation
-                                          toWinType:&winType
-                                              index:&index];
-            [_ticTacToeView showWinningStrikethroughOfType:winType
-                                                   atIndex:(NSUInteger)index];
-            NSString *message;
-            if (result == kResultYouWon) {
-                message = NSLocalizedString(@"A winner is you! Play again?", nil);
-            } else {
-                message = NSLocalizedString(@"You lost! Play again?", nil);
-            }
-            [self showGameOverMessage:message];
-            _gameStatusLabel.text = @"";
-            break;
-        }
-            
-        case kResultDraw: {
-            NSString *message = NSLocalizedString(@"Nobody wins, again.", nil);
-            [self showGameOverMessage:message];
-            _gameStatusLabel.text = @"";
-            break;
-        }
-            
-        case kResultAbandoned: {
-            NSString *title = NSLocalizedString(@"Opponent ran away", nil);
-            NSString *message = NSLocalizedString(@"It may feel hollow and empty, "
-                                                  @"but a win by default is still a "
-                                                  @"win!",
-                                                  nil);
-            [self showAlertMessage:message
-                         withTitle:title
-                               tag:kTagPopViewControllerOnOK];
-            break;
-        }
-    }
-    [_messageStream leaveGame];
-}
-*/
-
-/*
-// Converts the message stream representation of a win, which is a single
-// integer, to a TicTacToeWinType and (if necessary) the index at which that
-// win type applies.
-+ (void)decodeWinningLocationFrom:(NSInteger)value
-                        toWinType:(TicTacToeWinType *)winType
-                            index:(NSInteger *)index {
-    if ((value >= 0) && (value <= 2)) {
-        *winType = kTicTacToeWinTypeRow;
-        *index = value;
-    } else if ((value >= 3) && (value <= 5)) {
-        *winType = kTicTacToeWinTypeColumn;
-        *index = value - 3;
-    } else if (value == 6) {
-        *winType = kTicTacToeWinTypeDiagonalFromTopLeft;
-    } else if (value == 7) {
-        *winType = kTicTacToeWinTypeDiagonalFromBottomLeft;
-    } else {
-        *winType = kTicTacToeWinTypeNone;
-    }
-}
-*/
 
 @end

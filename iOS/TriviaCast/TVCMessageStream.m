@@ -22,7 +22,9 @@
 
 #import "TVCMessageStream.h"
 #import "TVCPlayer.h"
-
+#import "TVCAppDelegate.h"
+#import "TVCDataSource.h"
+#import "TVCLobbyViewController.h"
 
 static NSString * const kNamespace = @"com.bears.triviaCast";
 
@@ -42,6 +44,7 @@ static NSString * const valueTypeResponseReceived = @"responseReceived";
 static NSString * const valueTypeUpdateSettings = @"updateSettings";
 static NSString * const valueTypeSettingsUpdated = @"settingsUpdated";
 static NSString * const valueTypeError = @"error";
+static NSString * const valueTypeUploadResponse = @"uploadResult";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -73,6 +76,7 @@ static NSString * const keyPrompt = @"cue";
 static NSString * const keyReader = @"reader";
 static NSString * const keyScore = @"score";
 static NSString * const keyID = @"ID";
+static NSString * const keyPictureURL = @"pictureURL";
 
 //Google
 
@@ -139,11 +143,12 @@ static NSString * const kValuePlayerX = @"X";
     return [self sendMessage:payload];
 }
 
-- (BOOL) updateSettingsWithName:(NSString*)name {
+- (BOOL) updateSettingsWithName:(NSString*)name andURL:(NSString *)url {
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     [payload gck_setStringValue:valueTypeUpdateSettings forKey:keyType];
     [payload gck_setStringValue:name forKey:keyName];
-    
+    [payload gck_setStringValue:url forKey:keyPictureURL];
+    NSLog(@"url: %@", url);
     return [self sendMessage:payload];
 }
 
@@ -164,6 +169,7 @@ static NSString * const kValuePlayerX = @"X";
     [payload gck_setStringValue:valueTypeSubmitGuess forKey:keyType];
     [payload gck_setIntegerValue:*number forKey:keyGuessPlayerNumber];
     [payload gck_setIntegerValue:*responseId forKey:keyGuessResponseId];
+    NSLog(@"Guess: ResponseID: %i for Player: %i", *responseId, *number);
     [self.delegate setCurrentGuess:number];
     return [self sendMessage:payload];
 }
@@ -275,13 +281,33 @@ static NSString * const kValuePlayerX = @"X";
         
         NSMutableArray *returnPlayers = [NSMutableArray array];
         for(id key in players) {
+            
             NSDictionary * holdDictionary = [players gck_dictionaryForKey:key];
             NSInteger ID = [holdDictionary gck_integerForKey:keyID];
             NSString* name = [holdDictionary gck_stringForKey:keyName];
             NSInteger score = [holdDictionary gck_integerForKey:keyScore];
+            NSString* profilePicURL = [holdDictionary gck_stringForKey:keyPictureURL];
             
-            TVCPlayer *holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID];
+            TVCPlayer *holdPlayer;
+            
+            for (TVCPlayer * p in [[appDelegate dataSource] players]) {
+                if (p.playerNumber == ID) {
+                    holdPlayer = p;
+                }
+            }
+            if(!holdPlayer) {
+                holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID];
+            } else {
+                [holdPlayer setName:name];
+            }
             [holdPlayer setScore:&score];
+            if( ![profilePicURL isEqualToString:@""]) {
+                [holdPlayer setImageUrlString:profilePicURL completion:^(BOOL finished) {
+                    UIImageView * imageView = (UIImageView*)[[[[appDelegate dataSource] lobbyViewController] imageDict] objectForKey:[NSNumber numberWithInt:ID]];
+                    [imageView setImage:holdPlayer.profilePicture];
+                    [[[appDelegate dataSource] lobbyViewController] updateScoreList];
+                }];
+            }
             
             if (holdPlayer.playerNumber == readerID) {
                 [holdPlayer setIsReader:YES];
@@ -308,6 +334,8 @@ static NSString * const kValuePlayerX = @"X";
         [self.delegate didReceiveRoundEnded];
         return;
     }
+    
+    
     
     
     
