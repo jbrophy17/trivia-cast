@@ -159,6 +159,13 @@ function Game() {
         this.cues.splice(lastIndex, 1);
         return this.currentCue;
     }
+
+    this.sendGameSync = function(){
+        // update all clients' user list and scores
+        for(var i = 0; i < game.players.length; i++){
+            game.players[i].channel.send({type : 'gameSync', players : playerList, reader : game.players[game.reader].ID, guesser : game.players[game.guesser].ID });
+        }
+    }
 }
 
 function getPlayerIndexByChannel(channel){
@@ -482,6 +489,8 @@ function submitGuess(channel, guess){
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
 
+        game.sendGameSync();
+
         // need to find which response to delete if there are multiple
         var deleteIndex = rgIndex;
         if(correctAnswers.length > 1){
@@ -666,11 +675,7 @@ function newGrind(){
         // pick next guesser
         advanceGuesser();
 
-        // update all clients' user list and scores
-        for(var i = 0; i < game.players.length; i++){
-            console.debug('sending gameSync to ' + game.players[i].toString());
-            game.players[i].channel.send({type : 'gameSync', players : playerList, reader : game.players[game.reader].ID, guesser : game.players[game.guesser].ID });
-        }
+        game.sendGameSync();
     }
     else{
         console.warn("Didn't pick new reader/guesser, newGrind() called with not enough players");
