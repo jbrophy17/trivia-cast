@@ -15,7 +15,7 @@
 @property (strong, nonatomic) IBOutlet UITextField * nameInput;
 @property (strong, nonatomic) IBOutlet UIButton * submitButton;
 @property (strong, nonatomic) IBOutlet UIImageView * profileImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *maskImageView;
+
 
 - (IBAction)submitAction:(id)sender;
 - (void)selectPicture;

@@ -14,6 +14,7 @@
 
 #import <GCKFramework/GCKFramework.h>
 
+
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
 @interface TVCResponseViewController () 
@@ -40,6 +41,9 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     [[appDelegate dataSource] setCurrentViewController:self];
    // self.responseTextView.delegate = self;
     [self.promptLabel setText:self.promptLabelText];
+    [self.promptLabel setNumberOfLines:0];
+    [self.promptLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    [self.promptLabel sizeToFit];
 }
 
 
@@ -54,10 +58,10 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 // Start the remote application session when the view appears.
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ([[appDelegate dataSource] isReader]) {
+    if ([[[appDelegate dataSource] player] isReader]) {
         [self.iconImageView setImage:[UIImage imageNamed:@"readerIcon.png"]];
         NSLog(@"reader");
-    } else if ([[appDelegate dataSource] isGuesser]) {
+    } else if ([[[appDelegate dataSource] player] isGuessing]) {
         [self.iconImageView setImage:[UIImage imageNamed:@"guesserIcon.png"]];
         NSLog(@"guesser");
     } else {

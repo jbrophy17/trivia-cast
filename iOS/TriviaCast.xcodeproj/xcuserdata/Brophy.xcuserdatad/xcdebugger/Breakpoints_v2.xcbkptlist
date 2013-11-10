@@ -374,11 +374,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TriviaCast/TVCSettingsViewController.m"
-            timestampString = "405683063.052041"
+            timestampString = "405719811.51315"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "269"
-            endingLineNumber = "269"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
             landmarkName = "-didCaptureImage:"
             landmarkType = "5">
          </BreakpointContent>

@@ -104,10 +104,32 @@
              }
              NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
              UIImage *image = [[UIImage alloc] initWithData:imageData];
+            CGRect cropRect = CGRectMake((image.size.height - image.size.width) / 2, 0, image.size.width, image.size.width);
+            CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], cropRect);
+            UIImage *img = [UIImage imageWithCGImage:imageRef scale:image.scale orientation:image.imageOrientation];
+            CGImageRelease(imageRef);
         
         
         
-             [self setStillImage:image];
+        CGRect imageRect = CGRectMake(0, 0, img.size.width, img.size.height);
+        
+        UIGraphicsBeginImageContextWithOptions(img.size, NO, 0.0);
+        // Create the clipping path and add it
+        UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:imageRect];
+        [path addClip];
+        
+        
+        [img drawInRect:imageRect];
+        UIImage *roundedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        
+        
+        
+        
+
+             [self setStillImage:roundedImage];
+            
              [[NSNotificationCenter defaultCenter] postNotificationName:kImageCapturedSuccessfully object:nil];
         }];
 }

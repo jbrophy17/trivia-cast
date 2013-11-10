@@ -10,6 +10,8 @@
 #import "TVCAppDelegate.h"
 #import "TVCDataSource.h"
 
+#import <AudioToolbox/AudioServices.h>
+
 @interface TVCReaderViewController ()
 {
     BOOL finishedReading;
@@ -54,6 +56,7 @@
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
     [[appDelegate dataSource] setCurrentViewController:self];
 }
 
@@ -64,9 +67,12 @@
         frame.origin.x = frame.size.width * [self.responses indexOfObject:str];
         frame.origin.y = 0;
         UILabel * curResponse = [[UILabel alloc] initWithFrame:frame];
+        [curResponse setLineBreakMode:NSLineBreakByWordWrapping];
+        [curResponse setNumberOfLines:0];
+        [curResponse setTextColor:[UIColor colorWithRed:0 green:.5 blue:1 alpha:1]];
         [curResponse setText:str];
         [curResponse setTextAlignment:NSTextAlignmentCenter];
-        
+        [curResponse sizeToFit];
         [self.scrollView addSubview:curResponse];
     }
 }

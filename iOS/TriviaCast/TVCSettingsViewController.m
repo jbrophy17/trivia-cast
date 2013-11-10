@@ -266,6 +266,7 @@
 #pragma mark TVCCameraViewControllerDelegate methods
 
 -(void) didCaptureImage:(UIImage *)image {
+    NSLog(@"Got image");
     [self.profileImageView setImage:image];
 }
 
