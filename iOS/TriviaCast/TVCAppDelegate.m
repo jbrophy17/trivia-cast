@@ -11,6 +11,7 @@
 #import <GCKFramework/GCKFramework.h>
 #import "TVCDataSource.h"
 #import "TVCCastDiscoveryViewController.h"
+#import "TVCSplashScreenView.h"
 
 static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 
@@ -35,21 +36,32 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     [activity setBackgroundColor:[UIColor clearColor]];
     [activity setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
     
+    //Add the splash screen
+    TVCSplashScreenView *splashScreen = [[TVCSplashScreenView alloc] initWithTitle:@"TriviaCast" andSubtitle:@"A Game For Friends"];
+
+    UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);
+    [navVC.view addSubview:splashScreen];
+    [navVC.view bringSubviewToFront:splashScreen];
+    
+
+    //Old Splash screen
+    /*
     UIImageView*imageView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"splashScreen.png"]];
     [imageView setFrame:self.window.frame];
     [imageView setBackgroundColor:[UIColor whiteColor]];
     [imageView addSubview:activity];
     [activity startAnimating];
-    UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);
-    TVCCastDiscoveryViewController* viewController = (TVCCastDiscoveryViewController*)navVC.visibleViewController;
-    [[navVC view] addSubview:imageView];
-    [[navVC view] bringSubviewToFront:imageView];
-    [viewController initialLaunch];
+     */
+//    UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);
+  //  TVCCastDiscoveryViewController* viewController = (TVCCastDiscoveryViewController*)navVC.visibleViewController;
+    //[[navVC view] addSubview:imageView];
+    //[[navVC view] bringSubviewToFront:imageView];
+    //[viewController initialLaunch];
     // as usual
     [self.window makeKeyAndVisible];
     
     //now fade out splash image
-    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(timerFired:) userInfo:imageView repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(timerFired:) userInfo:splashScreen repeats:NO];
     
     
     
@@ -60,7 +72,8 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 
 - (void)timerFired:(NSTimer *)timer
 {
-    UIView *imageView = [timer userInfo];
+    NSLog(@"Timer fired");
+    TVCSplashScreenView *imageView = [timer userInfo];
     
     [UIView transitionWithView:self.window duration:0.5f options:UIViewAnimationOptionTransitionNone animations:^(void){imageView.alpha=0.0f;} completion:^(BOOL finished){[imageView removeFromSuperview];}];
 }

@@ -15,6 +15,7 @@
 		DC38689A18256ED100E22E92 /* guesserIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689618256ED100E22E92 /* guesserIcon@2x.png */; };
 		DC38689F1825722700E22E92 /* readerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689D1825722700E22E92 /* readerIcon.png */; };
 		DC3868A01825722700E22E92 /* readerIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689E1825722700E22E92 /* readerIcon@2x.png */; };
+		DC69C9C018459852008CF909 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC69C9BF18459852008CF909 /* AudioToolbox.framework */; };
 		DCA511F618278605004F3F66 /* TVCCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA511F518278605004F3F66 /* TVCCameraViewController.m */; };
 		DCA511F9182787F6004F3F66 /* TVCCameraSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA511F8182787F6004F3F66 /* TVCCameraSessionManager.m */; };
 		DCA511FB18278A00004F3F66 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCA511FA18278A00004F3F66 /* AVFoundation.framework */; };
@@ -54,6 +55,7 @@
 		DCF84F7217F01AFB00E52B11 /* TVCGuesserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */; };
 		DCF84F7917F14B1400E52B11 /* guessButton.png in Resources */ = {isa = PBXBuildFile; fileRef = DCF84F7717F14B1400E52B11 /* guessButton.png */; };
 		DCF84F7A17F14B1400E52B11 /* guessButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DCF84F7817F14B1400E52B11 /* guessButton@2x.png */; };
+		DCFE674418387663006DE750 /* TVCSplashScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = DCFE674318387663006DE750 /* TVCSplashScreenView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,7 @@
 		DC38689618256ED100E22E92 /* guesserIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guesserIcon@2x.png"; sourceTree = "<group>"; };
 		DC38689D1825722700E22E92 /* readerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readerIcon.png; sourceTree = "<group>"; };
 		DC38689E1825722700E22E92 /* readerIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "readerIcon@2x.png"; sourceTree = "<group>"; };
+		DC69C9BF18459852008CF909 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		DCA511F418278605004F3F66 /* TVCCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCCameraViewController.h; sourceTree = "<group>"; };
 		DCA511F518278605004F3F66 /* TVCCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCCameraViewController.m; sourceTree = "<group>"; };
 		DCA511F7182787F6004F3F66 /* TVCCameraSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCCameraSessionManager.h; sourceTree = "<group>"; };
@@ -135,6 +138,8 @@
 		DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCGuesserViewController.m; sourceTree = "<group>"; };
 		DCF84F7717F14B1400E52B11 /* guessButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = guessButton.png; sourceTree = "<group>"; };
 		DCF84F7817F14B1400E52B11 /* guessButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guessButton@2x.png"; sourceTree = "<group>"; };
+		DCFE674218387663006DE750 /* TVCSplashScreenView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCSplashScreenView.h; sourceTree = "<group>"; };
+		DCFE674318387663006DE750 /* TVCSplashScreenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCSplashScreenView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC69C9C018459852008CF909 /* AudioToolbox.framework in Frameworks */,
 				DCA5120318286B90004F3F66 /* CoreVideo.framework in Frameworks */,
 				DCA5120118286B88004F3F66 /* ImageIO.framework in Frameworks */,
 				DCA511FD18278A06004F3F66 /* CoreMedia.framework in Frameworks */,
@@ -174,6 +180,8 @@
 				DC007F6C17F1EEF700342963 /* TVCPickerView.m */,
 				DCA51204182B5434004F3F66 /* TVCScoreView.h */,
 				DCA51205182B5434004F3F66 /* TVCScoreView.m */,
+				DCFE674218387663006DE750 /* TVCSplashScreenView.h */,
+				DCFE674318387663006DE750 /* TVCSplashScreenView.m */,
 			);
 			name = "Custom Views";
 			sourceTree = "<group>";
@@ -200,6 +208,7 @@
 		DCE24ED717EA966100C1615F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DC69C9BF18459852008CF909 /* AudioToolbox.framework */,
 				DCA5120218286B90004F3F66 /* CoreVideo.framework */,
 				DCA5120018286B88004F3F66 /* ImageIO.framework */,
 				DCA511FC18278A06004F3F66 /* CoreMedia.framework */,
@@ -465,6 +474,7 @@
 				DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */,
 				DCF84F6817EED01200E52B11 /* TVCMessageStream.m in Sources */,
 				DCF84F6417EEB1EA00E52B11 /* TVCResponseViewController.m in Sources */,
+				DCFE674418387663006DE750 /* TVCSplashScreenView.m in Sources */,
 				DCF84F7217F01AFB00E52B11 /* TVCGuesserViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
