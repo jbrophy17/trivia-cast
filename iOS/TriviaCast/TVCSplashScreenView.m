@@ -21,6 +21,11 @@
         //Set default Title label
         self.titleLabel = [[UILabel alloc] init];
         [self.titleLabel setText:title];
+        [self.titleLabel setTextColor:[UIColor colorWithRed:0.0 green:128.0/255.0 blue:1.0 alpha:1.0]];
+       
+        //[test setValue:[NSNumber numberWithFloat:34.0] forKey:@"size"];
+        //[self.titleLabel setFont:test];
+        
         [self.titleLabel sizeToFit];
         CGRect defaultTitleFrame = CGRectMake(self.frame.size.width / 2.0 - self.titleLabel.bounds.size.width / 2.0, self.bounds.size.height / 2.0 - self.titleLabel.bounds.size.height, self.titleLabel.bounds.size.width, self.titleLabel.bounds.size.height);
         
@@ -30,6 +35,7 @@
         //Set default Subtitle lable
         self.subtitleLabel = [[UILabel alloc] init];
         [self.subtitleLabel setText:subtitle];
+         [self.subtitleLabel setTextColor:[UIColor colorWithRed:102.0/255.0 green:204.0/255.0 blue:1.0 alpha:1.0]];
         [self.subtitleLabel sizeToFit];
         CGRect defaultSubtitleFrame = CGRectMake(self.frame.size.width / 2.0 - self.subtitleLabel.bounds.size.width / 2.0, defaultTitleFrame.origin.y + defaultTitleFrame.size.height + self.bufferSpace, self.subtitleLabel.bounds.size.width, self.subtitleLabel.bounds.size.height);
         [self.subtitleLabel setFrame:defaultSubtitleFrame];

@@ -44,20 +44,6 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     [navVC.view bringSubviewToFront:splashScreen];
     
 
-    //Old Splash screen
-    /*
-    UIImageView*imageView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"splashScreen.png"]];
-    [imageView setFrame:self.window.frame];
-    [imageView setBackgroundColor:[UIColor whiteColor]];
-    [imageView addSubview:activity];
-    [activity startAnimating];
-     */
-//    UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);
-  //  TVCCastDiscoveryViewController* viewController = (TVCCastDiscoveryViewController*)navVC.visibleViewController;
-    //[[navVC view] addSubview:imageView];
-    //[[navVC view] bringSubviewToFront:imageView];
-    //[viewController initialLaunch];
-    // as usual
     [self.window makeKeyAndVisible];
     
     //now fade out splash image
@@ -72,7 +58,6 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 
 - (void)timerFired:(NSTimer *)timer
 {
-    NSLog(@"Timer fired");
     TVCSplashScreenView *imageView = [timer userInfo];
     
     [UIView transitionWithView:self.window duration:0.5f options:UIViewAnimationOptionTransitionNone animations:^(void){imageView.alpha=0.0f;} completion:^(BOOL finished){[imageView removeFromSuperview];}];
