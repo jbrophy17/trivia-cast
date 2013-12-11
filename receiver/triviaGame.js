@@ -69,6 +69,7 @@ function Player(name, channel, pictureURL) {
         thisObj.pictureURL = this.pictureURL;
         thisObj.ID         = this.ID;
         thisObj.score      = this.score;
+        thisObj.isOut      = this.isOut;
         return thisObj;
     }
 
@@ -123,7 +124,7 @@ function Response(response, responseID, userID, channel){
 
         console.debug("comparing '" + thisTemp + "' to '" + thatTemp + "'");
 
-        return thisTemp == thatTemp;
+        return thisTemp === thatTemp;
     }
 }
 
@@ -135,7 +136,7 @@ function Game() {
     this.cues        = prompts;
     this.cues        = shuffle(this.cues); // randomize each playthrough
 
-    this.reader = 0;
+    this.reader  = -1;
     this.guesser = 0;
 
     this.phase        = PHASE_BETWEEN_ROUNDS;
@@ -207,14 +208,18 @@ function Game() {
         return this.currentCue;
     }
 
-    this.sendGameSync = function(){
+    this.sendGameSync = function(noReader){
         // update all clients' user list and scores
         var playerList = new Object();
         for(var i = 0; i < this.players.length; i++){
             playerList[i] = this.players[i].clientSafeVersion();
         }
         for(var i = 0; i < this.players.length; i++){
-            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.guesser].ID, guesser : this.players[this.guesser].ID });
+            var thisReader = this.players[this.guesser].ID;
+            if(typeof noReader != "undefined"){
+                thisReader = -1;
+            }
+            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
         }
     }
 }
@@ -418,11 +423,11 @@ function leavePlayer(channel){
 
     console.debug("leavePlayer: about to send game sync");
 
-    game.sendGameSync();
-
     if(isLastPlayer){
         betweenRounds();
     }
+
+    game.sendGameSync();
 
     console.debug("leavePlayer: about to return");
 
@@ -430,15 +435,16 @@ function leavePlayer(channel){
 }
 
 function submitResponse(channel, response){
-    var userID      = getPlayerIndexByChannel(channel);
-    var responseID  = game.responses.length;
-    var newResponse = new Response(response, responseID, userID, channel);
+    var userID       = getPlayerIndexByChannel(channel);
+    var responseID   = game.responses.length;
+    var responseText = trim(response);
+    var newResponse  = new Response(responseText, responseID, userID, channel);
 
     // check if there's already a response from this channel
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].channel == channel){
             // update the response
-            game.responses[i].response = response;
+            game.responses[i].response = responseText;
             return;
         }
     }
@@ -555,7 +561,7 @@ function submitGuess(channel, guess){
 
     // check for other identical responses
     for(var i = 0; i < game.responses.length; i++){
-        if(game.responses[rgIndex].isTheSameAs(game.responses[i]) && game.responses[i].isActive){
+        if(game.responses[rgIndex].isTheSameAs(game.responses[i])){
             console.debug("found that " + game.responses[rgIndex].toString() + " is the same as " + game.responses[i].toString());
             correctAnswers.push(game.responses[i].userID);
         }
@@ -572,7 +578,7 @@ function submitGuess(channel, guess){
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
 
-        game.sendGameSync();
+        game.sendGameSync(true);
 
         // need to use guesser to find which response to delete if there are multiple
         var deleteIndex = rgIndex;
@@ -588,7 +594,7 @@ function submitGuess(channel, guess){
         game.responses[deleteIndex].isActive = false;
 
         // update ui
-        $('#response' + rgIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        $('#response' + deleteIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         var statusText = "correctly that ";
         if(typeof game.players[playerGuessed] == "undefined"){
             statusText += "someone who left";
@@ -596,10 +602,10 @@ function submitGuess(channel, guess){
         else{
             statusText += game.players[playerGuessed].toString();
         }
-        statusText += " submitted " + game.responses[rgIndex].toString() + ".";
+        statusText += " submitted " + game.responses[deleteIndex].toString();
         prependStatus(guesserID, statusText);
 
-        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
+        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[deleteIndex].toString());
         checkRoundOver();
     }
     else{
@@ -769,6 +775,9 @@ function newGrind(){
 
     if(game.players.length > 1){
         // pick next guesser/reader
+        if(game.reader >= 0){
+            game.guesser = game.reader; // set guesser to previous starting position
+        }
         advanceGuesser();
         game.reader = game.guesser;
         game.sendGameSync();
@@ -860,7 +869,7 @@ function setPlayerOrder(channel){
 }
 
 function cancelOrdering(channel){
-    if(game.phase != PHASE_ORDERING){
+    if(game.phase == PHASE_ORDERING){
         console.debug("Canceling ordering process");
         game.phase = PHASE_BETWEEN_ROUNDS;
         for(var i = 0; i < game.players.length; i++){
@@ -1001,3 +1010,9 @@ function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
+
+// Steven Levithan
+// http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
+function trim(str) {
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
