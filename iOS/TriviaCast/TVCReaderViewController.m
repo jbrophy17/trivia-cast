@@ -72,7 +72,7 @@
         [curResponse setTextColor:[UIColor colorWithRed:0 green:.5 blue:1 alpha:1]];
         [curResponse setText:str];
         [curResponse setTextAlignment:NSTextAlignmentCenter];
-        [curResponse sizeToFit];
+        //[curResponse sizeToFit];
         [self.scrollView addSubview:curResponse];
     }
 }
