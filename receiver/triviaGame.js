@@ -506,7 +506,7 @@ function checkRoundOver(){
         }
     }
 
-    if(responsesLeft <= 2){
+    if(responsesLeft <= 1){
         betweenRounds();
     }
 }
