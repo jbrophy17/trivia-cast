@@ -69,6 +69,7 @@ function Player(name, channel, pictureURL) {
         thisObj.pictureURL = this.pictureURL;
         thisObj.ID         = this.ID;
         thisObj.score      = this.score;
+        thisObj.isOut      = this.isOut;
         return thisObj;
     }
 
@@ -135,7 +136,7 @@ function Game() {
     this.cues        = prompts;
     this.cues        = shuffle(this.cues); // randomize each playthrough
 
-    this.reader = 0;
+    this.reader  = -1;
     this.guesser = 0;
 
     this.phase        = PHASE_BETWEEN_ROUNDS;
@@ -774,6 +775,9 @@ function newGrind(){
 
     if(game.players.length > 1){
         // pick next guesser/reader
+        if(game.reader >= 0){
+            game.guesser = game.reader; // set guesser to previous starting position
+        }
         advanceGuesser();
         game.reader = game.guesser;
         game.sendGameSync();
