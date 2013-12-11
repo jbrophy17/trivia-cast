@@ -7,6 +7,15 @@ ROUND_IN_PROGRESS      = 5;
 GUESSED_READER         = 6;
 GUESSED_SELF           = 7;
 INVALID_TYPE           = 8;
+ORDER_UNAVAILABLE      = 9;
+NOT_ORDERING           = 10;
+
+// phase constants
+PHASE_READING        = 100;
+PHASE_GUESSING       = 101;
+PHASE_ORDERING       = 102;
+PHASE_BETWEEN_ROUNDS = 103;
+PHASE_SUBMITTING     = 104;
 
 // when debug mode is on, all Response and Player objects are printed with
 // all human-useful member variables. Not great for competitive play.
@@ -15,6 +24,9 @@ DEBUG = false;
 // used to exit the game after inactivity
 idleTime = 0;
 IDLE_MAX = 15;
+
+// time show display splash screen in seconds
+splashDuration = 5;
 
 function Player(name, channel, pictureURL) {
     this.name       = name;
@@ -64,7 +76,7 @@ function Player(name, channel, pictureURL) {
         var string = '';
 
         if(this.pictureURL.length > 0 && typeof noImage == "undefined"){
-            string += '<img src="' + this.pictureURL + '" class="prof-pic"> ';
+            //string += '<img src="' + this.pictureURL + '" class="prof-pic"> ';
         }
         string += this.name;
 
@@ -116,21 +128,24 @@ function Response(response, responseID, userID, channel){
 }
 
 function Game() {
-    this.players       = new Array();
-    this.playerQueue   = new Array();
-    this.responses     = new Array();
-    this.cues          = prompts;
-    this.cues          = shuffle(this.cues); // randomize each playthrough
+    this.players     = new Array();
+    this.playerQueue = new Array();
+    this.orderQueue  = new Array();
+    this.responses   = new Array();
+    this.cues        = prompts;
+    this.cues        = shuffle(this.cues); // randomize each playthrough
 
-    this.reader  = -1;
+    this.reader = 0;
     this.guesser = 0;
 
-    this.isBetweenRounds = true;
-    this.firstGuesser    = true;
-    this.currentCue      = '';
+    this.phase        = PHASE_BETWEEN_ROUNDS;
+    this.firstGuesser = true;
+    this.currentCue   = '';
 
     this.errors = new Object();
     this.errors[NOT_ENOUGH_PLAYERS] = 'You can start the game once there are at least three players.';
+
+    this.notificationIsShown = false;
 
     this.addPlayer = function(player, noUpdate){
         var i = 0;
@@ -170,6 +185,18 @@ function Game() {
     this.deletePlayer = function(id){
         console.log("Deleted player " + this.players[id].toString());
         this.players.splice(id, 1);
+
+        // rebuild players' IDs to match their new indices
+        for(var i = 0; i < this.players.length; i++){
+            if(this.players[i].ID != i){
+                // fix and notify
+                this.players[i].ID = i;
+                this.players[i].channel.send({ "type" : "didJoin", "number" : i });
+            }
+        }
+
+        // update all clients with new IDs
+        this.sendGameSync();
         updatePlayerList();
     }
 
@@ -187,13 +214,8 @@ function Game() {
             playerList[i] = this.players[i].clientSafeVersion();
         }
         for(var i = 0; i < this.players.length; i++){
-            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.reader].ID, guesser : this.players[this.guesser].ID });
+            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.guesser].ID, guesser : this.players[this.guesser].ID });
         }
-    }
-
-    this.advanceReader = function(){
-        game.reader++;
-        game.reader = game.reader % game.players.length;
     }
 }
 
@@ -219,7 +241,7 @@ function getPlayerIndexByChannel(channel){
 // update the list of players on screen
 function updatePlayerList(){
     // if we're in the middle of a round and the player count drops below three, kick back to the homepage with a message
-    if(!game.isBetweenRounds && game.players.length < 3){
+    if(!game.phase == PHASE_BETWEEN_ROUNDS && game.players.length < 3){
         betweenRounds();
         $('#instructions').html(game.errors[NOT_ENOUGH_PLAYERS]);
     }
@@ -241,12 +263,10 @@ function updatePlayerList(){
                 infoHTML += ', but there are ' + game.playerQueue.length + ' queued to join';
             }
         }
-        
+
         infoHTML += '.</strong><br />Queued players will be added when the next round starts.</p></li>';
         $('#playerlist').append(infoHTML);
     }
-
-    hideNotification();
 
     if(game.playerQueue.length > 0){
         var notificationHTML = '';
@@ -278,15 +298,25 @@ function updatePlayerList(){
         console.debug('notificationHTML = ' + notificationHTML);
         showNotification(notificationHTML);
     }
+    else{
+        hideNotification();
+    }
 }
 
 function showNotification(text){
     $('#notification').html('<marquee>' + text + '</marquee>');
-    $('#notificationcontainer').slideDown();
+
+    if(!game.notificationIsShown){
+        $('#notificationcontainer').slideDown();
+    }
+    game.notificationIsShown = true;
 }
 
 function hideNotification(){
-    $('#notificationcontainer').slideUp();
+    if(game.notificationIsShown){
+        $('#notificationcontainer').slideUp();
+    }
+    game.notificationIsShown = false;
     $('#notification').empty();
 }
 
@@ -316,8 +346,6 @@ function roundScreen(){
 
     $('#status').html('Waiting for responses... 0/' + game.players.length);
     $('#status').fadeIn();
-
-
 }
 
 function joinPlayer(channel, response){
@@ -350,40 +378,53 @@ function leavePlayer(channel){
         }
     }
 
+    console.debug("leavePlayer: about to find player");
+
     // find player, set them as out for the round
     var playerID = getPlayerIndexByChannel(channel);
     if(playerID == -1){
         // player is already gone
         return;
     }
+
+    console.debug("leavePlayer: about to mark as out");
+
     game.players[playerID].didGetOut();
 
     var isLastPlayer = false;
     // is this the last player?
-    if(game.players.length == 1){
-        newGrind();
-        betweenRounds();
-        return;
+    if(game.players.length < 3){
+        console.debug("leavePlayer: about to betweenRounds()");
+        isLastPlayer = true;
     }
 
-    // if they're currently reader or currently guessing, advance to the first or next guesser
-    if(game.reader == playerID){
-        if(!game.isBetweenRounds){
-            nextGuesser();
-        }
-
-        game.advanceReader();        
+    // if they're the reader and currently reading, reveal responses and the
+    // next person starts guessing right away
+    if(game.reader == playerID && game.phase == PHASE_READING){
+        console.debug("Reader left.");
+        showResponses();
+        nextGuesser(true);
     }
-    if(game.guesser == playerID){
-        if(!game.isBetweenRounds){
-            nextGuesser(true);
-        }
 
-        advanceGuesser();
+    // if they're currently guessing, advance the guesser
+    if(game.guesser == playerID && game.phase == PHASE_GUESSING){
+        console.debug("Guesser left.");
+        nextGuesser(true);
     }
+
+    console.debug("leavePlayer: about to delete player");
 
     game.deletePlayer(playerID);
+
+    console.debug("leavePlayer: about to send game sync");
+
     game.sendGameSync();
+
+    if(isLastPlayer){
+        betweenRounds();
+    }
+
+    console.debug("leavePlayer: about to return");
 
     return;
 }
@@ -393,12 +434,6 @@ function submitResponse(channel, response){
     var responseID  = game.responses.length;
     var newResponse = new Response(response, responseID, userID, channel);
 
-    // check if there are already max number of responses
-    if(game.responses.length >= game.players.length){
-        channel.send({ type : 'error', value : ALREADY_HAVE_RESPONSES });
-        return;
-    }
-
     // check if there's already a response from this channel
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].channel == channel){
@@ -406,6 +441,12 @@ function submitResponse(channel, response){
             game.responses[i].response = response;
             return;
         }
+    }
+
+    // check if there are already max number of responses
+    if(game.responses.length >= game.players.length){
+        channel.send({ type : 'error', value : ALREADY_HAVE_RESPONSES });
+        return;
     }
 
     game.responses.push(newResponse);
@@ -433,7 +474,8 @@ function getAllResponsesJSON(){
 }
 
 function startReading(){
-    $('#status').html('The reader is reading.');
+    game.phase = PHASE_READING;
+    $('#status').html('Sit tight while <strong>' + game.players[game.reader].toString() + '</strong> is reading.');
 
     // randomize order of responses
     game.responses = shuffle(game.responses);
@@ -446,6 +488,8 @@ function startReading(){
 }
 
 function startGuessing(){
+    game.phase = PHASE_GUESSING;
+
     // send guesser all responses
     var responseJSON = getAllResponsesJSON();
     console.debug('sending responses to guesser ' + game.players[game.guesser].toString());
@@ -462,14 +506,14 @@ function checkRoundOver(){
         }
     }
 
-    if(responsesLeft <= 2){
+    if(responsesLeft <= 1){
         betweenRounds();
     }
 }
 
 // whatTheyGuessed is normally "correctly" or "incorrectly", but creativity can be applied
 function prependStatus(playerIndex, whatTheyGuessed){
-    $('#status').prepend('<strong>' + game.players[playerIndex].toString() + '</strong> guessed ' + whatTheyGuessed + '.<br />');
+    $('#status').prepend('<strong>' + game.players[playerIndex].toString(true) + '</strong> guessed ' + whatTheyGuessed + '.<br />');
 }
 
 function submitGuess(channel, guess){
@@ -484,21 +528,13 @@ function submitGuess(channel, guess){
     var guesserID       = game.players[getPlayerIndexByChannel(channel)].ID;
     var rgIndex         = -1;
 
-    // only allowed if not the reader or the current player
-    if(playerGuessed == game.players[game.reader].ID){
-        channel.send({ type : 'error', value : GUESSED_READER });
-        console.warn('Invalid guess: tried to guess the reader');
-        channel.send({ type : 'guessResponse', 'value' : false });
-        nextGuesser();
-        prependStatus(guesserID, "the reader");
-        return;
-    }
+    // only allowed if not the current player
     if(playerGuessed == guesserID){
         channel.send({ type : 'error', value : GUESSED_SELF });
         channel.send({ type : 'guessResponse', 'value' : false });
         console.warn('Invalid guess: tried to guess themself');
         nextGuesser();
-        prependStatus(guesserID, "themselves, like a fucking idiot");
+        prependStatus(guesserID, "themselves...");
         return;
     }
 
@@ -538,7 +574,7 @@ function submitGuess(channel, guess){
 
         game.sendGameSync();
 
-        // need to find which response to delete if there are multiple
+        // need to use guesser to find which response to delete if there are multiple
         var deleteIndex = rgIndex;
         if(correctAnswers.length > 1){
             for(var i = 0; i < game.responses.length; i++){
@@ -550,15 +586,26 @@ function submitGuess(channel, guess){
         }
 
         game.responses[deleteIndex].isActive = false;
-        $('#response' + responseGuessed).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
-        prependStatus(guesserID, "correctly");
+
+        // update ui
+        $('#response' + rgIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        var statusText = "correctly that ";
+        if(typeof game.players[playerGuessed] == "undefined"){
+            statusText += "someone who left";
+        }
+        else{
+            statusText += game.players[playerGuessed].toString();
+        }
+        statusText += " submitted " + game.responses[rgIndex].toString() + ".";
+        prependStatus(guesserID, statusText);
+
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
         checkRoundOver();
     }
     else{
         // if player doesn't exist
         if(typeof game.players[playerGuessed] != "undefined"){
-            prependStatus(guesserID, "a player that doesn't exist (or maybe just left)");
+            prependStatus(guesserID, "a player that doesn't exist (or maybe left)");
         }
         // if the person is out, you're dumb and your turn is over.
         else if(game.players[playerGuessed].isOut){
@@ -569,8 +616,16 @@ function submitGuess(channel, guess){
         console.log(game.players[guesserID].toString() + ' incorrectly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
 
         // next guesser's turn
+        var statusText = "incorrectly that ";
+        if(typeof game.players[playerGuessed] == "undefined"){
+            statusText += "someone who left";
+        }
+        else{
+            statusText += game.players[playerGuessed].toString();
+        }
+        statusText += " submitted " + game.responses[rgIndex].toString() + ".";
+        prependStatus(guesserID, statusText);
         nextGuesser();
-        prependStatus(guesserID, "incorrectly");
     }
 }
 
@@ -593,12 +648,13 @@ function advanceGuesser(){
     do{
         if(loopCount >= game.players.length){
             console.warn("Couldn't find new guesser. Ending round.");
-            newGrind();
             betweenRounds();
         }
-        loopCount = loopCount + 1;
+        loopCount++;
         var nextGuesser = game.guesser + 1;
-        nextGuesser = nextGuesser % game.players.length;
+        if(nextGuesser == game.players.length){
+            nextGuesser = 0;
+        }
         game.guesser = nextGuesser;
         console.debug("advancing guesser (loopCount = " + loopCount + "), about to check " + game.guesser);
 
@@ -608,10 +664,7 @@ function advanceGuesser(){
         if(game.players[game.guesser].isOut){
             console.debug("looking for guesser but found someone who is out: " + game.players[game.guesser].toString());
         }
-        if(game.guesser == game.reader){
-            console.debug("looking for guesser, found the reader, trying again");
-        }
-    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.guesser == game.reader);
+    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut);
     console.debug("new guesser set to " + game.guesser);
 }
 
@@ -634,31 +687,25 @@ function nextGuesser(force){
     startGuessing();
 }
 
-function startNextRound(){
+function startNextRound(channel){
     // only can start if we're in between rounds
-    if(!game.isBetweenRounds){
-        console.warn('Tried to start a new round during a round.');
-        for(var i = 0; i < game.players.length; i++){
-            game.players[i].channel.send({ type : 'error', value : ROUND_IN_PROGRESS });
-            return;
-        }
+    if(game.phase != PHASE_BETWEEN_ROUNDS){
+        console.warn(players[getPlayerIndexByChannel(channel)].toString() + " to start a new round during a round.");
+        channel.send({ type : 'error', value : ROUND_IN_PROGRESS });
+        return;
     }
 
     // only can start if we have > 2 players
     if((game.players.length + game.playerQueue.length) < 3){
         console.warn("Tried to start new round with not enough players.");
-        for(var i = 0; i < game.players.length; i++){
-            game.players[i].channel.send({ type : 'error', value : NOT_ENOUGH_PLAYERS });
-        }
-
+        channel.send({ type : 'error', value : NOT_ENOUGH_PLAYERS });
         $('#instructions').html(game.errors[NOT_ENOUGH_PLAYERS]);
-
         return;
     }
 
     newGrind();
 
-    game.isBetweenRounds = false;
+    game.phase = PHASE_SUBMITTING;
 
     // show next question
     game.getNextCue();
@@ -679,33 +726,39 @@ function betweenRounds(){
         game.players[i].channel.send({ 'type' : 'roundOver' });
     }
 
-    game.isBetweenRounds = true;
-    startScreen('Round Over!');
+    game.phase = PHASE_BETWEEN_ROUNDS;
+
+    if(game.players.length > 0){
+        startScreen('Round Over!');
+    }
+    else{
+        startScreen('TriviaCast');
+    }
 }
 
-// prepare for next question
-function newGrind(){
+function clearPlayerQueue(){
     console.debug('processing player queue');
     // add players who are queued
     for(var i = 0; i < game.playerQueue.length; i++){
-        console.debug('enqueuing player ' + i);
+        console.debug('adding queued player ' + i);
         game.addPlayer(game.playerQueue[i], true);
-        console.debug('enqueued player ' + i);
+        console.debug('added queued player ' + i);
     }
 
     console.debug('player queue processed');
 
     // clear player queue
     game.playerQueue = [];
+}
 
+// prepare for next question
+function newGrind(){
+    clearPlayerQueue();
     updatePlayerList();
 
     // clear responses
     game.responses = [];
     $('#responses ul').empty();
-
-    console.debug('Next reader is ' + game.reader);
-    console.debug('Next guesser is ' + game.guesser);
 
     // build array of players and set their isOut to false
     var playerList = new Object();
@@ -715,18 +768,18 @@ function newGrind(){
     }
 
     if(game.players.length > 1){
-        // pick next reader
-        game.advanceReader();
-
-        // pick next guesser
+        // pick next guesser/reader
         advanceGuesser();
-
+        game.reader = game.guesser;
         game.sendGameSync();
     }
     else{
         console.warn("Didn't pick new reader/guesser, newGrind() called with not enough players");
     }
     game.firstGuesser = true;
+
+    console.debug('Next reader is ' + game.reader);
+    console.debug('Next guesser is ' + game.guesser);
 
     console.debug('newGrind finished');
 }
@@ -758,6 +811,66 @@ function updatePlayer(channel, info){
 
     channel.send({ type : 'settingsUpdated' });
     updatePlayerList();
+}
+
+// start ordering players and tell everyone
+function initializeOrdering(channel){
+    if(game.phase == PHASE_BETWEEN_ROUNDS){
+        console.debug("Starting ordering phase");
+
+        // process player queue
+        clearPlayerQueue();
+        updatePlayerList();
+        game.orderQueue = new Array();
+        game.phase = PHASE_ORDERING;
+
+        for(var i = 0; i < game.players.length; i++){
+            game.players[i].channel.send({ "type" : "orderInitialized" });
+        }
+    }
+    else{
+        console.debug("Tried to start ordering during wrong phase");
+        channel.send({ "type" : "error", "value" : ORDER_UNAVAILABLE });
+    }
+}
+
+function setPlayerOrder(channel){
+    game.orderQueue.push(game.players[getPlayerIndexByChannel(channel)]);
+    console.debug("Setting order for " + game.players[getPlayerIndexByChannel(channel)].toString());
+
+    // if this is the last player, rebuild players and notify everyone
+    if(game.orderQueue.length == game.players.length){
+        console.debug("Rebuilding players with new order")
+        game.players = game.orderQueue;
+
+        for(var i = 0; i < game.players.length; i++){
+            game.players[i].ID = i;
+            game.players[i].channel.send({ "type" : "didJoin", "number" : i });
+        }
+
+        game.sendGameSync();
+
+        for(var i = 0; i < game.players.length; i++){
+            game.players[i].channel.send({ "type" : "orderComplete" });
+        }
+
+        updatePlayerList();
+        game.phase = PHASE_BETWEEN_ROUNDS;
+    }
+}
+
+function cancelOrdering(channel){
+    if(game.phase != PHASE_ORDERING){
+        console.debug("Canceling ordering process");
+        game.phase = PHASE_BETWEEN_ROUNDS;
+        for(var i = 0; i < game.players.length; i++){
+            game.players[i].channel.send({ "type" : "orderCanceled" });
+        }
+    }
+    else{
+        console.debug("Tried to cancel ordering in the wrong phase");
+        channel.send({ "type" : "error", "value" : NOT_ORDERING });
+    }
 }
 
 function initReceiver(){
@@ -795,7 +908,7 @@ function initReceiver(){
                 submitGuess(event.target, event.message);
                 break;
             case "nextRound":
-                startNextRound();
+                startNextRound(event.target);
                 break;
             case "readerIsDone":
                 showResponses();
@@ -803,6 +916,15 @@ function initReceiver(){
                 break;
             case "updateSettings":
                 updatePlayer(event.target, event.message);
+                break;
+            case "initializeOrder":
+                initializeOrdering(event.target);
+                break;
+            case "order":
+                setPlayerOrder(event.target);
+                break;
+            case "cancelOrder":
+                cancelOrdering(event.target);
                 break;
             default:
                 event.target.send({ type: 'error', value : INVALID_TYPE });
@@ -830,7 +952,7 @@ function initGame(){
     newGrind();
 
     // set timeout to hide splash screen
-    splashTimeout = window.setTimeout(hideSplash, 5000);
+    splashTimeout = window.setTimeout(hideSplash, (splashDuration * 1000));
 
     if(DEBUG){
         hideSplash();
