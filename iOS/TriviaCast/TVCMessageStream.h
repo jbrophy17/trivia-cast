@@ -71,6 +71,16 @@ typedef NS_ENUM(NSInteger, GameResult) {
 - (void)didFailToJoinWithErrorMessage:(NSString *)message;
 
 /**
+ * Called when the someone has initialized an order revision.
+ */
+- (void)didReceiveOrderInitialized;
+
+/**
+ * Called when the someone has canceled an order revision.
+ */
+- (void)didReceiveOrderCanceled;
+
+/**
  * Called when the round starts
  *
  */
@@ -191,6 +201,26 @@ typedef NS_ENUM(NSInteger, GameResult) {
  */
 - (BOOL)joinGameWithName:(NSString *)name;
 
+/**
+ * Sends the order message.
+ *
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+- (BOOL)sendOrderMessage;
+
+/**
+ * Sends the initialize order message.
+ *
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+- (BOOL)sendInitializeOrderMessage;
+
+/**
+ * Sends the cancel order message.
+ *
+ * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
+ */
+- (BOOL)sendCancelOrderMessage;
 
 /**
  * Sends updated settings to server

@@ -122,6 +122,12 @@
     }];
 }
 
+- (IBAction)reviseOrderAction:(id)sender {
+    
+    [[[appDelegate dataSource] getMessageStream] sendInitializeOrderMessage];
+    
+}
+
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField

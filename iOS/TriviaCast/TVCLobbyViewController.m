@@ -11,6 +11,7 @@
 #import "TVCResponseViewController.h"
 #import "TVCReaderViewController.h"
 #import "TVCGuesserViewController.h"
+#import "TVCOrderPickerViewController.h"
 #import "TVCPlayer.h"
 #import "TVCScoreView.h"
 
@@ -106,6 +107,14 @@
     viewController.players = [NSMutableArray arrayWithArray:updatedPlayers];
     viewController.responseDictionary = [NSMutableDictionary dictionaryWithDictionary:responseDictionary];
     [self presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void) segueToOrderPickerView {
+    UIStoryboard *storyboard = self.storyboard;
+    TVCOrderPickerViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"orderPickerViewController"];
+    
+    [self presentViewController:viewController animated:YES completion:nil];
+    
 }
 
 - (IBAction)startRoundAction:(id)sender {

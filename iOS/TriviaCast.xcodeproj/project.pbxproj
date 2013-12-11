@@ -48,6 +48,8 @@
 		DCE24F2717EB6FB300C1615F /* TVCCastDiscoveryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F2617EB6FB300C1615F /* TVCCastDiscoveryViewController.m */; };
 		DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */; };
 		DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */; };
+		DCE9A7D71857DF6F00EC15DB /* TVCOrderPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE9A7D61857DF6F00EC15DB /* TVCOrderPickerViewController.m */; };
+		DCE9A7D91857EA3100EC15DB /* orderButton.png in Resources */ = {isa = PBXBuildFile; fileRef = DCE9A7D81857EA3100EC15DB /* orderButton.png */; };
 		DCF2039117F3457F00B2D093 /* TVCDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF2039017F3457F00B2D093 /* TVCDataSource.m */; };
 		DCF84F6417EEB1EA00E52B11 /* TVCResponseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F6317EEB1EA00E52B11 /* TVCResponseViewController.m */; };
 		DCF84F6817EED01200E52B11 /* TVCMessageStream.m in Sources */ = {isa = PBXBuildFile; fileRef = DCF84F6717EED01200E52B11 /* TVCMessageStream.m */; };
@@ -126,6 +128,9 @@
 		DCE24F3617EBA9DA00C1615F /* TVCSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCSettingsViewController.m; sourceTree = "<group>"; };
 		DCE24F3817EBE7DF00C1615F /* TVCLobbyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCLobbyViewController.h; sourceTree = "<group>"; };
 		DCE24F3917EBE7DF00C1615F /* TVCLobbyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCLobbyViewController.m; sourceTree = "<group>"; };
+		DCE9A7D51857DF6F00EC15DB /* TVCOrderPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCOrderPickerViewController.h; sourceTree = "<group>"; };
+		DCE9A7D61857DF6F00EC15DB /* TVCOrderPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCOrderPickerViewController.m; sourceTree = "<group>"; };
+		DCE9A7D81857EA3100EC15DB /* orderButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orderButton.png; sourceTree = "<group>"; };
 		DCF2038F17F3457F00B2D093 /* TVCDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCDataSource.h; sourceTree = "<group>"; };
 		DCF2039017F3457F00B2D093 /* TVCDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCDataSource.m; sourceTree = "<group>"; };
 		DCF84F6217EEB1EA00E52B11 /* TVCResponseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCResponseViewController.h; sourceTree = "<group>"; };
@@ -244,6 +249,7 @@
 		DCE24EDF17EA966100C1615F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DCE9A7D81857EA3100EC15DB /* orderButton.png */,
 				DCA511FE18278D93004F3F66 /* circleMask2.png */,
 				DC38689D1825722700E22E92 /* readerIcon.png */,
 				DC38689E1825722700E22E92 /* readerIcon@2x.png */,
@@ -318,6 +324,8 @@
 				DCF84F7117F01AFB00E52B11 /* TVCGuesserViewController.m */,
 				DCA511F418278605004F3F66 /* TVCCameraViewController.h */,
 				DCA511F518278605004F3F66 /* TVCCameraViewController.m */,
+				DCE9A7D51857DF6F00EC15DB /* TVCOrderPickerViewController.h */,
+				DCE9A7D61857DF6F00EC15DB /* TVCOrderPickerViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -418,6 +426,7 @@
 				DCE24EF217EA966100C1615F /* MainStoryboard_iPhone.storyboard in Resources */,
 				DC38689A18256ED100E22E92 /* guesserIcon@2x.png in Resources */,
 				DCF84F7917F14B1400E52B11 /* guessButton.png in Resources */,
+				DCE9A7D91857EA3100EC15DB /* orderButton.png in Resources */,
 				DCF84F7A17F14B1400E52B11 /* guessButton@2x.png in Resources */,
 				DCE24EF517EA966100C1615F /* MainStoryboard_iPad.storyboard in Resources */,
 				DC38689F1825722700E22E92 /* readerIcon.png in Resources */,
@@ -472,6 +481,7 @@
 				DCE24F2717EB6FB300C1615F /* TVCCastDiscoveryViewController.m in Sources */,
 				DCE24F3717EBA9DA00C1615F /* TVCSettingsViewController.m in Sources */,
 				DCE24F3A17EBE7DF00C1615F /* TVCLobbyViewController.m in Sources */,
+				DCE9A7D71857DF6F00EC15DB /* TVCOrderPickerViewController.m in Sources */,
 				DCF84F6817EED01200E52B11 /* TVCMessageStream.m in Sources */,
 				DCF84F6417EEB1EA00E52B11 /* TVCResponseViewController.m in Sources */,
 				DCFE674418387663006DE750 /* TVCSplashScreenView.m in Sources */,

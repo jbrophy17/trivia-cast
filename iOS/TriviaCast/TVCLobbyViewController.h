@@ -26,6 +26,8 @@
 - (void) segueToResponseViewWithCue:(NSString*)cue;
 -(void) segueToReaderViewWithResponses:(NSDictionary *)responseDictionary;
 -(void) segueToGuesserViewWithResponses:(NSDictionary *)responseDictionary andPlayers:(NSArray*)players;
+- (void) segueToOrderPickerView;
+
 - (void) updateScoreList;
 
 - (IBAction)startRoundAction:(id)sender;

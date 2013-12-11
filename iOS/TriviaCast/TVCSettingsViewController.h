@@ -15,9 +15,11 @@
 @property (strong, nonatomic) IBOutlet UITextField * nameInput;
 @property (strong, nonatomic) IBOutlet UIButton * submitButton;
 @property (strong, nonatomic) IBOutlet UIImageView * profileImageView;
+@property (weak, nonatomic) IBOutlet UIButton *reviseOrderButton;
 
 
 - (IBAction)submitAction:(id)sender;
+- (IBAction)reviseOrderAction:(id)sender;
 - (void)selectPicture;
 - (void) setPicture:(UIImage*)image;
 @end

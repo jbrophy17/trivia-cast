@@ -33,6 +33,8 @@ static NSString * const keyType = @"type";
 // Messages Received
 
 static NSString * const valueTypeDidJoin = @"didJoin";
+static NSString * const valueTypeOrderInitialized = @"orderInitialized";
+static NSString * const valueTypeOrderCanceled = @"orderCanceled";
 static NSString * const valueTypeSetGuesser = @"guesser";
 static NSString * const valueTypeSetReader = @"reader";
 static NSString * const valueTypeReceiveResponses = @"receiveResponses";
@@ -49,6 +51,9 @@ static NSString * const valueTypeUploadResponse = @"uploadResult";
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
 static NSString * const valueTypeLeave = @"leave";
+static NSString * const valueTypeOrder = @"order";
+static NSString * const valueTypeInitializeOrder = @"initializeOrder";
+static NSString * const valueTypeCancelOrder = @"cancelOrder";
 static NSString * const valueTypeSubmitResponse = @"submitResponse";
 static NSString * const valueTypeReaderIsDone = @"readerIsDone";
 static NSString * const valueTypeSubmitGuess = @"submitGuess";
@@ -143,6 +148,27 @@ static NSString * const kValuePlayerX = @"X";
     return [self sendMessage:payload];
 }
 
+- (BOOL)sendOrderMessage {
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    [payload gck_setStringValue:valueTypeOrder forKey:keyType];
+    
+    return [self sendMessage:payload];
+}
+
+- (BOOL)sendCancelOrderMessage {
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    [payload gck_setStringValue:valueTypeCancelOrder forKey:keyType];
+    
+    return [self sendMessage:payload];
+}
+
+- (BOOL)sendInitializeOrderMessage {
+    NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
+    [payload gck_setStringValue:valueTypeInitializeOrder forKey:keyType];
+    
+    return [self sendMessage:payload];
+}
+
 - (BOOL) updateSettingsWithName:(NSString*)name andURL:(NSString *)url {
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     [payload gck_setStringValue:valueTypeUpdateSettings forKey:keyType];
@@ -224,6 +250,16 @@ static NSString * const kValuePlayerX = @"X";
         }
         
         
+    }
+    
+    if([type isEqualToString:valueTypeOrderInitialized]) {
+        [self.delegate didReceiveOrderInitialized];
+        return;
+    }
+    
+    if([type isEqualToString:valueTypeOrderCanceled]) {
+        [self.delegate didReceiveOrderCanceled];
+        return;
     }
     
     if([type isEqualToString:valueTypeSetReader]) {

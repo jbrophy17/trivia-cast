@@ -179,6 +179,18 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
   //  [self showErrorMessage:message popViewControllerOnOK:YES];
 }
 
+- (void) didReceiveOrderInitialized {
+    TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.lobbyViewController;
+    [lobbyViewController segueToOrderPickerView];
+    
+}
+
+- (void) didReceiveOrderCanceled {
+    TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.lobbyViewController;
+    [[[lobbyViewController presentingViewController] presentingViewController ] dismissViewControllerAnimated:YES completion:nil];
+#warning todo: possibly fix dismissing the modal view controller
+}
+
 - (void) didReceiveGuesser {
     [self.player setIsGuessing:YES];
 }
