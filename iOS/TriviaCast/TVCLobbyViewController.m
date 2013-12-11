@@ -106,7 +106,14 @@
     }
     viewController.players = [NSMutableArray arrayWithArray:updatedPlayers];
     viewController.responseDictionary = [NSMutableDictionary dictionaryWithDictionary:responseDictionary];
-    [self presentViewController:viewController animated:YES completion:nil];
+    
+    if ([[[appDelegate dataSource] currentViewController] isKindOfClass:[TVCReaderViewController class]]) {
+        [[[appDelegate dataSource] currentViewController] dismissViewControllerAnimated:YES completion:^(void) {
+            [self presentViewController:viewController animated:YES completion:nil];
+        }];
+    } else {
+        [self presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 - (void) segueToOrderPickerView {
