@@ -123,7 +123,7 @@ function Response(response, responseID, userID, channel){
 
         console.debug("comparing '" + thisTemp + "' to '" + thatTemp + "'");
 
-        return thisTemp == thatTemp;
+        return thisTemp === thatTemp;
     }
 }
 
@@ -207,14 +207,18 @@ function Game() {
         return this.currentCue;
     }
 
-    this.sendGameSync = function(){
+    this.sendGameSync = function(noReader){
         // update all clients' user list and scores
         var playerList = new Object();
         for(var i = 0; i < this.players.length; i++){
             playerList[i] = this.players[i].clientSafeVersion();
         }
         for(var i = 0; i < this.players.length; i++){
-            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : this.players[this.guesser].ID, guesser : this.players[this.guesser].ID });
+            var thisReader = this.players[this.guesser].ID;
+            if(typeof noReader != "undefined"){
+                thisReader = -1;
+            }
+            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
         }
     }
 }
@@ -418,11 +422,11 @@ function leavePlayer(channel){
 
     console.debug("leavePlayer: about to send game sync");
 
-    game.sendGameSync();
-
     if(isLastPlayer){
         betweenRounds();
     }
+
+    game.sendGameSync();
 
     console.debug("leavePlayer: about to return");
 
@@ -430,15 +434,16 @@ function leavePlayer(channel){
 }
 
 function submitResponse(channel, response){
-    var userID      = getPlayerIndexByChannel(channel);
-    var responseID  = game.responses.length;
-    var newResponse = new Response(response, responseID, userID, channel);
+    var userID       = getPlayerIndexByChannel(channel);
+    var responseID   = game.responses.length;
+    var responseText = trim(response);
+    var newResponse  = new Response(responseText, responseID, userID, channel);
 
     // check if there's already a response from this channel
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].channel == channel){
             // update the response
-            game.responses[i].response = response;
+            game.responses[i].response = responseText;
             return;
         }
     }
@@ -555,7 +560,7 @@ function submitGuess(channel, guess){
 
     // check for other identical responses
     for(var i = 0; i < game.responses.length; i++){
-        if(game.responses[rgIndex].isTheSameAs(game.responses[i]) && game.responses[i].isActive){
+        if(game.responses[rgIndex].isTheSameAs(game.responses[i])){
             console.debug("found that " + game.responses[rgIndex].toString() + " is the same as " + game.responses[i].toString());
             correctAnswers.push(game.responses[i].userID);
         }
@@ -572,7 +577,7 @@ function submitGuess(channel, guess){
         game.players[guesserID].incrementScore();
         game.players[playerGuessed].didGetOut();
 
-        game.sendGameSync();
+        game.sendGameSync(true);
 
         // need to use guesser to find which response to delete if there are multiple
         var deleteIndex = rgIndex;
@@ -588,7 +593,7 @@ function submitGuess(channel, guess){
         game.responses[deleteIndex].isActive = false;
 
         // update ui
-        $('#response' + rgIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        $('#response' + deleteIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         var statusText = "correctly that ";
         if(typeof game.players[playerGuessed] == "undefined"){
             statusText += "someone who left";
@@ -596,10 +601,10 @@ function submitGuess(channel, guess){
         else{
             statusText += game.players[playerGuessed].toString();
         }
-        statusText += " submitted " + game.responses[rgIndex].toString() + ".";
+        statusText += " submitted " + game.responses[deleteIndex].toString();
         prependStatus(guesserID, statusText);
 
-        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[rgIndex].toString());
+        console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[deleteIndex].toString());
         checkRoundOver();
     }
     else{
@@ -1001,3 +1006,9 @@ function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
+
+// Steven Levithan
+// http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
+function trim(str) {
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
