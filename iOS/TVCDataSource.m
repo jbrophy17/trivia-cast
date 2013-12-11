@@ -236,7 +236,18 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 
 -(void) didReceiveResponsesHelper:(NSDictionary *)responses {
-    if ([self.player isGuessing]) {
+    
+    if([self.player isReader]){
+        NSLog(@"DataSource: didReceiveResponses, Reader");
+        TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+        [lobbyViewController segueToReaderViewWithResponses:responses];
+        [self.player setIsReader:NO];
+        /*[self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
+         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+         [lobbyViewController segueToReaderViewWithResponses:responses];
+         }];*/
+        
+    }else if ([self.player isGuessing]) {
         NSLog(@"DataSource: didReceiveResponses, Guesser");
         NSLog(@"DataSource: didReceiveResponses, responses: %@ players %@", responses, self.players);
         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
@@ -245,16 +256,6 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
          TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
          [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
          }];*/
-    } else if([self.player isReader]){
-        NSLog(@"DataSource: didReceiveResponses, Reader");
-        TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-        [lobbyViewController segueToReaderViewWithResponses:responses];
-        
-        /*[self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
-         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-         [lobbyViewController segueToReaderViewWithResponses:responses];
-         }];*/
-        
     }
 }
 
