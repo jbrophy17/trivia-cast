@@ -26,6 +26,7 @@
         self.score = 0;
         self.isReader = NO;
         self.isGuessing = NO;
+        self.isOut = NO;
         self.updatePicture = NO;
         self.imageUrlString = nil;
         _profilePicture = nil;
