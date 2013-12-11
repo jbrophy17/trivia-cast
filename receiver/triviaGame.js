@@ -869,7 +869,7 @@ function setPlayerOrder(channel){
 }
 
 function cancelOrdering(channel){
-    if(game.phase != PHASE_ORDERING){
+    if(game.phase == PHASE_ORDERING){
         console.debug("Canceling ordering process");
         game.phase = PHASE_BETWEEN_ROUNDS;
         for(var i = 0; i < game.players.length; i++){
