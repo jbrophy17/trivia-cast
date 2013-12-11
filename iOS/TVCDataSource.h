@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "TVCMessageStream.h"
 #import "TVCAppDelegate.h"
+#import "TVCOrderPickerViewController.h"
 
 @class TVCLobbyViewController;
 
@@ -18,6 +19,7 @@
 @property (nonatomic, strong) NSArray* players;
 @property(nonatomic, strong) UIViewController *currentViewController;
 @property(nonatomic, strong) TVCLobbyViewController *lobbyViewController;
+@property(nonatomic, strong) TVCOrderPickerViewController *orderPickerViewController;
 @property(nonatomic) NSInteger * currentGuess;
 @property(nonatomic) NSInteger currentScore;
 

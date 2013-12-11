@@ -35,6 +35,7 @@ static NSString * const keyType = @"type";
 static NSString * const valueTypeDidJoin = @"didJoin";
 static NSString * const valueTypeOrderInitialized = @"orderInitialized";
 static NSString * const valueTypeOrderCanceled = @"orderCanceled";
+static NSString * const valueTypeOrderCompleted = @"orderComplete";
 static NSString * const valueTypeSetGuesser = @"guesser";
 static NSString * const valueTypeSetReader = @"reader";
 static NSString * const valueTypeReceiveResponses = @"receiveResponses";
@@ -259,6 +260,11 @@ static NSString * const kValuePlayerX = @"X";
     
     if([type isEqualToString:valueTypeOrderCanceled]) {
         [self.delegate didReceiveOrderCanceled];
+        return;
+    }
+    
+    if([type isEqualToString:valueTypeOrderCompleted]) {
+        [self.delegate didReceiveOrderCompleted];
         return;
     }
     

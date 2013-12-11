@@ -357,6 +357,7 @@
                                 </state>
                                 <connections>
                                     <action selector="reviseOrderAction:" destination="2" eventType="touchUpInside" id="bfw-1v-901"/>
+                                    <segue destination="fSX-Tb-kpm" kind="modal" id="C6F-g3-bFB"/>
                                 </connections>
                             </button>
                         </subviews>

@@ -81,6 +81,11 @@ typedef NS_ENUM(NSInteger, GameResult) {
 - (void)didReceiveOrderCanceled;
 
 /**
+ * Called when the order revision is complete.
+ */
+- (void)didReceiveOrderCompleted;
+
+/**
  * Called when the round starts
  *
  */

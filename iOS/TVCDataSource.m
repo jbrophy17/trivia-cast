@@ -10,6 +10,7 @@
 #import "TVCPlayer.h"
 #import "TVCLobbyViewController.h"
 #import "TVCGuesserViewController.h"
+#import "TVCSettingsViewController.h"
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
@@ -180,15 +181,43 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 
 - (void) didReceiveOrderInitialized {
-    TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.lobbyViewController;
-    [lobbyViewController segueToOrderPickerView];
     
+    UIViewController* viewController = self.currentViewController;
+    if ([viewController isKindOfClass:[TVCLobbyViewController class]]) {
+        TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+        [lobbyViewController segueToOrderPickerView];
+    } else if ([viewController isKindOfClass:[TVCSettingsViewController class]]){
+        TVCSettingsViewController* settingsView = (TVCSettingsViewController*)self.currentViewController;
+        [settingsView dismissViewControllerAnimated:YES completion:^(void){
+            
+            [[[appDelegate dataSource] lobbyViewController] segueToOrderPickerView];
+            
+        }];
+    }
 }
 
 - (void) didReceiveOrderCanceled {
     TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.lobbyViewController;
-    [[[lobbyViewController presentingViewController] presentingViewController ] dismissViewControllerAnimated:YES completion:nil];
+    [[lobbyViewController presentingViewController ] dismissViewControllerAnimated:YES completion:nil];
 #warning todo: possibly fix dismissing the modal view controller
+}
+
+- (void) didReceiveOrderCompleted {
+    
+    UIViewController* viewController = self.currentViewController;
+    if ([viewController isKindOfClass:[TVCOrderPickerViewController class]]) {
+        TVCOrderPickerViewController* orderPickerView = (TVCOrderPickerViewController*) viewController;
+        
+        [orderPickerView dismissViewControllerAnimated:YES completion:nil];
+        
+       /* if (self.orderPickerViewController) {
+            [self.orderPickerViewController dismissViewControllerAnimated:YES completion:nil];
+            self.orderPickerViewController = nil;
+        }*/
+    }
+    
+    
+    
 }
 
 - (void) didReceiveGuesser {

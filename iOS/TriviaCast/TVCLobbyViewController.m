@@ -112,7 +112,7 @@
 - (void) segueToOrderPickerView {
     UIStoryboard *storyboard = self.storyboard;
     TVCOrderPickerViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"orderPickerViewController"];
-    
+    [appDelegate dataSource].orderPickerViewController = viewController;
     [self presentViewController:viewController animated:YES completion:nil];
     
 }
