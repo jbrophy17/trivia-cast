@@ -664,10 +664,7 @@ function advanceGuesser(){
         if(game.players[game.guesser].isOut){
             console.debug("looking for guesser but found someone who is out: " + game.players[game.guesser].toString());
         }
-        if(game.guesser == game.reader){
-            console.debug("looking for guesser, found the reader, trying again");
-        }
-    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.guesser == game.reader);
+    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut);
     console.debug("new guesser set to " + game.guesser);
 }
 
