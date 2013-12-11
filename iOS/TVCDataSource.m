@@ -250,8 +250,14 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     }else if ([self.player isGuessing]) {
         NSLog(@"DataSource: didReceiveResponses, Guesser");
         NSLog(@"DataSource: didReceiveResponses, responses: %@ players %@", responses, self.players);
+        NSMutableArray* notOutPlayers = [NSMutableArray array];
+        for (TVCPlayer* p in self.players) {
+            if (!p.isOut) {
+                [notOutPlayers addObject:p];
+            }
+        }
         TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
-        [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
+        [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:notOutPlayers];
         /* [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
          TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
          [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];

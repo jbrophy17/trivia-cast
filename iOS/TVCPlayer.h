@@ -16,6 +16,7 @@ typedef void(^imageSetCompletion)(BOOL);
 @property (nonatomic) NSInteger * score;
 @property (nonatomic) BOOL isReader;
 @property (nonatomic) BOOL isGuessing;
+@property (nonatomic) BOOL isOut;
 @property (nonatomic) NSInteger playerNumber;
 @property (nonatomic,readonly) UIImage* profilePicture;
 @property BOOL updatePicture;

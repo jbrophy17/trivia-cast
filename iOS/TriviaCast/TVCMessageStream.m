@@ -65,6 +65,7 @@ static NSString * const valueTypeGetScore = @"score"; //Maybe
 static NSString * const keyName = @"name";
 static NSString * const keyPlayerNumber = @"number";
 static NSString * const keyPlayers = @"players";
+static NSString * const keyPlayerIsOut = @"isOut";
 
 // Receive Responses Protocol
 static NSString * const keyResponses = @"responses";
@@ -328,6 +329,7 @@ static NSString * const kValuePlayerX = @"X";
             NSInteger ID = [holdDictionary gck_integerForKey:keyID];
             NSString* name = [holdDictionary gck_stringForKey:keyName];
             NSInteger score = [holdDictionary gck_integerForKey:keyScore];
+            BOOL isOut = [holdDictionary gck_boolForKey:keyPlayerIsOut];
             NSString* profilePicURL = [holdDictionary gck_stringForKey:keyPictureURL];
             
             TVCPlayer *holdPlayer;
@@ -342,6 +344,7 @@ static NSString * const kValuePlayerX = @"X";
             } else {
                 [holdPlayer setName:name];
             }
+            [holdPlayer setIsOut:isOut];
             [holdPlayer setScore:&score];
             if( ![profilePicURL isEqualToString:@""]) {
                 [holdPlayer setImageUrlString:profilePicURL completion:^(BOOL finished) {
