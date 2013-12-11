@@ -353,7 +353,8 @@ static NSString * const kValuePlayerX = @"X";
             
             if (holdPlayer.playerNumber == readerID) {
                 [holdPlayer setIsReader:YES];
-            } else if (holdPlayer.playerNumber == guesserID) {
+            }
+            if (holdPlayer.playerNumber == guesserID) {
                 [holdPlayer setIsGuessing:YES];
             }
             

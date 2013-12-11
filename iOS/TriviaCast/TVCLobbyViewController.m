@@ -107,11 +107,15 @@
     viewController.players = [NSMutableArray arrayWithArray:updatedPlayers];
     viewController.responseDictionary = [NSMutableDictionary dictionaryWithDictionary:responseDictionary];
     
+    NSLog(@"segue to guesser view");
+    
     if ([[[appDelegate dataSource] currentViewController] isKindOfClass:[TVCReaderViewController class]]) {
+        NSLog(@"guesser view, should dissmiss");
         [[[appDelegate dataSource] currentViewController] dismissViewControllerAnimated:YES completion:^(void) {
             [self presentViewController:viewController animated:YES completion:nil];
         }];
     } else {
+        NSLog(@"Wasn't in reader view");
         [self presentViewController:viewController animated:YES completion:nil];
     }
 }
