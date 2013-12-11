@@ -34,10 +34,21 @@
                                     <action selector="orderButtonAction:" destination="ixK-Fj-XF2" eventType="touchUpInside" id="M2d-fY-GOL"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FR0-S6-Osi">
+                                <rect key="frame" x="702" y="961" width="48" height="43"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelAction:" destination="ixK-Fj-XF2" eventType="touchUpInside" id="QoP-y8-0kK"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="cancelButton" destination="FR0-S6-Osi" id="MtX-fi-OCg"/>
                         <outlet property="instructionsLabel" destination="oAo-Vn-IUP" id="WLe-u8-ws1"/>
                         <outlet property="orderButton" destination="cCt-44-pK5" id="zRN-jJ-I03"/>
                     </connections>

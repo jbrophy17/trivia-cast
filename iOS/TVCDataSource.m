@@ -197,9 +197,12 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 }
 
 - (void) didReceiveOrderCanceled {
-    TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.lobbyViewController;
-    [[lobbyViewController presentingViewController ] dismissViewControllerAnimated:YES completion:nil];
-#warning todo: possibly fix dismissing the modal view controller
+    UIViewController* viewController = self.currentViewController;
+    if ([viewController isKindOfClass:[TVCOrderPickerViewController class]]) {
+        TVCOrderPickerViewController* orderPickerView = (TVCOrderPickerViewController*) viewController;
+        
+        [orderPickerView dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void) didReceiveOrderCompleted {
@@ -209,11 +212,6 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         TVCOrderPickerViewController* orderPickerView = (TVCOrderPickerViewController*) viewController;
         
         [orderPickerView dismissViewControllerAnimated:YES completion:nil];
-        
-       /* if (self.orderPickerViewController) {
-            [self.orderPickerViewController dismissViewControllerAnimated:YES completion:nil];
-            self.orderPickerViewController = nil;
-        }*/
     }
     
     

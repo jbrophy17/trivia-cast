@@ -47,4 +47,9 @@
     [[self orderButton] setEnabled:NO];
     [[self instructionsLabel] setText:@"Order set. Please wait for the remaining players..."];
 }
+
+- (IBAction)cancelAction:(id)sender {
+    [[[appDelegate dataSource] getMessageStream] sendCancelOrderMessage];
+    
+}
 @end

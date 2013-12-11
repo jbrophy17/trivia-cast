@@ -9,8 +9,10 @@
 #import <UIKit/UIKit.h>
 
 @interface TVCOrderPickerViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *orderButton;
 - (IBAction)orderButtonAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
 
 @end

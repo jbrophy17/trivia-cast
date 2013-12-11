@@ -30,10 +30,21 @@
                                     <action selector="orderButtonAction:" destination="fSX-Tb-kpm" eventType="touchUpInside" id="6el-VY-4cw"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="BQK-yW-6BY">
+                                <rect key="frame" x="252" y="505" width="48" height="43"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelAction:" destination="fSX-Tb-kpm" eventType="touchUpInside" id="pkH-YE-LMh"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="cancelButton" destination="BQK-yW-6BY" id="Wca-at-Zuh"/>
                         <outlet property="instructionsLabel" destination="T6f-1o-kAN" id="hoz-dx-LFi"/>
                         <outlet property="orderButton" destination="Gah-1B-GXb" id="zzU-g8-bZl"/>
                     </connections>
