@@ -239,7 +239,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     
     if([self.player isReader]){
         NSLog(@"DataSource: didReceiveResponses, Reader");
-        TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+        TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
         [lobbyViewController segueToReaderViewWithResponses:responses];
         [self.player setIsReader:NO];
         /*[self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
@@ -250,7 +250,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     }else if ([self.player isGuessing]) {
         NSLog(@"DataSource: didReceiveResponses, Guesser");
         NSLog(@"DataSource: didReceiveResponses, responses: %@ players %@", responses, self.players);
-        TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+        TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
         [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
         /* [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
          TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
