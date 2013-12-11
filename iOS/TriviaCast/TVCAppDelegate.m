@@ -36,13 +36,18 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
     [activity setBackgroundColor:[UIColor clearColor]];
     [activity setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
     
+    
+    
+    
     //Add the splash screen
     TVCSplashScreenView *splashScreen = [[TVCSplashScreenView alloc] initWithTitle:@"TriviaCast" andSubtitle:@"A Game For Friends"];
 
     UINavigationController* navVC = ((UINavigationController*)self.window.rootViewController);
+    TVCCastDiscoveryViewController* viewController = (TVCCastDiscoveryViewController*)navVC.visibleViewController;
+    
     [navVC.view addSubview:splashScreen];
     [navVC.view bringSubviewToFront:splashScreen];
-    
+    [viewController initialLaunch];
 
     [self.window makeKeyAndVisible];
     
