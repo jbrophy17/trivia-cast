@@ -65,6 +65,8 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	private MediaRouter.Callback mMediaRouterCallback;
 
 	// UI elements
+	private Button nextRoundButton;
+	private TextView instructionsTextView;
 
 	// Colors
 	private static final int BACKGROUND_ERROR         = 0xFF800000;
@@ -104,8 +106,15 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		mMediaRouterCallback = new MediaRouterCallback();
 
 		// Get UI elements
+		nextRoundButton = (Button) findViewById(R.id.button_next_round);
+		instructionsTextView = (TextView) findViewById(R.id.instructions);
 
 		// add listeners
+		nextRoundButton.setOnClickListener(new Button.OnClickListener(){
+			public void onClick(View v){
+				mGameMessageStream.startNextRound();
+			}
+		});
 
 		// load saved stuff
 		loadPlayerName();
@@ -391,7 +400,6 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 				}
 
 				savePlayerName(newName);
-				Toast.makeText(getApplicationContext(), "Name updated to " + playerName, Toast.LENGTH_LONG).show();
 				mGameMessageStream.updateSettings(playerName);
 			}
 		});
@@ -424,13 +432,18 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	private class TVCStream extends GameMessageStream {
 
 		protected void onPlayerQueued(){
-			showInfoMessage("You've Been Queued",
-					"You're in the player queue.\nYou'll join the game when the next round starts.",
-					"Cool");
+			String statusMessage = "You're in the player queue.\n\nYou'll join the game\nwhen the next round starts.";
+
+			nextRoundButton.setVisibility(View.VISIBLE);
+			instructionsTextView.setText(statusMessage);
 		}
 
 		protected void onPlayerJoined(int newID){
 			playerID = newID;
+		}
+
+		protected void onSettingsUpdated(){
+			Toast.makeText(getApplicationContext(), "Name updated to " + playerName, Toast.LENGTH_LONG).show();
 		}
 
 		protected void onGameSync(JSONObject players, int newReader, int newGuesser){
@@ -461,39 +474,39 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 				showInfoMessage("Correct!",
 						"You guessed right.",
 						"Awesome!");
-				
+
 				// TODO: update guesser interface removing guessed response
 			}
 			else{
 				showInfoMessage("Incorrect!",
 						"Sorry, your guess was wrong...",
 						"Bummer.");
-			
+
 				// TODO: hide guesser interface
 			}
 		}
-		
+
 		protected void onRoundStarted(String newPrompt){
 			currentPrompt = newPrompt;
-			
+
 			// TODO: show composing interface
 		}
-		
+
 		protected void onRoundEnded(){
 			// TODO: show lobby interface
 		}
-		
+
 		protected void onOrderInitialized(){
 			// TODO: show ordering interface
 		}
-		
+
 		protected void onOrderCanceled(){
 			showInfoMessage("Reordering Canceled",
 					"The reordering process has been canceled.",
 					"OK");
 			// TODO: back to lobby interface
 		}
-		
+
 		protected void onOrderComplete(){
 			showInfoMessage("Reordering Complete!",
 					"Players are now in a new order - hopefully one that makes more sense.",

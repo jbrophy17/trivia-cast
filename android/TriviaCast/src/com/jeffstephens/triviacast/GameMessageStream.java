@@ -65,6 +65,7 @@ public abstract class GameMessageStream extends MessageStream {
 	// Events to receive from server
 	private static final String KEY_USER_QUEUED = "didQueue";
 	private static final String KEY_USER_JOINED = "didJoin";
+	private static final String KEY_SETTINGS_UPDATED = "settingsUpdated";
 	private static final String KEY_YOU_ARE_READER = "reader";
 	private static final String KEY_RECEIVE_RESPONSES = "receiveResponses";
 	private static final String KEY_RESPONSE_RECEIVED = "responseReceived"; 
@@ -176,7 +177,8 @@ public abstract class GameMessageStream extends MessageStream {
 
 	protected abstract void onPlayerQueued();
 	protected abstract void onPlayerJoined(int newID);
-	protected abstract void onGameSync(JSONObject player, int newReader, int newGuesser);
+	protected abstract void onSettingsUpdated();
+	protected abstract void onGameSync(JSONObject players, int newReader, int newGuesser);
 	protected abstract void onReceiveResponses(JSONObject responses);
 	protected abstract void onResponseReceived();
 	protected abstract void onGuesser();
@@ -215,6 +217,12 @@ public abstract class GameMessageStream extends MessageStream {
 					catch (JSONException e) {
 						e.printStackTrace();
 					}
+				}
+				
+				// settings were updated
+				else if (KEY_SETTINGS_UPDATED.equals(event)){
+					Log.d(TAG, "Settings updated");
+					onSettingsUpdated();
 				}
 
 				// if we're now the reader (deprecated, warn)
