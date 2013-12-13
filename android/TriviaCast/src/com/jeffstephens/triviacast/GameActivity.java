@@ -1,14 +1,12 @@
 package com.jeffstephens.triviacast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.content.Context;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,14 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,9 +35,10 @@ import com.google.cast.MediaRouteAdapter;
 import com.google.cast.MediaRouteHelper;
 import com.google.cast.MediaRouteStateChangeListener;
 import com.google.cast.SessionError;
+import com.jeffstephens.triviacast.TVCComposer.OnUIReadyListener;
 
 
-public class GameActivity extends ActionBarActivity implements MediaRouteAdapter {
+public class GameActivity extends ActionBarActivity implements MediaRouteAdapter, OnUIReadyListener {
 
 	// Debug toggle
 	public static final boolean IS_DEBUG = false;
@@ -85,6 +78,21 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 	// Constants
 	private static final String PREF_FILE = "myPreferences";
+	private static final String TAG_COMPOSE_FRAGMENT = "COMPOSE_FRAGMENT";
+		
+	/**
+	 * Interface so fragment can access prompt text
+	 */
+	@Override
+	public String getPromptText() {
+		return currentPrompt;
+	}
+	
+	@Override
+	public void submitResponseText(String response){
+		mGameMessageStream.submitResponse(response);
+		showWaitingForReadingUI();
+	}
 
 	/**
 	 * Called when the activity is first created. Initializes the game with necessary listeners
@@ -426,16 +434,40 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		.show();
 	}
 
+	private void showComposeUI(){
+		// hide lobby UI
+		instructionsTextView.setVisibility(View.GONE);
+		nextRoundButton.setVisibility(View.GONE);
+		
+		// show compose UI
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		TVCComposer fragment = new TVCComposer();
+		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
+		fragmentTransaction.commit();
+	}
+	
+	private void showWaitingForReadingUI(){
+		// hide compose UI
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		TVCComposer fragment = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
+		fragmentTransaction.remove(fragment);
+		fragmentTransaction.commit();
+		
+		// show waiting UI
+		instructionsTextView.setText(R.string.waiting_for_other_responses_message);
+		instructionsTextView.setVisibility(View.VISIBLE);
+	}
+
 	/**
 	 * An extension of the GameMessageStream specifically for the TriviaCast game.
 	 */
 	private class TVCStream extends GameMessageStream {
 
 		protected void onPlayerQueued(){
-			String statusMessage = "You're in the player queue.\n\nYou'll join the game\nwhen the next round starts.";
-
 			nextRoundButton.setVisibility(View.VISIBLE);
-			instructionsTextView.setText(statusMessage);
+			instructionsTextView.setText(R.string.in_queue_message);
 		}
 
 		protected void onPlayerJoined(int newID){
@@ -488,8 +520,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 		protected void onRoundStarted(String newPrompt){
 			currentPrompt = newPrompt;
-
-			// TODO: show composing interface
+			showComposeUI();
 		}
 
 		protected void onRoundEnded(){

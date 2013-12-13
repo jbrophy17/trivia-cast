@@ -174,6 +174,25 @@ public abstract class GameMessageStream extends MessageStream {
 			Log.e(TAG, "Message Stream is not attached", e);
 		}
 	}
+	
+	public final void submitResponse(String response){
+		Log.d(TAG, "trying to submit response: " + response);
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_SUBMIT_RESPONSE);
+			payload.put(KEY_RESPONSE, response);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to submit response", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_RESPONSE + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
 
 	protected abstract void onPlayerQueued();
 	protected abstract void onPlayerJoined(int newID);

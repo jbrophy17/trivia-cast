@@ -9,17 +9,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".GameActivity" >
 
-    <Button
-        android:id="@+id/button_next_round"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:background="#008000"
-        android:text="@string/button_next_round_label"
-        android:textColor="#FFFFFF"
-        android:visibility="gone" />
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/instructions"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="68dp" />
 
     <TextView
         android:id="@+id/instructions"
@@ -32,5 +28,17 @@
         android:text="@string/choose_chromecast"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#333333" />
+
+    <Button
+        android:id="@+id/button_next_round"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:background="#0099CC"
+        android:text="@string/button_next_round_label"
+        android:textColor="#FFFFFF"
+        android:visibility="gone" />
 
 </RelativeLayout>
