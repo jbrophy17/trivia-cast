@@ -9,6 +9,7 @@ GUESSED_SELF           = 7;
 INVALID_TYPE           = 8;
 ORDER_UNAVAILABLE      = 9;
 NOT_ORDERING           = 10;
+TOO_FEW_TO_ORDER       = 11;
 
 // phase constants
 PHASE_READING        = 100;
@@ -16,6 +17,8 @@ PHASE_GUESSING       = 101;
 PHASE_ORDERING       = 102;
 PHASE_BETWEEN_ROUNDS = 103;
 PHASE_SUBMITTING     = 104;
+
+MIN_PLAYER_NUMBER = 3;
 
 // when debug mode is on, all Response and Player objects are printed with
 // all human-useful member variables. Not great for competitive play.
@@ -29,11 +32,11 @@ IDLE_MAX = 15;
 splashDuration = 5;
 
 function Player(name, channel, pictureURL) {
-    this.name       = name;
-    this.ID         = -1;
-    this.channel    = channel;
-    this.isOut      = false;
-    this.score      = 0;
+    this.name    = name;
+    this.ID      = -1;
+    this.channel = channel;
+    this.isOut   = false;
+    this.score   = 0;
 
     if(typeof pictureURL != "undefined"){
         this.pictureURL = pictureURL;
@@ -536,9 +539,9 @@ function submitGuess(channel, guess){
 
     // only allowed if not the current player
     if(playerGuessed == guesserID){
-        channel.send({ type : 'error', value : GUESSED_SELF });
-        channel.send({ type : 'guessResponse', 'value' : false });
-        console.warn('Invalid guess: tried to guess themself');
+        channel.send({ "type" : "error", "value" : GUESSED_SELF });
+        channel.send({ "type" : "guessResponse", "value" : false });
+        console.warn("Invalid guess: tried to guess themself");
         nextGuesser();
         prependStatus(guesserID, "themselves...");
         return;
@@ -702,7 +705,7 @@ function startNextRound(channel){
     }
 
     // only can start if we have > 2 players
-    if((game.players.length + game.playerQueue.length) < 3){
+    if((game.players.length + game.playerQueue.length) < MIN_PLAYER_NUMBER){
         console.warn("Tried to start new round with not enough players.");
         channel.send({ type : 'error', value : NOT_ENOUGH_PLAYERS });
         $('#instructions').html(game.errors[NOT_ENOUGH_PLAYERS]);
@@ -746,9 +749,7 @@ function clearPlayerQueue(){
     console.debug('processing player queue');
     // add players who are queued
     for(var i = 0; i < game.playerQueue.length; i++){
-        console.debug('adding queued player ' + i);
         game.addPlayer(game.playerQueue[i], true);
-        console.debug('added queued player ' + i);
     }
 
     console.debug('player queue processed');
@@ -796,6 +797,12 @@ function newGrind(){
 function updatePlayer(channel, info){
     var playerID = getPlayerIndexByChannel(channel);
 
+    if(!("name" in info) || info.name.length == 0){
+        console.warn("Recieved a player update request with no name. Ignoring.");
+        channel.send({ "type" : "error", "value" : SENT_BLANK_NAME });
+        return;
+    }
+
     var url = '';
     if("pictureURL" in info){
         var url = info.pictureURL;
@@ -824,6 +831,13 @@ function updatePlayer(channel, info){
 
 // start ordering players and tell everyone
 function initializeOrdering(channel){
+    // only can order once there are enough people (no point to ordering with ≤2 players)
+    if(game.players.length < MIN_PLAYER_NUMBER){
+        console.warn("Tried to start ordering with not enough players.");
+        channel.send({ "type" : "error", "value" : TOO_FEW_TO_ORDER });
+        return;
+    }
+
     if(game.phase == PHASE_BETWEEN_ROUNDS){
         console.debug("Starting ordering phase");
 
@@ -836,6 +850,12 @@ function initializeOrdering(channel){
         for(var i = 0; i < game.players.length; i++){
             game.players[i].channel.send({ "type" : "orderInitialized" });
         }
+
+        // update UI
+        startScreen("TriviaCast: Set Player Order");
+        $("#instructions").html("Each player should press the join button in the order they're sitting.").show();
+        $("#scoreboard").hide();
+        $("#orderscreen").empty().show();
     }
     else{
         console.debug("Tried to start ordering during wrong phase");
@@ -844,8 +864,16 @@ function initializeOrdering(channel){
 }
 
 function setPlayerOrder(channel){
+    if(game.phase != PHASE_ORDERING){
+        console.warn("Client tried to set player order while not in the ordering phase.");
+        channel.send({ "type" : "error", "value" : NOT_ORDERING });
+        return;
+    }
+
     game.orderQueue.push(game.players[getPlayerIndexByChannel(channel)]);
     console.debug("Setting order for " + game.players[getPlayerIndexByChannel(channel)].toString());
+
+    $("#orderscreen").append(game.players[getPlayerIndexByChannel(channel)].toString() + "<br />");
 
     // if this is the last player, rebuild players and notify everyone
     if(game.orderQueue.length == game.players.length){
@@ -877,7 +905,7 @@ function cancelOrdering(channel){
         }
     }
     else{
-        console.debug("Tried to cancel ordering in the wrong phase");
+        console.warn("Client tried to cancel ordering in the wrong phase");
         channel.send({ "type" : "error", "value" : NOT_ORDERING });
     }
 }
