@@ -13,6 +13,12 @@
 #import "TVCSettingsViewController.h"
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
+static NSString * const betweenRoundsMessage = @"Start the round once everyone has joined";
+static NSString * const queuedToJoinMessage = @"You will join after the current round";
+static NSString * const waitForGuesserMessage = @"The guesser is currently guessing";
+static NSString * const waitForReaderMessage = @"The reader is currently reading";
+static NSString * const incorrectGuessMessage = @"You guessed incorrectly";
+static NSString * const submittedResponseMessage = @"Your response was submitted";
 
 
 @interface TVCDataSource(){
@@ -173,6 +179,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     playerNumber = number;
     //self.players = [NSArray arrayWithArray:players];
     self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber andImageURL:[appDelegate profilePicUrl]];
+    [self.lobbyViewController.descriptionLabel setText:queuedToJoinMessage];
 }
 
 // Dispaly an error indicating that the game couldn't be started.
@@ -276,7 +283,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 
     } else {
         [self.player setIsGuessing:NO];
-        [[self.lobbyViewController descriptionLabel] setText:@"You guessed Incorrectly"];
+        [[self.lobbyViewController descriptionLabel] setText:incorrectGuessMessage];
         [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
     }
     
@@ -306,6 +313,9 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         [lobbyViewController segueToResponseViewWithCue:cue];
     }
     
+    [self.lobbyViewController.descriptionLabel setText:waitForReaderMessage];
+    [self.lobbyViewController.roundStartButton setHidden:YES];
+    
 }
 
 - (void) didReceiveRoundEnded {
@@ -313,7 +323,8 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
         [self.lobbyViewController.roundStartButton setHidden:NO];
     }
-    [[self.lobbyViewController descriptionLabel] setText:@"Start the round once everyone has joined"];
+    [[self.lobbyViewController descriptionLabel] setText:betweenRoundsMessage];
+    [self.lobbyViewController.roundStartButton setHidden:NO];
 }
 
 - (void)responseWasReceived {
@@ -321,6 +332,8 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
         [self.currentViewController dismissViewControllerAnimated:YES completion:nil];
         
     }
+    [self.lobbyViewController.descriptionLabel setText:submittedResponseMessage];
+    
 }
 
 
