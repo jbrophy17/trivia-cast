@@ -6,20 +6,31 @@ body{
 	padding-left: 23px;
     width: 1280px;
     font-family: 'Lato', sans-serif;
+    overflow: hidden;
 }
+
+/* overscan off */
+
+body{
+    padding: 0;
+    margin: 0;
+}
+
+/* back to normal */
 
 #splashscreen, #idlewarning{
     position: absolute;
     z-index: 1000;
     background: #000;
     height: 100%;
-    width: 1225px;
+    width: 100%;
 
     h1{
         color: #CCC;
         font-size: 190px;
         text-align: center;
         padding-top: 158px;
+        width: 100%;
     }
 
     p{
@@ -50,7 +61,7 @@ body{
 }
 
 #notificationcontainer{
-    width: 100%;
+    width: 105%;
     background: #341940;
     color: #EDEDED;
     text-align: center;
@@ -64,7 +75,6 @@ body{
 }
 
     #notification{
-        width: 1280px;
         margin: auto;
     }
 
