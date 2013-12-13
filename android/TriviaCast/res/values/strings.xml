@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TriviaCast</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="choose_chromecast">Choose a Chromecast\nto join a game.</string>
+    <string name="button_next_round_label">Start Next Round</string>
+    <string name="media_route_menu_title">Choose Chromecast</string>
+    <string name="menu_settings">Settings</string>
+
+</resources>
