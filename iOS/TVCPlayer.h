@@ -19,9 +19,10 @@ typedef void(^imageSetCompletion)(BOOL);
 @property (nonatomic) BOOL isOut;
 @property (nonatomic) NSInteger playerNumber;
 @property (nonatomic,readonly) UIImage* profilePicture;
+@property (nonatomic,strong) NSString* imageUrlString;
 @property BOOL updatePicture;
 
--(id) initWithName:(NSString*) name andNumber:(NSInteger) number;
+-(id) initWithName:(NSString*) name andNumber:(NSInteger) number andImageURL:(NSString *)URL;
 -(void) setImageUrlString:(NSString*)imageUrlString completion:(imageSetCompletion) comp;
 
 @end

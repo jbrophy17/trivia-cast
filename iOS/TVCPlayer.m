@@ -7,17 +7,19 @@
 //
 
 #import "TVCPlayer.h"
+
+
 @interface TVCPlayer () {
     NSMutableData* requestData;
 }
-    @property (nonatomic,strong) NSString* imageUrlString;
+
 
 @end
 
 @implementation TVCPlayer
 
 
--(id) initWithName:(NSString *)name andNumber:(NSInteger )number{
+-(id) initWithName:(NSString *)name andNumber:(NSInteger )number andImageURL:(NSString *)URL{
     self = [super init];
     
     if (self) {
@@ -28,8 +30,7 @@
         self.isGuessing = NO;
         self.isOut = NO;
         self.updatePicture = NO;
-        self.imageUrlString = nil;
-        _profilePicture = nil;
+        [self setImageUrlString:URL];
     }
     
     return self;
@@ -38,7 +39,7 @@
 -(void) setImageUrlString:(NSString *)imageUrlString completion:(imageSetCompletion)comp {
     if (self.imageUrlString != imageUrlString) {
         _imageUrlString = imageUrlString;
-
+        
         NSURLRequest *theRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:self.imageUrlString]
                                                   cachePolicy:NSURLRequestUseProtocolCachePolicy
                                               timeoutInterval:15.0];

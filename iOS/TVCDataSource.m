@@ -172,7 +172,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
 - (void)didJoinGameAsPlayer:(NSInteger)number {
     playerNumber = number;
     //self.players = [NSArray arrayWithArray:players];
-    self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber];
+    self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber andImageURL:[appDelegate profilePicUrl]];
 }
 
 // Dispaly an error indicating that the game couldn't be started.

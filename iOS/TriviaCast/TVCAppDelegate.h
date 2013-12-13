@@ -26,6 +26,8 @@
 
 - (NSString *)userName;
 - (void)setUserName:(NSString *)userName;
+- (NSString *)profilePicUrl;
+- (void)setProfilePicUrl:(NSString *)URL;
 - (NSString *)applicationDocumentDirectory;
 
 @end

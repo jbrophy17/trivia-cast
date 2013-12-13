@@ -340,16 +340,18 @@ static NSString * const kValuePlayerX = @"X";
                 }
             }
             if(!holdPlayer) {
-                holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID];
+                holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID andImageURL:profilePicURL];
             } else {
                 [holdPlayer setName:name];
             }
             [holdPlayer setIsOut:isOut];
             [holdPlayer setScore:&score];
             if( ![profilePicURL isEqualToString:@""]) {
+                __weak typeof (holdPlayer) weakHoldPlayer = holdPlayer;
                 [holdPlayer setImageUrlString:profilePicURL completion:^(BOOL finished) {
                     UIImageView * imageView = (UIImageView*)[[[[appDelegate dataSource] lobbyViewController] imageDict] objectForKey:[NSNumber numberWithInt:ID]];
-                    [imageView setImage:holdPlayer.profilePicture];
+                    
+                    [imageView setImage:weakHoldPlayer.profilePicture];
                     [[[appDelegate dataSource] lobbyViewController] updateScoreList];
                 }];
             }

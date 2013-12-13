@@ -15,6 +15,7 @@
 @interface TVCSettingsViewController () {
     NSMutableData *urlData;
     NSString * nameHold;
+    bool changedPicture;
 }
 
 @end
@@ -53,6 +54,8 @@
         profileImage = [UIImage imageNamed:@"defaultProfile.jpg"];
     }
     
+    changedPicture = NO;
+    
     //[self setPicture:[UIImage imageNamed:@"defaultProfile.jpg"]];
     [self.profileImageView setImage:profileImage];
     /*[self.profileImageView setImage:[UIImage imageNamed:@"defaultProfile.jpg"]];
@@ -89,27 +92,39 @@
 
 - (IBAction)submitAction:(id)sender {
     if ([self.nameInput hasText]) {
-        NSString * name = [self.nameInput text];
-        [appDelegate setUserName:name];
+        bool changedName = NO;
+        if ( ![self.nameInput.text isEqualToString:[appDelegate userName]]) {
+            NSString * name = [self.nameInput text];
+            [appDelegate setUserName:name];
         
-        //[[[appDelegate dataSource] getMessageStream] updateSettingsWithName:name];
-        nameHold = name;
-        [self sendImageToServer];
-        
-    }
-    
-    NSString* path = [[appDelegate applicationDocumentDirectory] stringByAppendingFormat:@"/profilePic.jpg"];
-    NSData* imageData = [NSData dataWithData:UIImageJPEGRepresentation(self.profileImageView.image, 1.0)];
-    NSError *writeError = nil;
-    
-    if([imageData writeToFile:path options:NSDataWritingAtomic error:&writeError]) {
-    
-        if(writeError!=nil) {
-            NSLog(@"%@: Error saving image: %@", [self class], [writeError localizedDescription]);
+            //[[[appDelegate dataSource] getMessageStream] updateSettingsWithName:name];
+            //nameHold = name;
+            changedName = YES;
         }
-    } else {
-        NSLog(@"Error unable to write to file");
+        
+        if (changedPicture) {
+            
+            [self sendImageToServer];
+            NSString* path = [[appDelegate applicationDocumentDirectory] stringByAppendingFormat:@"/profilePic.jpg"];
+            NSData* imageData = [NSData dataWithData:UIImageJPEGRepresentation(self.profileImageView.image, 1.0)];
+            NSError *writeError = nil;
+            
+            if([imageData writeToFile:path options:NSDataWritingAtomic error:&writeError]) {
+                
+                if(writeError!=nil) {
+                    NSLog(@"%@: Error saving image: %@", [self class], [writeError localizedDescription]);
+                }
+            } else {
+                NSLog(@"Error unable to write to file");
+            }
+            
+        } else if (changedName) {
+            [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:[appDelegate userName] andURL:[appDelegate profilePicUrl]];
+        }
+        
     }
+    
+
     
     
     
@@ -274,6 +289,8 @@
 -(void) didCaptureImage:(UIImage *)image {
     NSLog(@"Got image");
     [self.profileImageView setImage:image];
+    changedPicture = YES;
+    
 }
 
 #pragma mark NSURLConnectionDelegate methods
@@ -309,8 +326,11 @@
             NSString* urlString = [dict gck_stringForKey:@"filename"];
             NSLog(@"got url from request: %@", urlString);
 #warning @"TODO: write completion block for receiving the url"
-            [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:nameHold andURL:urlString];
+            [appDelegate setProfilePicUrl:urlString];
             [[[appDelegate dataSource] player] setImageUrlString:urlString completion:nil];
+            NSLog(@"received new url, app del url is %@", [appDelegate profilePicUrl]);
+            [[[appDelegate dataSource] getMessageStream] updateSettingsWithName:[appDelegate userName] andURL:urlString];
+            
         }
     }
 }

@@ -14,6 +14,7 @@
 #import "TVCSplashScreenView.h"
 
 static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
+static NSString *const kUserDefaultsKeyProfilePictureURL = @"userDefaultsKeyProfilePictureURL";
 
 @interface TVCAppDelegate ()
 
@@ -147,6 +148,16 @@ static NSString *const kUserDefaultsKeyUserName = @"userDefaultsKeyUserName";
 - (void)setUserName:(NSString *)userName {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults setValue:userName forKey:kUserDefaultsKeyUserName];
+}
+
+- (NSString *)profilePicUrl {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    return [userDefaults stringForKey:kUserDefaultsKeyProfilePictureURL];
+}
+
+- (void)setProfilePicUrl:(NSString *)URL {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setValue:URL forKey:kUserDefaultsKeyProfilePictureURL];
 }
 
 - (NSString *)applicationDocumentDirectory {
