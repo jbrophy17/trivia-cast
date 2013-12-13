@@ -48,6 +48,7 @@ static NSString * const valueTypeUpdateSettings = @"updateSettings";
 static NSString * const valueTypeSettingsUpdated = @"settingsUpdated";
 static NSString * const valueTypeError = @"error";
 static NSString * const valueTypeUploadResponse = @"uploadResult";
+static NSString * const valueTypeDidQueue = @"didQueue";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -252,6 +253,8 @@ static NSString * const kValuePlayerX = @"X";
         }
         
         
+    } if([type isEqualToString:valueTypeDidQueue]) {
+        [self.delegate didReceiveDidQueue];
     }
     
     if([type isEqualToString:valueTypeOrderInitialized]) {

@@ -14,7 +14,7 @@
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 static NSString * const betweenRoundsMessage = @"Start the round once everyone has joined";
-static NSString * const queuedToJoinMessage = @"You will join after the current round";
+static NSString * const queuedToJoinMessage = @"You will join at the begining of the next round";
 static NSString * const waitForGuesserMessage = @"The guesser is currently guessing";
 static NSString * const waitForReaderMessage = @"The reader is currently reading";
 static NSString * const incorrectGuessMessage = @"You guessed incorrectly";
@@ -179,12 +179,16 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
     playerNumber = number;
     //self.players = [NSArray arrayWithArray:players];
     self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber andImageURL:[appDelegate profilePicUrl]];
-    [self.lobbyViewController.descriptionLabel setText:queuedToJoinMessage];
+    [self.lobbyViewController.descriptionLabel setText:betweenRoundsMessage];
 }
 
 // Dispaly an error indicating that the game couldn't be started.
 - (void)didFailToJoinWithErrorMessage:(NSString *)message {
   //  [self showErrorMessage:message popViewControllerOnOK:YES];
+}
+
+- (void) didReceiveDidQueue {
+    [self.lobbyViewController.descriptionLabel setText:queuedToJoinMessage];
 }
 
 - (void) didReceiveOrderInitialized {
