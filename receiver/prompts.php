@@ -8,8 +8,9 @@ if(file_exists(filename)){
 
 	echo 'prompts = new Array();' . "\n";
 	foreach($things as $thing){
+		$thing = trim($thing);
 		if(strlen($thing)){
-			echo 'prompts.push("' . trim($thing) . '");' . "\n";
+			echo 'prompts.push("' . $thing . '");' . "\n";
 		}
 	}
 
