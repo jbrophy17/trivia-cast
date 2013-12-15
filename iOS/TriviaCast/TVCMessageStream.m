@@ -355,7 +355,7 @@ static NSString * const kValuePlayerX = @"X";
                     UIImageView * imageView = (UIImageView*)[[[[appDelegate dataSource] lobbyViewController] imageDict] objectForKey:[NSNumber numberWithInt:ID]];
                     
                     [imageView setImage:weakHoldPlayer.profilePicture];
-                    [[[appDelegate dataSource] lobbyViewController] updateScoreList];
+                    //[[[appDelegate dataSource] lobbyViewController] updateScoreList];
                 }];
             }
             

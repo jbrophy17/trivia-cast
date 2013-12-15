@@ -22,6 +22,7 @@
 @property (nonatomic, strong) NSMutableDictionary * imageDict;
 
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
+@property (weak, nonatomic) IBOutlet UIScrollView *scoresScrollView;
 
 - (void) segueToResponseViewWithCue:(NSString*)cue;
 -(void) segueToReaderViewWithResponses:(NSDictionary *)responseDictionary;
