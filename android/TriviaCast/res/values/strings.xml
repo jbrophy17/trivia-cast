@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TriviaCast</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="choose_chromecast">Choose a Chromecast\nto join a game.</string>
+    <string name="button_next_round_label">Start Next Round</string>
+    <string name="media_route_menu_title">Choose Chromecast</string>
+    <string name="menu_settings">Settings</string>
+    <string name="in_queue_message">You\'re in the player queue.\n\nYou\'ll join the game\nwhen the next round starts.</string>
+    <string name="prompt_placeholder">Waiting for prompt from server&#8230;</string>
+    <string name="button_submit_response_label">Submit Response</string>
+    <string name="waiting_for_other_responses_message">Waiting for everyone to\nsubmit their responses&#8230;</string>
+
+</resources>

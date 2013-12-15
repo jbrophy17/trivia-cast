@@ -10,7 +10,12 @@ $newFile = '';
 
 foreach($fileParts as &$line){
 	$line = strtolower(trim($line));
-	
+
+	// if it's empty, move on
+	if(!strlen($line)){
+		continue;
+	}
+
 	// make sure it starts with 'things'
 	$byWord = explode(" ", $line);
 	if($byWord[0] != "things"){
