@@ -6,8 +6,12 @@ class PlayerNotFoundException extends Exception{
 	private static final long serialVersionUID = 7533201933222707417L;
 }
 
-class PlayerContainer{
-	ArrayList<Player> players;
+public class PlayerContainer{
+	private ArrayList<Player> players;
+	
+	public PlayerContainer(){
+		this.players = new ArrayList<Player>();
+	}
 	
 	public void addPlayer(Player p){
 		players.add(p);
@@ -21,5 +25,13 @@ class PlayerContainer{
 		}
 		
 		throw new PlayerNotFoundException();
+	}
+	
+	public void clear(){
+		players.clear();
+	}
+	
+	public int size(){
+		return players.size();
 	}
 }
