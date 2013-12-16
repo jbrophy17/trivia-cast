@@ -18,6 +18,10 @@ PHASE_ORDERING       = 102;
 PHASE_BETWEEN_ROUNDS = 103;
 PHASE_SUBMITTING     = 104;
 
+// string constants
+GET_READY = "Join using your mobile device, and get ready to t-t-t-t-t-t-t-triviacast.";
+BETWEEN_ROUNDS = "We're waiting for someone to start the next round!";
+
 MIN_PLAYER_NUMBER = 3;
 
 // when debug mode is on, all Response and Player objects are printed with
@@ -140,7 +144,7 @@ function Game() {
     this.cues        = shuffle(this.cues); // randomize each playthrough
 
     this.reader  = -1;
-    this.guesser = 0;
+    this.guesser = -1;
 
     this.phase        = PHASE_BETWEEN_ROUNDS;
     this.firstGuesser = true;
@@ -213,9 +217,9 @@ function Game() {
 
     this.sendGameSync = function(noReader){
         // update all clients' user list and scores
-        var playerList = new Object();
+        var playerList = new Array();
         for(var i = 0; i < this.players.length; i++){
-            playerList[i] = this.players[i].clientSafeVersion();
+            playerList.push(this.players[i].clientSafeVersion());
         }
         for(var i = 0; i < this.players.length; i++){
             var thisReader = this.players[this.guesser].ID;
@@ -377,11 +381,18 @@ function joinPlayer(channel, response){
     game.queuePlayer(newPlayer);
 }
 
+function checkIfEmpty(){
+    if(game.players.length == 0 && game.playerQueue.length == 0){
+        $('#instructions').html(GET_READY).show();
+    }
+}
+
 function leavePlayer(channel){
     // if this player is queued, just dequeue them
     for(var i = 0; i < game.playerQueue.length; i++){
         if(game.playerQueue[i].channel == channel){
             game.deQueuePlayerByChannel(channel);
+            checkIfEmpty();
             return;
         }
     }
@@ -400,7 +411,7 @@ function leavePlayer(channel){
     game.players[playerID].didGetOut();
 
     var isLastPlayer = false;
-    // is this the last player?
+    // after this, will there not be enough players to continue?
     if(game.players.length < 3){
         console.debug("leavePlayer: about to betweenRounds()");
         isLastPlayer = true;
@@ -423,6 +434,7 @@ function leavePlayer(channel){
     console.debug("leavePlayer: about to delete player");
 
     game.deletePlayer(playerID);
+    checkIfEmpty();
 
     console.debug("leavePlayer: about to send game sync");
 
@@ -471,10 +483,10 @@ function submitResponse(channel, response){
 }
 
 function getAllResponsesJSON(){
-    var response = new Object();
+    var response = new Array();
     for(var i = 0; i < game.responses.length; i++){
         if(game.responses[i].isActive){
-            response[i] = game.responses[i].clientSafeVersion();
+            response.push(game.responses[i].clientSafeVersion());
         }
     }
     // var responseJSON = JSON.stringify(response);
@@ -493,7 +505,7 @@ function startReading(){
     var responseJSON = getAllResponsesJSON();
     console.debug('sending responses to reader');
     console.debug(responseJSON);
-    game.players[game.reader].channel.send({ type : 'receiveResponses', responses : responseJSON });
+    game.players[game.reader].channel.send({ type : 'receiveResponses', responses : responseJSON, responseCount : game.responses.length });
 }
 
 function startGuessing(){
@@ -503,7 +515,7 @@ function startGuessing(){
     var responseJSON = getAllResponsesJSON();
     console.debug('sending responses to guesser ' + game.players[game.guesser].toString());
     console.debug(responseJSON);
-    game.players[game.guesser].channel.send({ type : 'receiveResponses', responses : responseJSON });
+    game.players[game.guesser].channel.send({ type : 'receiveResponses', responses : responseJSON, responseCount : game.responses.length });
 }
 
 function checkRoundOver(){
@@ -712,6 +724,7 @@ function startNextRound(channel){
         return;
     }
 
+    $("#instructions").hide();
     newGrind();
 
     game.phase = PHASE_SUBMITTING;
@@ -736,12 +749,15 @@ function betweenRounds(){
     }
 
     game.phase = PHASE_BETWEEN_ROUNDS;
+    $('#instructions').show();
 
     if(game.players.length > 0){
-        startScreen('Round Over!');
+        startScreen('TriviaCast Round Over!');
+        $('#instructions').html(BETWEEN_ROUNDS);
     }
     else{
         startScreen('TriviaCast');
+        $('#instructions').html(GET_READY);
     }
 }
 
