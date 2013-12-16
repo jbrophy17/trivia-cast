@@ -321,19 +321,19 @@ static NSString * const kValuePlayerX = @"X";
     }
     
     if([type isEqualToString:valueTypeSyncGame]) {
-        NSDictionary* players = [payload gck_dictionaryForKey:keyPlayers];
+        NSArray* players = [payload gck_arrayForKey:keyPlayers];
         NSInteger readerID = [payload gck_integerForKey:keyReader];
         NSInteger guesserID = [payload gck_integerForKey:valueTypeSetGuesser];
         
         NSMutableArray *returnPlayers = [NSMutableArray array];
-        for(id key in players) {
+        for(NSDictionary * dict in players) {
             
-            NSDictionary * holdDictionary = [players gck_dictionaryForKey:key];
-            NSInteger ID = [holdDictionary gck_integerForKey:keyID];
-            NSString* name = [holdDictionary gck_stringForKey:keyName];
-            NSInteger score = [holdDictionary gck_integerForKey:keyScore];
-            BOOL isOut = [holdDictionary gck_boolForKey:keyPlayerIsOut];
-            NSString* profilePicURL = [holdDictionary gck_stringForKey:keyPictureURL];
+            //NSDictionary * holdDictionary = [players gck_dictionaryForKey:key];
+            NSInteger ID = [dict gck_integerForKey:keyID];
+            NSString* name = [dict gck_stringForKey:keyName];
+            NSInteger score = [dict gck_integerForKey:keyScore];
+            BOOL isOut = [dict gck_boolForKey:keyPlayerIsOut];
+            NSString* profilePicURL = [dict gck_stringForKey:keyPictureURL];
             
             TVCPlayer *holdPlayer;
             
