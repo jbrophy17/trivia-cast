@@ -48,6 +48,7 @@ static NSString * const valueTypeUpdateSettings = @"updateSettings";
 static NSString * const valueTypeSettingsUpdated = @"settingsUpdated";
 static NSString * const valueTypeError = @"error";
 static NSString * const valueTypeUploadResponse = @"uploadResult";
+static NSString * const valueTypeDidQueue = @"didQueue";
 
 //Messages Sent
 static NSString * const valueTypeJoin = @"join";
@@ -252,6 +253,8 @@ static NSString * const kValuePlayerX = @"X";
         }
         
         
+    } if([type isEqualToString:valueTypeDidQueue]) {
+        [self.delegate didReceiveDidQueue];
     }
     
     if([type isEqualToString:valueTypeOrderInitialized]) {
@@ -276,12 +279,12 @@ static NSString * const kValuePlayerX = @"X";
     }
     
     if([type isEqualToString:valueTypeReceiveResponses]) {
-        NSDictionary *responsesDictionary = [payload gck_dictionaryForKey:keyResponses];
+        NSArray *responsesArray = [payload gck_arrayForKey:keyResponses];
     
         NSMutableDictionary *responseIdDictionary = [[NSMutableDictionary alloc] init];
         
-        for(id key in responsesDictionary) {
-            NSDictionary * holdDict = [responsesDictionary gck_dictionaryForKey:key];
+        for(NSDictionary *holdDict in responsesArray) {
+           // NSDictionary * holdDict = [responsesDictionary gck_dictionaryForKey:key];
             
             NSString * response = [holdDict gck_stringForKey:keyResponse];
             NSInteger responseID = [holdDict gck_integerForKey:keyResponseId];
@@ -352,7 +355,7 @@ static NSString * const kValuePlayerX = @"X";
                     UIImageView * imageView = (UIImageView*)[[[[appDelegate dataSource] lobbyViewController] imageDict] objectForKey:[NSNumber numberWithInt:ID]];
                     
                     [imageView setImage:weakHoldPlayer.profilePicture];
-                    [[[appDelegate dataSource] lobbyViewController] updateScoreList];
+                    //[[[appDelegate dataSource] lobbyViewController] updateScoreList];
                 }];
             }
             

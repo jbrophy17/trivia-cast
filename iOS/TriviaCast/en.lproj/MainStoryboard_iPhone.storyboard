@@ -159,6 +159,10 @@
                                 <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="nYP-hK-Ihi">
+                                <rect key="frame" x="20" y="181" width="280" height="315"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -179,6 +183,7 @@
                         <outlet property="descriptionLabel" destination="LJM-y4-yWc" id="xl7-b0-iwa"/>
                         <outlet property="profileThumbnailImageView" destination="gwt-9j-rLr" id="Ms5-3c-Qm2"/>
                         <outlet property="roundStartButton" destination="QRP-vL-jLG" id="ilx-eI-GHU"/>
+                        <outlet property="scoresScrollView" destination="nYP-hK-Ihi" id="2ma-Ks-a83"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YQX-NN-ZwV" userLabel="First Responder" sceneMemberID="firstResponder"/>

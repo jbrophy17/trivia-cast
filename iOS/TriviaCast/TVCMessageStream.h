@@ -64,6 +64,11 @@ typedef NS_ENUM(NSInteger, GameResult) {
 - (void)didJoinGameAsPlayer:(NSInteger)number;
 
 /**
+ * Called when a player has successfully queued to join
+ */
+- (void) didReceiveDidQueue;
+
+/**
  * Called when the game could not be joined.
  *
  * @param message The error message describing the failure.
