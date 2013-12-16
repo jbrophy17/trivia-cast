@@ -68,7 +68,8 @@ body {
   margin: auto;
 }
 #responses {
-  margin-top: 30px;
+  margin-top: 0;
+  display: none;
 }
 #leftcol {
   float: left;

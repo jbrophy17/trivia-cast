@@ -2,14 +2,16 @@ package com.jeffstephens.triviacast;
 
 import java.io.IOException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.MediaRouteActionProvider;
@@ -35,10 +37,9 @@ import com.google.cast.MediaRouteAdapter;
 import com.google.cast.MediaRouteHelper;
 import com.google.cast.MediaRouteStateChangeListener;
 import com.google.cast.SessionError;
-import com.jeffstephens.triviacast.TVCComposer.OnUIReadyListener;
+import com.jeffstephens.triviacast.TVCComposer.ComposerListener;
 
-
-public class GameActivity extends ActionBarActivity implements MediaRouteAdapter, OnUIReadyListener {
+public class GameActivity extends ActionBarActivity implements MediaRouteAdapter, ComposerListener {
 
 	// Debug toggle
 	public static final boolean IS_DEBUG = false;
@@ -79,7 +80,8 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	// Constants
 	private static final String PREF_FILE = "myPreferences";
 	private static final String TAG_COMPOSE_FRAGMENT = "COMPOSE_FRAGMENT";
-		
+	private static final String TAG_READ_FRAGMENT = "READ_FRAGMENT";
+
 	/**
 	 * Interface so fragment can access prompt text
 	 */
@@ -87,7 +89,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	public String getPromptText() {
 		return currentPrompt;
 	}
-	
+
 	@Override
 	public void submitResponseText(String response){
 		mGameMessageStream.submitResponse(response);
@@ -113,6 +115,9 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 				MediaRouteHelper.CATEGORY_CAST, APP_NAME, null);
 		mMediaRouterCallback = new MediaRouterCallback();
 
+		responses = new ResponseContainer();
+		players = new PlayerContainer();
+
 		// Get UI elements
 		nextRoundButton = (Button) findViewById(R.id.button_next_round);
 		instructionsTextView = (TextView) findViewById(R.id.instructions);
@@ -128,6 +133,18 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		loadPlayerName();
 
 		// initialize UI
+		//		
+		//		
+		//		// FIXME remove
+		//		String json = "{\"responses\" : \"[{\"response\":\"sadfasdf\",\"responseID\":1},{\"response\":\"udjdsj\",\"responseID\":2},{\"response\":\"jhkqwedjgkdqejkbwdsbjkdwgjk\",\"responseID\":0}]\"}";
+		//		try {
+		//			JSONObject obj = new JSONObject(json);
+		//			JSONArray arr = obj.getJSONArray("responses");
+		//			Log.d(TAG, "length is " + arr.length());
+		//		} catch (JSONException e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
 	}
 
 	/**
@@ -438,26 +455,51 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		// hide lobby UI
 		instructionsTextView.setVisibility(View.GONE);
 		nextRoundButton.setVisibility(View.GONE);
-		
+
 		// show compose UI
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		TVCComposer fragment = new TVCComposer();
 		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
 		fragmentTransaction.commit();
 	}
-	
+
 	private void showWaitingForReadingUI(){
 		// hide compose UI
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		TVCComposer fragment = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
 		fragmentTransaction.remove(fragment);
 		fragmentTransaction.commit();
-		
+
 		// show waiting UI
 		instructionsTextView.setText(R.string.waiting_for_other_responses_message);
 		instructionsTextView.setVisibility(View.VISIBLE);
+	}
+
+	private void showReadingUI(){
+		Log.d(TAG, "Showing reading UI");
+
+		// hide waiting UI
+		instructionsTextView.setVisibility(View.GONE);
+
+		// show reading UI
+		Bundle args = new Bundle();
+		args.putStringArrayList("responses", responses.getStringArrayList());
+		args.putString("prompt", currentPrompt);
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		TVCResponseReader fragment = new TVCResponseReader();
+		fragment.setArguments(args);
+		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_READ_FRAGMENT);
+		fragmentTransaction.commit();
+
+		Log.d(TAG, "Committed TVCResponseReader fragment");
+	}
+
+	private void showGuessingUI(){
+		// TODO 
 	}
 
 	/**
@@ -478,19 +520,36 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 			Toast.makeText(getApplicationContext(), "Name updated to " + playerName, Toast.LENGTH_LONG).show();
 		}
 
-		protected void onGameSync(JSONObject players, int newReader, int newGuesser){
+		protected void onGameSync(JSONArray players, int newReader, int newGuesser){
 			readerID = newReader;
 			guesserID = newGuesser;
 
 			// TODO: parse players
 		}
 
-		protected void onReceiveResponses(JSONObject responses){
-			if(readerID == playerID && !doneReading){
-				// TODO: display reader interface
+		protected void onReceiveResponses(JSONArray newResponses){			
+			Log.d(TAG, "Got " + newResponses.length() + " responses");
+
+			responses.clear();
+
+			try{
+				for(int i = 0; i < newResponses.length(); ++i){
+					JSONObject thisSet = newResponses.getJSONObject(i);
+					Response thisResponse = new Response(thisSet.getInt("responseID"), thisSet.getString("response"));
+					responses.addResponse(thisResponse);
+				}
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
 			}
 
-			// TODO: parse responses
+			if(readerID == playerID && !doneReading){
+				showReadingUI();
+			}
+			else{
+				showGuessingUI();
+			}
+
 		}
 
 		protected void onResponseReceived(){

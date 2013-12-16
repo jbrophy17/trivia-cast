@@ -1,8 +1,8 @@
 package com.jeffstephens.triviacast;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class TVCComposer extends Fragment{
-	OnUIReadyListener mListener;
+	ComposerListener mListener;
 	Button submitResponseButton;
 	
 	@Override
@@ -50,14 +50,14 @@ public class TVCComposer extends Fragment{
 	public void onAttach(Activity activity){
 		super.onAttach(activity);
 		try{
-			mListener = (OnUIReadyListener) activity;
+			mListener = (ComposerListener) activity;
 		}
 		catch(ClassCastException e){
-			throw new ClassCastException(activity.toString() + " must implement OnUIReadyListener");
+			throw new ClassCastException(activity.toString() + " must implement ComposerListener");
 		}
 	}
 	
-	public interface OnUIReadyListener{
+	public interface ComposerListener{
 		// Container Activity must implement this
 		public String getPromptText();
 		public void submitResponseText(String response);

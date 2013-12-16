@@ -41,12 +41,14 @@ public abstract class GameMessageStream extends MessageStream {
 	private static final String KEY_PICTURE_URL = "pictureURL";
 	private static final String KEY_NUMBER = "number";
 	private static final String KEY_RESPONSES = "responses";
+	private static final String KEY_RESPONSE_COUNT = "responseCount";
 	private static final String KEY_VALUE = "value";
 	private static final String KEY_PLAYERS = "players";
 	private static final String KEY_READER = "reader"; // deprecated
 	private static final String KEY_GUESSER = "guesser";
 	private static final String KEY_CUE = "cue";
 	private static final String KEY_RESPONSE = "response";
+	private static final String KEY_RESPONSE_ID = "responseID";
 	private static final String KEY_GUESS_RESPONSE_ID = "guessResponseId";
 	private static final String KEY_GUESS_PLAYER_NUMBER = "guessPlayerNumber";
 
@@ -197,8 +199,8 @@ public abstract class GameMessageStream extends MessageStream {
 	protected abstract void onPlayerQueued();
 	protected abstract void onPlayerJoined(int newID);
 	protected abstract void onSettingsUpdated();
-	protected abstract void onGameSync(JSONObject players, int newReader, int newGuesser);
-	protected abstract void onReceiveResponses(JSONObject responses);
+	protected abstract void onGameSync(JSONArray players, int newReader, int newGuesser);
+	protected abstract void onReceiveResponses(JSONArray responses);
 	protected abstract void onResponseReceived();
 	protected abstract void onGuesser();
 	protected abstract void onGuessResponse(boolean response);
@@ -254,8 +256,8 @@ public abstract class GameMessageStream extends MessageStream {
 				else if (KEY_RECEIVE_RESPONSES.equals(event)) {
 					Log.d(TAG, "Received responses");
 					try {
-						JSONObject responses = message.getJSONObject(KEY_RESPONSES);
-						onReceiveResponses(responses);
+						JSONArray arr = message.getJSONArray(KEY_RESPONSES);
+						onReceiveResponses(arr);
 					}
 					catch (JSONException e) {
 						e.printStackTrace();
@@ -290,10 +292,10 @@ public abstract class GameMessageStream extends MessageStream {
 				else if (KEY_GAMESYNC.equals(event)) {
 					Log.d(TAG, "GameSync");
 					try {
-						JSONObject thisPlayer = message.getJSONObject(KEY_PLAYERS);
+						JSONArray players = message.getJSONArray(KEY_PLAYERS);
 						int newReader = message.getInt(KEY_READER);
 						int newGuesser = message.getInt(KEY_GUESSER);
-						onGameSync(thisPlayer, newReader, newGuesser);
+						onGameSync(players, newReader, newGuesser);
 					}
 					catch (JSONException e) {
 						e.printStackTrace();
