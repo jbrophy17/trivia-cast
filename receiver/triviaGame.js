@@ -609,7 +609,7 @@ function submitGuess(channel, guess){
         game.responses[deleteIndex].isActive = false;
 
         // update ui
-        $('#response' + deleteIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        $('#response' + game.responses[deleteIndex].responseID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         var statusText = "correctly that ";
         if(typeof game.players[playerGuessed] == "undefined"){
             statusText += "someone who left";
