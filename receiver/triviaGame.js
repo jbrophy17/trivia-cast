@@ -40,6 +40,7 @@ function Player(name, channel, pictureURL) {
     this.ID      = -1;
     this.channel = channel;
     this.isOut   = false;
+    this.isGone  = false;
     this.score   = 0;
 
     if(typeof pictureURL != "undefined"){
@@ -222,11 +223,13 @@ function Game() {
             playerList.push(this.players[i].clientSafeVersion());
         }
         for(var i = 0; i < this.players.length; i++){
-            var thisReader = this.players[this.guesser].ID;
-            if(typeof noReader != "undefined"){
-                thisReader = -1;
+            if(!this.players[i].isGone){
+                var thisReader = this.players[this.reader].ID;
+                if(typeof noReader != "undefined"){
+                    thisReader = -1;
+                }
+                this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
             }
-            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
         }
     }
 }
@@ -382,7 +385,14 @@ function joinPlayer(channel, response){
 }
 
 function checkIfEmpty(){
-    if(game.players.length == 0 && game.playerQueue.length == 0){
+    var playersNotGone = 0;
+    for(var i = 0; i < game.players.length; i++){
+        if(!game.players[i].isGone){
+            playersNotGone++;
+        }
+    }
+
+    if(playersNotGone == 0 && game.playerQueue.length == 0){
         $('#instructions').html(GET_READY).show();
     }
 }
@@ -408,7 +418,7 @@ function leavePlayer(channel){
 
     console.debug("leavePlayer: about to mark as out");
 
-    game.players[playerID].didGetOut();
+    game.players[playerID].isGone = true;
 
     var isLastPlayer = false;
     // after this, will there not be enough players to continue?
@@ -431,12 +441,7 @@ function leavePlayer(channel){
         nextGuesser(true);
     }
 
-    console.debug("leavePlayer: about to delete player");
-
-    game.deletePlayer(playerID);
     checkIfEmpty();
-
-    console.debug("leavePlayer: about to send game sync");
 
     if(isLastPlayer){
         betweenRounds();
@@ -555,7 +560,7 @@ function submitGuess(channel, guess){
         channel.send({ "type" : "guessResponse", "value" : false });
         console.warn("Invalid guess: tried to guess themself");
         nextGuesser();
-        prependStatus(guesserID, "themselves...");
+        prependStatus(guesserID, "themselves..");
         return;
     }
 
@@ -609,7 +614,8 @@ function submitGuess(channel, guess){
         game.responses[deleteIndex].isActive = false;
 
         // update ui
-        $('#response' + deleteIndex).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+        console.debug("Fading resopnse ID " + '#response' + game.responses[deleteIndex].responseID);
+        $('#response' + game.responses[deleteIndex].responseID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         var statusText = "correctly that ";
         if(typeof game.players[playerGuessed] == "undefined"){
             statusText += "someone who left";
@@ -670,6 +676,7 @@ function advanceGuesser(){
         if(loopCount >= game.players.length){
             console.warn("Couldn't find new guesser. Ending round.");
             betweenRounds();
+            return;
         }
         loopCount++;
         var nextGuesser = game.guesser + 1;
@@ -685,7 +692,10 @@ function advanceGuesser(){
         if(game.players[game.guesser].isOut){
             console.debug("looking for guesser but found someone who is out: " + game.players[game.guesser].toString());
         }
-    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut);
+        if(game.players[game.guesser].isGone){
+            console.debug("looking for guesser but found someone who is gone: " + game.players[game.guesser].toString());
+        }
+    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.players[game.guesser].isGone);
     console.debug("new guesser set to " + game.guesser);
 }
 
@@ -694,9 +704,6 @@ function nextGuesser(force){
         advanceGuesser();
 
         console.debug('guesser is now ' + game.guesser);
-
-        // notify next guesser
-        game.players[game.guesser].channel.send({ type : 'guesser' });
     }
     else{
         game.firstGuesser = false;
@@ -745,7 +752,9 @@ function startNextRound(channel){
 function betweenRounds(){
     // notify everyone that we're in between rounds
     for(var i = 0; i < game.players.length; i++){
-        game.players[i].channel.send({ 'type' : 'roundOver' });
+        if(!game.players[i].isGone){
+            game.players[i].channel.send({ 'type' : 'roundOver' });
+        }
     }
 
     game.phase = PHASE_BETWEEN_ROUNDS;
@@ -774,9 +783,21 @@ function clearPlayerQueue(){
     game.playerQueue = [];
 }
 
+// delete all players for whom isGone === true
+function clearDeleteQueue(){
+    console.debug("Processing delete queue");
+    for(var i = 0; i < game.players.length; i++){
+        if(game.players[i].isGone){
+            game.deletePlayer(game.players[i].ID);
+        }
+    }
+    console.debug("Finished processing delete queue");
+}
+
 // prepare for next question
 function newGrind(){
     clearPlayerQueue();
+    clearDeleteQueue();
     updatePlayerList();
 
     // clear responses

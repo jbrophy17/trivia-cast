@@ -176,7 +176,7 @@ public abstract class GameMessageStream extends MessageStream {
 			Log.e(TAG, "Message Stream is not attached", e);
 		}
 	}
-	
+
 	public final void submitResponse(String response){
 		Log.d(TAG, "trying to submit response: " + response);
 		try{
@@ -196,13 +196,50 @@ public abstract class GameMessageStream extends MessageStream {
 		}
 	}
 
+	public final void readerIsDone(){
+		Log.d(TAG, "trying to readerIsDone");
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_READER_IS_DONE);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to readerIsDone", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_READER_IS_DONE + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
+	
+	public final void submitGuess(int responseID, int playerID){
+		Log.d(TAG, "trying to submit guess: " + responseID + ", " + playerID);
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_SUBMIT_GUESS);
+			payload.put(KEY_GUESS_RESPONSE_ID, responseID);
+			payload.put(KEY_GUESS_PLAYER_NUMBER, playerID);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to submit guess", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_SUBMIT_GUESS + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
+
 	protected abstract void onPlayerQueued();
 	protected abstract void onPlayerJoined(int newID);
 	protected abstract void onSettingsUpdated();
 	protected abstract void onGameSync(JSONArray players, int newReader, int newGuesser);
 	protected abstract void onReceiveResponses(JSONArray responses);
 	protected abstract void onResponseReceived();
-	protected abstract void onGuesser();
 	protected abstract void onGuessResponse(boolean response);
 	protected abstract void onRoundStarted(String newPrompt);
 	protected abstract void onRoundEnded();
@@ -239,7 +276,7 @@ public abstract class GameMessageStream extends MessageStream {
 						e.printStackTrace();
 					}
 				}
-				
+
 				// settings were updated
 				else if (KEY_SETTINGS_UPDATED.equals(event)){
 					Log.d(TAG, "Settings updated");
@@ -272,8 +309,7 @@ public abstract class GameMessageStream extends MessageStream {
 
 				// time to guess
 				else if (KEY_YOU_ARE_GUESSER.equals(event)) {
-					Log.d(TAG, "Time to guess");
-					onGuesser();
+					Log.w(TAG, "Deprecated type received: " + KEY_YOU_ARE_GUESSER);
 				}
 
 				// got a response to our guess

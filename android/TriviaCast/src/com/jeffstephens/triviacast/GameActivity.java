@@ -1,6 +1,7 @@
 package com.jeffstephens.triviacast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +39,9 @@ import com.google.cast.MediaRouteHelper;
 import com.google.cast.MediaRouteStateChangeListener;
 import com.google.cast.SessionError;
 import com.jeffstephens.triviacast.TVCComposer.ComposerListener;
+import com.jeffstephens.triviacast.TVCResponseReader.ReaderListener;
 
-public class GameActivity extends ActionBarActivity implements MediaRouteAdapter, ComposerListener {
+public class GameActivity extends ActionBarActivity implements MediaRouteAdapter, ComposerListener, ReaderListener {
 
 	// Debug toggle
 	public static final boolean IS_DEBUG = false;
@@ -62,11 +64,6 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	private Button nextRoundButton;
 	private TextView instructionsTextView;
 
-	// Colors
-	private static final int BACKGROUND_ERROR         = 0xFF800000;
-	private static final int BACKGROUND_SUCCESS       = 0xFF006600;
-	private static final int BACKGROUND_SELECTED_CARD = 0xFFFFFFCC;
-
 	// Game state
 	private int playerID = -1;
 	private String playerName = null;
@@ -76,6 +73,8 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	private int readerID = -1;
 	private int guesserID = -1;
 	private boolean doneReading = false;
+
+	private int lastResponseGuessed = -1;
 
 	// Constants
 	private static final String PREF_FILE = "myPreferences";
@@ -93,7 +92,35 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	@Override
 	public void submitResponseText(String response){
 		mGameMessageStream.submitResponse(response);
-		showWaitingForReadingUI();
+		showSubmittingResponseUI();
+	}
+
+	/**
+	 * Interface so reader can say they're done
+	 * and guesses can be submitted
+	 */
+	@Override
+	public void readerIsDone(){
+		doneReading = true;
+		mGameMessageStream.readerIsDone();
+		showInRoundWaitingUI();
+	}
+
+	@Override
+	public PlayerContainer getPlayers(){
+		return players;
+	}
+
+	@Override
+	public ResponseContainer getResponseContainer(){
+		return responses;
+	}
+
+	@Override
+	public void submitGuess(int responseID, int playerID){
+		lastResponseGuessed = responseID;
+		mGameMessageStream.submitGuess(responseID, playerID);
+		showInRoundWaitingUI();
 	}
 
 	/**
@@ -133,18 +160,6 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		loadPlayerName();
 
 		// initialize UI
-		//		
-		//		
-		//		// FIXME remove
-		//		String json = "{\"responses\" : \"[{\"response\":\"sadfasdf\",\"responseID\":1},{\"response\":\"udjdsj\",\"responseID\":2},{\"response\":\"jhkqwedjgkdqejkbwdsbjkdwgjk\",\"responseID\":0}]\"}";
-		//		try {
-		//			JSONObject obj = new JSONObject(json);
-		//			JSONArray arr = obj.getJSONArray("responses");
-		//			Log.d(TAG, "length is " + arr.length());
-		//		} catch (JSONException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
 	}
 
 	/**
@@ -451,6 +466,30 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		.show();
 	}
 
+	private void clearFragments(){
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
+		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
+
+		if(fragmentComposer != null && fragmentComposer instanceof TVCComposer){		
+			fragmentTransaction.remove(fragmentComposer);
+		}
+
+		if(fragmentReader != null && fragmentReader instanceof TVCResponseReader){
+			fragmentTransaction.remove(fragmentReader);
+		}
+
+		fragmentTransaction.commit();
+	}
+
+	private void showLobbyUI(){
+		clearFragments();
+		instructionsTextView.setText(R.string.between_rounds);
+		instructionsTextView.setVisibility(View.VISIBLE);
+		nextRoundButton.setVisibility(View.VISIBLE);
+	}
+
 	private void showComposeUI(){
 		// hide lobby UI
 		instructionsTextView.setVisibility(View.GONE);
@@ -464,29 +503,29 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		fragmentTransaction.commit();
 	}
 
+	private void showSubmittingResponseUI(){
+		// hide compose UI
+		clearFragments();
+
+		// show submitting UI
+		instructionsTextView.setText(R.string.submitting_response);
+		instructionsTextView.setVisibility(View.VISIBLE);
+	}
+
 	private void showWaitingForReadingUI(){
 		// hide compose UI
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		TVCComposer fragment = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
-		fragmentTransaction.remove(fragment);
-		fragmentTransaction.commit();
+		clearFragments();
 
 		// show waiting UI
 		instructionsTextView.setText(R.string.waiting_for_other_responses_message);
 		instructionsTextView.setVisibility(View.VISIBLE);
 	}
 
-	private void showReadingUI(){
-		Log.d(TAG, "Showing reading UI");
-
-		// hide waiting UI
-		instructionsTextView.setVisibility(View.GONE);
-
-		// show reading UI
+	private void goGoTVCResponseReader(boolean guessingMode){
 		Bundle args = new Bundle();
-		args.putStringArrayList("responses", responses.getStringArrayList());
 		args.putString("prompt", currentPrompt);
+		args.putBoolean("guessingMode", guessingMode);
+		args.putInt("playerID", playerID);
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -494,12 +533,36 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		fragment.setArguments(args);
 		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_READ_FRAGMENT);
 		fragmentTransaction.commit();
+	}
 
-		Log.d(TAG, "Committed TVCResponseReader fragment");
+	private void showReadingUI(){
+		Log.d(TAG, "Showing reading UI");
+
+		// hide waiting UI
+		hideInstructions();
+
+		// show reading UI
+		goGoTVCResponseReader(false);
+	}
+
+	private void showInRoundWaitingUI(){
+		// hide reader or guessing UI
+		clearFragments();
+
+		instructionsTextView.setVisibility(View.VISIBLE);
+		instructionsTextView.setText(R.string.someone_elses_turn);
+	}
+
+	private void hideInstructions(){
+		instructionsTextView.setVisibility(View.GONE);
 	}
 
 	private void showGuessingUI(){
-		// TODO 
+		// hide in round waiting UI
+		hideInstructions();
+
+		// show guessing UI
+		goGoTVCResponseReader(true);
 	}
 
 	/**
@@ -520,11 +583,37 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 			Toast.makeText(getApplicationContext(), "Name updated to " + playerName, Toast.LENGTH_LONG).show();
 		}
 
-		protected void onGameSync(JSONArray players, int newReader, int newGuesser){
+		protected void onGameSync(JSONArray newPlayers, int newReader, int newGuesser){
 			readerID = newReader;
 			guesserID = newGuesser;
 
-			// TODO: parse players
+			players.clear();
+
+			try{
+				for(int i = 0; i < newPlayers.length(); ++i){
+					JSONObject thisPlayerJSON = newPlayers.getJSONObject(i);
+					int thisID = thisPlayerJSON.getInt("ID");
+					int thisScore = thisPlayerJSON.getInt("score");
+					String thisName = thisPlayerJSON.getString("name");
+					String thisPictureURL = thisPlayerJSON.getString("pictureURL");
+					boolean thisIsOut = thisPlayerJSON.getBoolean("isOut");
+					Player thisPlayer = new Player(thisID, thisScore, thisName, thisPictureURL, thisIsOut);
+
+					players.addPlayer(thisPlayer);
+				}
+
+				try{
+					if(players.getPlayerById(playerID).isOut){
+						instructionsTextView.setText(R.string.youre_out_for_round);
+					}
+				}
+				catch(PlayerNotFoundException ex){
+					;
+				}
+			}
+			catch (JSONException e){
+				e.printStackTrace();
+			}
 		}
 
 		protected void onReceiveResponses(JSONArray newResponses){			
@@ -553,27 +642,19 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		}
 
 		protected void onResponseReceived(){
-			// TODO: update UI
-		}
-
-		protected void onGuesser(){
-			// TODO: display guesser interface
+			showWaitingForReadingUI();
 		}
 
 		protected void onGuessResponse(boolean response){
 			if(response){
-				showInfoMessage("Correct!",
-						"You guessed right.",
-						"Awesome!");
+				Toast.makeText(getApplicationContext(), "You guessed correctly!", Toast.LENGTH_LONG).show();
+				responses.removeResponseById(lastResponseGuessed); // remove from selectable responses
 
-				// TODO: update guesser interface removing guessed response
+				showGuessingUI();				
 			}
 			else{
-				showInfoMessage("Incorrect!",
-						"Sorry, your guess was wrong...",
-						"Bummer.");
-
-				// TODO: hide guesser interface
+				Toast.makeText(getApplicationContext(), "You guessed incorrectly.", Toast.LENGTH_LONG).show();
+				showInRoundWaitingUI();
 			}
 		}
 
@@ -583,7 +664,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		}
 
 		protected void onRoundEnded(){
-			// TODO: show lobby interface
+			showLobbyUI();
 		}
 
 		protected void onOrderInitialized(){
@@ -594,13 +675,14 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 			showInfoMessage("Reordering Canceled",
 					"The reordering process has been canceled.",
 					"OK");
-			// TODO: back to lobby interface
+			showLobbyUI();
 		}
 
 		protected void onOrderComplete(){
 			showInfoMessage("Reordering Complete!",
 					"Players are now in a new order - hopefully one that makes more sense.",
 					"OK");
+			showLobbyUI();
 		}
 
 		// Some error code has been received. Let the user know.
@@ -626,7 +708,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 				messageText = "A round is already in progress!";
 				break;
 			case ERROR_GUESSED_THE_READER:
-				messageText = "You guessed the reader!";
+				messageText = "You guessed the reader!"; // deprecated
 				break;
 			case ERROR_GUESSED_SELF:
 				messageText = "You guessed yourself.";

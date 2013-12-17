@@ -7,7 +7,7 @@ class ResponseNotFoundException extends Exception{
 }
 
 public class ResponseContainer{
-	private ArrayList<Response> responses;
+	public ArrayList<Response> responses;
 	
 	public ResponseContainer(){
 		this.responses = new ArrayList<Response>();
@@ -15,6 +15,15 @@ public class ResponseContainer{
 
 	public void addResponse(Response r){
 		responses.add(r);
+	}
+	
+	public void removeResponseById(int id){
+		for(int i = 0; i < responses.size(); ++i){
+			if(responses.get(i).ID == id){
+				responses.remove(i);
+				return;
+			}
+		}
 	}
 
 	public void clear(){
