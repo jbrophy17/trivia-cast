@@ -140,7 +140,6 @@ function Game() {
     this.players     = new Array();
     this.playerQueue = new Array();
     this.orderQueue  = new Array();
-    this.deleteQueue = new Array();
     this.responses   = new Array();
     this.cues        = prompts;
     this.cues        = shuffle(this.cues); // randomize each playthrough
@@ -386,7 +385,14 @@ function joinPlayer(channel, response){
 }
 
 function checkIfEmpty(){
-    if(game.players.length == 0 && game.playerQueue.length == 0){
+    var playersNotGone = 0;
+    for(var i = 0; i < game.players.length; i++){
+        if(!game.players[i].isGone){
+            playersNotGone++;
+        }
+    }
+
+    if(playersNotGone == 0 && game.playerQueue.length == 0){
         $('#instructions').html(GET_READY).show();
     }
 }
@@ -435,12 +441,7 @@ function leavePlayer(channel){
         nextGuesser(true);
     }
 
-    console.debug("leavePlayer: about to delete player");
-
-    game.deleteQueue.push(playerID);
     checkIfEmpty();
-
-    console.debug("leavePlayer: about to send game sync");
 
     if(isLastPlayer){
         betweenRounds();
@@ -782,10 +783,13 @@ function clearPlayerQueue(){
     game.playerQueue = [];
 }
 
+// delete all players for whom isGone === true
 function clearDeleteQueue(){
     console.debug("Processing delete queue");
-    for(var i = 0; i < game.deleteQueue.length; i++){
-        game.deletePlayer(game.deleteQueue[i]);
+    for(var i = 0; i < game.players.length; i++){
+        if(game.players[i].isGone){
+            game.deletePlayer(game.players[i].ID);
+        }
     }
     console.debug("Finished processing delete queue");
 }
