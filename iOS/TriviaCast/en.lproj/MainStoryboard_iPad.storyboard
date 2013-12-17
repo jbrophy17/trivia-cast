@@ -135,8 +135,8 @@
                                     <action selector="startRoundAction:" destination="JvG-7A-mK6" eventType="touchUpInside" id="X3Z-kb-Qbs"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Start the round once everyone has joined" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="220" translatesAutoresizingMaskIntoConstraints="NO" id="2w2-aT-tXw">
-                                <rect key="frame" x="20" y="122" width="220" height="46"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Start the round once everyone has joined" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="620" translatesAutoresizingMaskIntoConstraints="NO" id="2w2-aT-tXw">
+                                <rect key="frame" x="20" y="122" width="620" height="46"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -167,6 +167,10 @@
                                 <color key="textColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZq-UC-aXj">
+                                <rect key="frame" x="20" y="230" width="728" height="722"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -187,6 +191,7 @@
                         <outlet property="descriptionLabel" destination="2w2-aT-tXw" id="snF-qB-gxM"/>
                         <outlet property="profileThumbnailImageView" destination="j5q-4x-K8d" id="BLc-1J-zXT"/>
                         <outlet property="roundStartButton" destination="Y75-Dv-7Hx" id="wrZ-lh-lZC"/>
+                        <outlet property="scoresScrollView" destination="dZq-UC-aXj" id="qmg-c2-WH2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SKY-SM-G04" userLabel="First Responder" sceneMemberID="firstResponder"/>
