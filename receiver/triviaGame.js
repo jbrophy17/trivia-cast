@@ -40,6 +40,7 @@ function Player(name, channel, pictureURL) {
     this.ID      = -1;
     this.channel = channel;
     this.isOut   = false;
+    this.isGone  = false;
     this.score   = 0;
 
     if(typeof pictureURL != "undefined"){
@@ -139,6 +140,7 @@ function Game() {
     this.players     = new Array();
     this.playerQueue = new Array();
     this.orderQueue  = new Array();
+    this.deleteQueue = new Array();
     this.responses   = new Array();
     this.cues        = prompts;
     this.cues        = shuffle(this.cues); // randomize each playthrough
@@ -222,11 +224,13 @@ function Game() {
             playerList.push(this.players[i].clientSafeVersion());
         }
         for(var i = 0; i < this.players.length; i++){
-            var thisReader = this.players[this.guesser].ID;
-            if(typeof noReader != "undefined"){
-                thisReader = -1;
+            if(!this.players[i].isGone){
+                var thisReader = this.players[this.reader].ID;
+                if(typeof noReader != "undefined"){
+                    thisReader = -1;
+                }
+                this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
             }
-            this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
         }
     }
 }
@@ -408,7 +412,7 @@ function leavePlayer(channel){
 
     console.debug("leavePlayer: about to mark as out");
 
-    game.players[playerID].didGetOut();
+    game.players[playerID].isGone = true;
 
     var isLastPlayer = false;
     // after this, will there not be enough players to continue?
@@ -433,7 +437,7 @@ function leavePlayer(channel){
 
     console.debug("leavePlayer: about to delete player");
 
-    game.deletePlayer(playerID);
+    game.deleteQueue.push(playerID);
     checkIfEmpty();
 
     console.debug("leavePlayer: about to send game sync");
@@ -555,7 +559,7 @@ function submitGuess(channel, guess){
         channel.send({ "type" : "guessResponse", "value" : false });
         console.warn("Invalid guess: tried to guess themself");
         nextGuesser();
-        prependStatus(guesserID, "themselves...");
+        prependStatus(guesserID, "themselves..");
         return;
     }
 
@@ -609,6 +613,7 @@ function submitGuess(channel, guess){
         game.responses[deleteIndex].isActive = false;
 
         // update ui
+        console.debug("Fading resopnse ID " + '#response' + game.responses[deleteIndex].responseID);
         $('#response' + game.responses[deleteIndex].responseID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
         var statusText = "correctly that ";
         if(typeof game.players[playerGuessed] == "undefined"){
@@ -670,6 +675,7 @@ function advanceGuesser(){
         if(loopCount >= game.players.length){
             console.warn("Couldn't find new guesser. Ending round.");
             betweenRounds();
+            return;
         }
         loopCount++;
         var nextGuesser = game.guesser + 1;
@@ -685,7 +691,10 @@ function advanceGuesser(){
         if(game.players[game.guesser].isOut){
             console.debug("looking for guesser but found someone who is out: " + game.players[game.guesser].toString());
         }
-    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut);
+        if(game.players[game.guesser].isGone){
+            console.debug("looking for guesser but found someone who is gone: " + game.players[game.guesser].toString());
+        }
+    }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.players[game.guesser].isGone);
     console.debug("new guesser set to " + game.guesser);
 }
 
@@ -742,7 +751,9 @@ function startNextRound(channel){
 function betweenRounds(){
     // notify everyone that we're in between rounds
     for(var i = 0; i < game.players.length; i++){
-        game.players[i].channel.send({ 'type' : 'roundOver' });
+        if(!game.players[i].isGone){
+            game.players[i].channel.send({ 'type' : 'roundOver' });
+        }
     }
 
     game.phase = PHASE_BETWEEN_ROUNDS;
@@ -771,9 +782,18 @@ function clearPlayerQueue(){
     game.playerQueue = [];
 }
 
+function clearDeleteQueue(){
+    console.debug("Processing delete queue");
+    for(var i = 0; i < game.deleteQueue.length; i++){
+        game.deletePlayer(game.deleteQueue[i]);
+    }
+    console.debug("Finished processing delete queue");
+}
+
 // prepare for next question
 function newGrind(){
     clearPlayerQueue();
+    clearDeleteQueue();
     updatePlayerList();
 
     // clear responses
