@@ -30,6 +30,7 @@
         self.isGuessing = NO;
         self.isOut = NO;
         self.updatePicture = NO;
+        self.profilePicture = nil;
         [self setImageUrlString:URL];
     }
     
@@ -37,7 +38,9 @@
 }
 
 -(void) setImageUrlString:(NSString *)imageUrlString completion:(imageSetCompletion)comp {
-    if (self.imageUrlString != imageUrlString) {
+    NSLog(@"setImageUrlString %@", imageUrlString);
+    if ( (self.profilePicture == nil && ![self.imageUrlString isEqualToString:@""]) || ![self.imageUrlString isEqualToString:imageUrlString]) {
+        NSLog(@"in the set url loop");
         _imageUrlString = imageUrlString;
         
         NSURLRequest *theRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:self.imageUrlString]
@@ -50,16 +53,20 @@
         
         // create the connection with the request
         // and start loading the data
-        NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
+        NSURLConnection *theConnection=[NSURLConnection connectionWithRequest:theRequest delegate:self];//[[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
+        [theConnection start];
+        
         if (!theConnection) {
             // Release the receivedData object.
             requestData = nil;
+            self.profilePicture = nil;
             NSLog(@"Error creatingConnection");
             // Inform the user that the connection failed.
             if(comp) {
                 comp(NO);
             }
         } else {
+#warning TODO: make this fire in the actual url completion method
             if(comp) {
                 comp(YES);
             }
@@ -75,11 +82,29 @@
 
 #pragma NSURLConnectionDelegate methods
 
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    [requestData setLength:0];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    [requestData appendData:data];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    NSLog(@"Connection failed: %@", [error description]);
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     if (requestData)
     {
-        _profilePicture = [[UIImage alloc] initWithData:requestData];
+        self.profilePicture = [[UIImage alloc] initWithData:requestData];
+        if (self.profilePicture == nil) {
+            NSLog(@"profile pic is null, you trash programmer");
+        }
+        NSLog(@"%@ got picture: %@", self.name, self.imageUrlString);
+    } else {
+        NSLog(@"requestData nil");
     }
 }
 

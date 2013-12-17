@@ -121,7 +121,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
     if ([_channel attachMessageStream:_messageStream]) {
         if (_messageStream.messageSink) {
             if (20 < _channel.sendBufferAvailableBytes) {
-                if (![_messageStream joinGameWithName:[self currentUserName]]) {
+                if (![_messageStream joinGameWithName:[self currentUserName] andURL:[appDelegate profilePicUrl]]) {
                     NSLog(@"Couldn't join game.");
                 }
             } else {
@@ -247,7 +247,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 -(void) didReceiveResponsesHelper:(NSDictionary *)responses {
     
     if([self.player isReader]){
-        NSLog(@"DataSource: didReceiveResponses, Reader");
+        
         TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
         [lobbyViewController segueToReaderViewWithResponses:responses];
         [self.player setIsReader:NO];
@@ -256,9 +256,8 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
          [lobbyViewController segueToReaderViewWithResponses:responses];
          }];*/
         
-    }else if ([self.player isGuessing]) {
-        NSLog(@"DataSource: didReceiveResponses, Guesser");
-        NSLog(@"DataSource: didReceiveResponses, responses: %@ players %@", responses, self.players);
+    }else {
+        NSLog(@"not reader");
         NSMutableArray* notOutPlayers = [NSMutableArray array];
         for (TVCPlayer* p in self.players) {
             if (!p.isOut) {
@@ -300,7 +299,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
     for(TVCPlayer* player in self.players) {
         if(player.playerNumber == playerNumber) {
             self.player = player;
-            self.currentScore = *(player.score);
+            self.currentScore = player.score;
         }
     }
     [[appDelegate dataSource] setPlayers:players];
@@ -308,7 +307,6 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 }
 
 -(void)didReceiveRoundStartedWithCue:(NSString*)cue {
-    NSLog(@"DataSource: didReceiveRoundStartedWithCue: %@",cue);
     if (self.currentViewController != self.lobbyViewController) {
         [self.lobbyViewController setMissedCue:YES];
         [self.lobbyViewController setCue:cue];
