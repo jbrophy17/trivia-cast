@@ -32,5 +32,17 @@
         android:text="@string/button_done_reading_label"
         android:textColor="#FFFFFF"
         android:visibility="invisible" />
+    
+    <Button
+        android:id="@+id/button_start_guess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:background="#0099CC"
+        android:text="@string/button_start_guess_label"
+        android:textColor="#FFFFFF"
+        android:visibility="gone" />
 
 </RelativeLayout>

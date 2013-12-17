@@ -34,4 +34,24 @@ public class PlayerContainer{
 	public int size(){
 		return players.size();
 	}
+	
+	public ArrayList<Player> toArrayList(){
+		ArrayList<Player> result = new ArrayList<Player>();
+		for(int i = 0; i < players.size(); ++i){
+			result.add(players.get(i));
+		}
+		return result;
+	}
+	
+	public ArrayList<String> getStringArrayList(){
+		ArrayList<String> result = new ArrayList<String>();
+		for(int i = 0; i < players.size(); ++i){
+			result.add(players.get(i).toString());
+		}
+		return result;
+	}
+	
+	public Player[] toStringArray(){
+		return (Player[]) this.getStringArrayList().toArray();
+	}
 }
