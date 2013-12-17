@@ -161,7 +161,7 @@
     for (UIView* subview in self.scoresScrollView.subviews) {
         [subview removeFromSuperview];
     }
-    int newScore = ([[[appDelegate dataSource] player] score]);
+    int newScore = [[appDelegate dataSource] currentScore];
     [self.currentScoreLabel setText:[NSString stringWithFormat:@"%i", newScore]] ;
     
     int ycount = 0;

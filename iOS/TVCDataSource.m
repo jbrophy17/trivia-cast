@@ -299,7 +299,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
     for(TVCPlayer* player in self.players) {
         if(player.playerNumber == playerNumber) {
             self.player = player;
-            self.currentScore = (player.score);
+            self.currentScore = player.score;
         }
     }
     [[appDelegate dataSource] setPlayers:players];

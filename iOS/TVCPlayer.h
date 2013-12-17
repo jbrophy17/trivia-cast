@@ -18,7 +18,7 @@ typedef void(^imageSetCompletion)(BOOL);
 @property (nonatomic) BOOL isGuessing;
 @property (nonatomic) BOOL isOut;
 @property (nonatomic) NSInteger playerNumber;
-@property (nonatomic,readonly) UIImage* profilePicture;
+@property (nonatomic) UIImage* profilePicture;
 @property (nonatomic,strong) NSString* imageUrlString;
 @property BOOL updatePicture;
 
