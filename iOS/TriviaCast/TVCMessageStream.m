@@ -344,7 +344,7 @@ static NSString * const kValuePlayerX = @"X";
             
             [holdPlayer setName:name];
             [holdPlayer setIsOut:isOut];
-            [holdPlayer setScore:&score];
+            [holdPlayer setScore:score];
             [holdPlayer setImageUrlString:profilePicURL];
             NSLog(@"Game synce: Profile pic url: %@", profilePicURL);
             

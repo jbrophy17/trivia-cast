@@ -13,7 +13,7 @@ typedef void(^imageSetCompletion)(BOOL);
 @interface TVCPlayer : NSObject <NSURLConnectionDelegate>
 
 @property (nonatomic, strong) NSString * name;
-@property (nonatomic) NSInteger * score;
+@property (nonatomic) NSInteger score;
 @property (nonatomic) BOOL isReader;
 @property (nonatomic) BOOL isGuessing;
 @property (nonatomic) BOOL isOut;

@@ -161,7 +161,7 @@
     for (UIView* subview in self.scoresScrollView.subviews) {
         [subview removeFromSuperview];
     }
-    int newScore = *([[[appDelegate dataSource] player] score]);
+    int newScore = ([[[appDelegate dataSource] player] score]);
     [self.currentScoreLabel setText:[NSString stringWithFormat:@"%i", newScore]] ;
     
     int ycount = 0;
@@ -189,7 +189,7 @@
             TVCScoreView * holdScore = [[TVCScoreView alloc] initWithFrame:CGRectMake(0, yCoord, scoreWidth, scoreHeight)];
             
             [[holdScore profileThumbnail ] setImage:img];
-            [[holdScore scoreLabel] setText:[NSString stringWithFormat:@"%i",*curP.score]];
+            [[holdScore scoreLabel] setText:[NSString stringWithFormat:@"%i",curP.score]];
             [[holdScore nameLabel] setText:curP.name];
             
             [self.scoresScrollView addSubview:holdScore];

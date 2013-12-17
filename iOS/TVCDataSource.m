@@ -257,6 +257,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
          }];*/
         
     }else {
+        NSLog(@"not reader");
         NSMutableArray* notOutPlayers = [NSMutableArray array];
         for (TVCPlayer* p in self.players) {
             if (!p.isOut) {
@@ -298,7 +299,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
     for(TVCPlayer* player in self.players) {
         if(player.playerNumber == playerNumber) {
             self.player = player;
-            self.currentScore = *(player.score);
+            self.currentScore = (player.score);
         }
     }
     [[appDelegate dataSource] setPlayers:players];
