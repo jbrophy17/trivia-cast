@@ -474,7 +474,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 		fragmentTransaction.commit();
 	}
-	
+
 	private void showLobbyUI(){
 		instructionsTextView.setText(R.string.between_rounds);
 		instructionsTextView.setVisibility(View.VISIBLE);
@@ -493,11 +493,11 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
 		fragmentTransaction.commit();
 	}
-	
+
 	private void showSubmittingResponseUI(){
 		// hide compose UI
 		clearFragments();
-		
+
 		// show submitting UI
 		instructionsTextView.setText(R.string.submitting_response);
 		instructionsTextView.setVisibility(View.VISIBLE);
@@ -540,8 +540,17 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		// hide reader or guessing UI
 		clearFragments();
 
-		instructionsTextView.setText(R.string.someone_elses_turn);
 		instructionsTextView.setVisibility(View.VISIBLE);
+		instructionsTextView.setText(R.string.someone_elses_turn);
+
+		try{
+			if(players.getPlayerById(playerID).isOut){
+				instructionsTextView.setText(R.string.youre_out_for_round);
+			}
+		}
+		catch (PlayerNotFoundException ex){
+			Log.e(TAG, "Couldn't find self when checking if out");
+		}
 	}
 
 	private void hideInstructions(){
@@ -655,13 +664,14 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 			showInfoMessage("Reordering Canceled",
 					"The reordering process has been canceled.",
 					"OK");
-			// TODO: back to lobby interface
+			showLobbyUI();
 		}
 
 		protected void onOrderComplete(){
 			showInfoMessage("Reordering Complete!",
 					"Players are now in a new order - hopefully one that makes more sense.",
 					"OK");
+			showLobbyUI();
 		}
 
 		// Some error code has been received. Let the user know.
