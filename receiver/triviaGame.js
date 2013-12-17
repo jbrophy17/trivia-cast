@@ -694,9 +694,6 @@ function nextGuesser(force){
         advanceGuesser();
 
         console.debug('guesser is now ' + game.guesser);
-
-        // notify next guesser
-        game.players[game.guesser].channel.send({ type : 'guesser' });
     }
     else{
         game.firstGuesser = false;
