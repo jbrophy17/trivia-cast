@@ -20,5 +20,6 @@
     <string name="title_who_said_it">Who Said It?</string>
     <string name="between_rounds">Start the next round\nwhen everyone\'s ready.</string>
     <string name="youre_out_for_round">Someone guessed your response!\nThat means you can\'t guess anymore this round.</string>
+    <string name="your_response_here">Touch to write a response...</string>
 
 </resources>

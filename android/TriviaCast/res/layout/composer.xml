@@ -26,6 +26,7 @@
 
     <EditText
         android:id="@+id/response"
+        android:hint="@string/your_response_here"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -33,6 +34,9 @@
         android:layout_marginTop="40dp"
         android:ems="10"
         android:inputType="textMultiLine"
-        android:textColor="#333333" />
+        android:textColor="#333333"
+        android:textColorHint="#666666"
+        android:background="@drawable/textfield_multiline_activated_holo_dark"
+        android:textCursorDrawable="@null" />
 
 </RelativeLayout>

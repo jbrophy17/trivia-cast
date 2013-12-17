@@ -472,14 +472,14 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
 		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
 
-		if(fragmentComposer != null && fragmentComposer instanceof TVCComposer){		
+		try{
 			fragmentTransaction.remove(fragmentComposer);
-		}
-
-		if(fragmentReader != null && fragmentReader instanceof TVCResponseReader){
 			fragmentTransaction.remove(fragmentReader);
 		}
-
+		catch (IllegalStateException ex){
+			; // no problem here
+		}
+		
 		fragmentTransaction.commit();
 	}
 
@@ -650,7 +650,12 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 				Toast.makeText(getApplicationContext(), "You guessed correctly!", Toast.LENGTH_LONG).show();
 				responses.removeResponseById(lastResponseGuessed); // remove from selectable responses
 
-				showGuessingUI();				
+				if(responses.size() == 0){
+					showInRoundWaitingUI();
+				}
+				else{
+					showGuessingUI();
+				}
 			}
 			else{
 				Toast.makeText(getApplicationContext(), "You guessed incorrectly.", Toast.LENGTH_LONG).show();
@@ -659,6 +664,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		}
 
 		protected void onRoundStarted(String newPrompt){
+			doneReading = false; 
 			currentPrompt = newPrompt;
 			showComposeUI();
 		}
