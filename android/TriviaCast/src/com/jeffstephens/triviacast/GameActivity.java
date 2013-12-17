@@ -74,6 +74,8 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	private int guesserID = -1;
 	private boolean doneReading = false;
 
+	private int lastResponseGuessed = -1;
+
 	// Constants
 	private static final String PREF_FILE = "myPreferences";
 	private static final String TAG_COMPOSE_FRAGMENT = "COMPOSE_FRAGMENT";
@@ -105,12 +107,18 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	}
 
 	@Override
-	public ArrayList<Player> getPlayerList(){
-		return players.toArrayList();
+	public PlayerContainer getPlayers(){
+		return players;
+	}
+
+	@Override
+	public ResponseContainer getResponseContainer(){
+		return responses;
 	}
 
 	@Override
 	public void submitGuess(int responseID, int playerID){
+		lastResponseGuessed = responseID;
 		mGameMessageStream.submitGuess(responseID, playerID);
 		showInRoundWaitingUI();
 	}
@@ -464,11 +472,11 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
 		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
 
-		if(fragmentComposer != null){		
+		if(fragmentComposer != null && fragmentComposer instanceof TVCComposer){		
 			fragmentTransaction.remove(fragmentComposer);
 		}
 
-		if(fragmentReader != null){
+		if(fragmentReader != null && fragmentReader instanceof TVCResponseReader){
 			fragmentTransaction.remove(fragmentReader);
 		}
 
@@ -476,6 +484,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	}
 
 	private void showLobbyUI(){
+		clearFragments();
 		instructionsTextView.setText(R.string.between_rounds);
 		instructionsTextView.setVisibility(View.VISIBLE);
 		nextRoundButton.setVisibility(View.VISIBLE);
@@ -514,9 +523,9 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 	private void goGoTVCResponseReader(boolean guessingMode){
 		Bundle args = new Bundle();
-		args.putStringArrayList("responses", responses.getStringArrayList());
 		args.putString("prompt", currentPrompt);
 		args.putBoolean("guessingMode", guessingMode);
+		args.putInt("playerID", playerID);
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -542,15 +551,6 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 		instructionsTextView.setVisibility(View.VISIBLE);
 		instructionsTextView.setText(R.string.someone_elses_turn);
-
-		try{
-			if(players.getPlayerById(playerID).isOut){
-				instructionsTextView.setText(R.string.youre_out_for_round);
-			}
-		}
-		catch (PlayerNotFoundException ex){
-			Log.e(TAG, "Couldn't find self when checking if out");
-		}
 	}
 
 	private void hideInstructions(){
@@ -601,6 +601,15 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 					players.addPlayer(thisPlayer);
 				}
+
+				try{
+					if(players.getPlayerById(playerID).isOut){
+						instructionsTextView.setText(R.string.youre_out_for_round);
+					}
+				}
+				catch(PlayerNotFoundException ex){
+					;
+				}
 			}
 			catch (JSONException e){
 				e.printStackTrace();
@@ -639,7 +648,9 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		protected void onGuessResponse(boolean response){
 			if(response){
 				Toast.makeText(getApplicationContext(), "You guessed correctly!", Toast.LENGTH_LONG).show();
-				showGuessingUI();
+				responses.removeResponseById(lastResponseGuessed); // remove from selectable responses
+
+				showGuessingUI();				
 			}
 			else{
 				Toast.makeText(getApplicationContext(), "You guessed incorrectly.", Toast.LENGTH_LONG).show();

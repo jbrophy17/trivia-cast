@@ -19,13 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class TVCResponseReader extends Fragment {
 
 	private int NUM_PAGES = 0;
-	private ArrayList<String> responses = new ArrayList<String>();
-	ArrayList<Player> playerList = new ArrayList<Player>();
+	private ResponseContainer responses = new ResponseContainer();
+	private Response[] responseArray;
+	private PlayerContainer players = new PlayerContainer();
+	private String[] playerNames;
+	private int[] playerIDs;
+	private int myPlayerID;
 	private ViewPager mPager;
 	private PagerAdapter mPagerAdapter;
 	private String prompt;
@@ -40,7 +43,8 @@ public class TVCResponseReader extends Fragment {
 	public interface ReaderListener{
 		// Container Activity must implement this
 		public void readerIsDone();
-		public ArrayList<Player> getPlayerList();
+		public PlayerContainer getPlayers();
+		public ResponseContainer getResponseContainer();
 		public void submitGuess(int responseID, int playerID);
 	}
 
@@ -66,16 +70,30 @@ public class TVCResponseReader extends Fragment {
 
 	private void initGuessingMode(){
 		Log.d(TAG, "init guessing mode");
-		playerList = mListener.getPlayerList();
+		players = mListener.getPlayers();
 		doneButton.setVisibility(View.GONE);
 		guessButton.setVisibility(View.VISIBLE);
 
 		guessButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
 				// build string array for display with same indices as playerList
-				String playerNames[] = new String[playerList.size()];
-				for(int i = 0; i < playerList.size(); ++i){
-					playerNames[i] = playerList.get(i).toString();
+				ArrayList<String> tempPlayerNames = new ArrayList<String>();
+				ArrayList<Integer> tempPlayerIDs = new ArrayList<Integer>();
+				for(int i = 0; i < players.size(); ++i){
+					if(!players.players.get(i).isOut && players.players.get(i).ID != myPlayerID){
+						tempPlayerNames.add(players.players.get(i).toString());
+						tempPlayerIDs.add(players.players.get(i).ID);
+					}
+					else{
+						Log.d(TAG, "Excluding " + players.players.get(i).toString());
+					}
+				}
+
+				playerNames = new String[tempPlayerNames.size()];
+				playerIDs = new int[tempPlayerIDs.size()];
+				for(int i = 0; i < tempPlayerIDs.size(); ++i){
+					playerNames[i] = tempPlayerNames.get(i).toString();
+					playerIDs[i] = tempPlayerIDs.get(i).intValue();
 				}
 
 				// build dialog
@@ -83,8 +101,7 @@ public class TVCResponseReader extends Fragment {
 				builder.setTitle(R.string.title_who_said_it);
 				builder.setItems(playerNames, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						int playerID = playerList.get(which).ID;
-						confirmChoice(playerID);
+						confirmChoice(which);
 					}
 				});
 				builder.create();
@@ -94,9 +111,9 @@ public class TVCResponseReader extends Fragment {
 	}
 
 	private void confirmChoice(final int playerIndex){
-		String confirmText = "You're guessing that <b>" + playerList.get(playerIndex).toString() + "</b> submitted";
-		confirmText += "<b>" + responses.get(selectedPrompt).toString() + "</b>";
-		
+		String confirmText = "You're guessing that <b>" + playerNames[playerIndex] + "</b> submitted ";
+		confirmText += "<b>" + responseArray[selectedPrompt].toString() + "</b>";
+
 		String lastCharacter = confirmText.substring(confirmText.length());
 		if(lastCharacter != "." && lastCharacter != "!" && lastCharacter != "?"){
 			confirmText += ".";
@@ -110,7 +127,7 @@ public class TVCResponseReader extends Fragment {
 		alert.setPositiveButton("Submit Guess", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				// submit guess
-				mListener.submitGuess(selectedPrompt, playerIndex);
+				mListener.submitGuess(responseArray[selectedPrompt].ID, playerIDs[playerIndex]);
 			}
 		});
 
@@ -128,10 +145,18 @@ public class TVCResponseReader extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		responses = args.getStringArrayList("responses");
+		responses = mListener.getResponseContainer();
+
+		// populate array
+		responseArray = new Response[responses.size()];
+		for(int i = 0; i < responses.responses.size(); ++i){
+			responseArray[i] = responses.responses.get(i);
+		}
+
 		NUM_PAGES = responses.size();
 		prompt = args.getString("prompt");
 		guessingMode = args.getBoolean("guessingMode");
+		myPlayerID = args.getInt("playerID");
 
 		Log.d(TAG, "Got " + NUM_PAGES + " responses");
 
@@ -194,9 +219,11 @@ public class TVCResponseReader extends Fragment {
 			}
 
 			Bundle args = new Bundle();
-			args.putString("text", responses.get(position));
 			ScreenSlidePageFragment frag = new ScreenSlidePageFragment();
 			frag.setArguments(args);
+
+			args.putString("text", responseArray[position].toString());
+
 			return frag;
 		}
 
