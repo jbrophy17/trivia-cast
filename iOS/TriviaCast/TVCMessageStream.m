@@ -143,10 +143,11 @@ static NSString * const kValuePlayerX = @"X";
     return self;
 }
 
-- (BOOL)joinGameWithName:(NSString *)name {
+- (BOOL)joinGameWithName:(NSString *)name andURL:(NSString *)URL{
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     [payload gck_setStringValue:valueTypeJoin forKey:keyType];
     [payload gck_setStringValue:name forKey:keyName];
+    [payload gck_setStringValue:URL forKey:keyPictureURL];
 
     return [self sendMessage:payload];
 }
@@ -177,7 +178,7 @@ static NSString * const kValuePlayerX = @"X";
     [payload gck_setStringValue:valueTypeUpdateSettings forKey:keyType];
     [payload gck_setStringValue:name forKey:keyName];
     [payload gck_setStringValue:url forKey:keyPictureURL];
-    NSLog(@"url: %@", url);
+    NSLog(@"update settings, url: %@", url);
     return [self sendMessage:payload];
 }
 
@@ -185,7 +186,6 @@ static NSString * const kValuePlayerX = @"X";
     NSMutableDictionary *payload = [[NSMutableDictionary alloc] init];
     [payload gck_setStringValue:valueTypeSubmitResponse forKey:keyType];
     [payload gck_setStringValue:text forKey:keyResponse];
-    NSLog(@"Payload: %@", payload);
     @try {
         return [self sendMessage:payload];
     } @catch (GCKError *error) {
@@ -198,7 +198,6 @@ static NSString * const kValuePlayerX = @"X";
     [payload gck_setStringValue:valueTypeSubmitGuess forKey:keyType];
     [payload gck_setIntegerValue:*number forKey:keyGuessPlayerNumber];
     [payload gck_setIntegerValue:*responseId forKey:keyGuessResponseId];
-    NSLog(@"Guess: ResponseID: %i for Player: %i", *responseId, *number);
     [self.delegate setCurrentGuess:number];
     return [self sendMessage:payload];
 }
@@ -226,10 +225,9 @@ static NSString * const kValuePlayerX = @"X";
 
 - (void)didReceiveMessage:(id)message {
     NSDictionary *payload = message;
-    NSLog(@"Did receive Message");
-    NSLog(@"dict: %@",payload);
+    NSLog(@"Did receive Message: dict: %@",payload);
     NSString *type = [payload gck_stringForKey:keyType];
-    NSLog(@"type:%@",type);
+
     if (!type) {
         NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
         return;
@@ -237,7 +235,6 @@ static NSString * const kValuePlayerX = @"X";
     
     
     if([type isEqualToString:valueTypeDidJoin]) {
-        NSLog(@"Did start working");
         
         NSNumber *playerValue = [NSNumber numberWithInt:[payload gck_integerForKey:keyPlayerNumber]];
        
@@ -292,7 +289,6 @@ static NSString * const kValuePlayerX = @"X";
             [responseIdDictionary setObject:response forKey:[NSString stringWithFormat:@"%i",responseID]];
         }
        
-        NSLog(@"responseDictionary: %@", responseIdDictionary);
         [self.delegate didReceiveResponses:responseIdDictionary];
         return;
     }
@@ -344,20 +340,13 @@ static NSString * const kValuePlayerX = @"X";
             }
             if(!holdPlayer) {
                 holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID andImageURL:profilePicURL];
-            } else {
-                [holdPlayer setName:name];
             }
+            
+            [holdPlayer setName:name];
             [holdPlayer setIsOut:isOut];
             [holdPlayer setScore:&score];
-            if( ![profilePicURL isEqualToString:@""]) {
-                __weak typeof (holdPlayer) weakHoldPlayer = holdPlayer;
-                [holdPlayer setImageUrlString:profilePicURL completion:^(BOOL finished) {
-                    UIImageView * imageView = (UIImageView*)[[[[appDelegate dataSource] lobbyViewController] imageDict] objectForKey:[NSNumber numberWithInt:ID]];
-                    
-                    [imageView setImage:weakHoldPlayer.profilePicture];
-                    //[[[appDelegate dataSource] lobbyViewController] updateScoreList];
-                }];
-            }
+            [holdPlayer setImageUrlString:profilePicURL];
+            NSLog(@"Game synce: Profile pic url: %@", profilePicURL);
             
             if (holdPlayer.playerNumber == readerID) {
                 [holdPlayer setIsReader:YES];
@@ -369,7 +358,6 @@ static NSString * const kValuePlayerX = @"X";
             [returnPlayers addObject:holdPlayer];
             
         }
-        NSLog(@"returnPlayers: %@", returnPlayers);
         [self.delegate didReceiveGameSyncWithPlayers:returnPlayers];
         return;
     }
@@ -385,90 +373,12 @@ static NSString * const kValuePlayerX = @"X";
         [self.delegate didReceiveRoundEnded];
         return;
     }
-    
-    
-    
-    
-    
-    /*start google's stuff*/
-    /*
-    if ([event isEqualToString:kValueEventJoined]) {
-        NSString *playerName = [payload gck_stringForKey:kKeyName];
-        NSInteger playerValue = [payload gck_integerForKey:kKeyPlayer];
-        TVCPlayer * player;
-        if (playerName && playerValue) {
-            player = [[TVCPlayer alloc] initWithName:playerName andNumber:playerValue];
-        } else {
-            NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
-            return;
-        }
-        
-        NSArray *players = [payload gck_arrayForKey:keyPlayersInGame];
-        
-        [self.delegate didJoinGameAsPlayer:player withPlayers:players];
-        
-    } else if ([event isEqualToString:kValueEventReader])
-    {
-        NSArray * listOfResponses = [payload gck_arrayForKey:kKeyResponses];
-        //SHould add error check here
-        
-        [self.delegate didReceiveReaderWithResponses:listOfResponses];
-        
-    } else if ([event isEqualToString:kValueEventGuesser])
-    {
-      NSArray * listOfResponses = [payload gck_arrayForKey:kKeyResponses];
-        
-        [self.delegate didReceiveGuesserWithResponses:listOfResponses];
-        
-    }
-     */
-    /* else if ([event isEqualToString:kValueEventMoved]) {
-        NSString *playerValue = [payload gck_stringForKey:kKeyPlayer];
-        TicTacToePlayer player;
-        if ([playerValue isEqualToString:kValuePlayerO]) {
-            player = kPlayerO;
-        } else if ([playerValue isEqualToString:kValuePlayerX]) {
-            player = kPlayerX;
-        } else {
-            NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
-            return;
-        }
-        NSInteger row = [payload gck_integerForKey:kKeyRow];
-        NSInteger column = [payload gck_integerForKey:kKeyColumn];
-        if ((row > 2) || (column > 2)) {
-            NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
-            return;
-        }
-        BOOL isFinal = [payload gck_boolForKey:kKeyGameOver];
-        
-        [self.delegate didReceiveMoveByPlayer:player atRow:row column:column isFinal:isFinal];
-    } */
+
     if ([type isEqualToString:valueTypeError]) {
         NSInteger errorCode = [payload gck_integerForKey:keyValue];
         
           [self.delegate didReceiveErrorMessage:[NSString stringWithFormat:@"Error Code: %i",errorCode]];
-    } /* else if ([event isEqualToString:kValueEventEndgame]) {
-        NSString *stateValue = [payload gck_stringForKey:kKeyEndState];
-        
-        GameResult result;
-        if ([stateValue isEqualToString:kValueEndgameOWon]) {
-            result = (self.player == kPlayerO) ? kResultYouWon : kResultYouLost;
-        } else if ([stateValue isEqualToString:kValueEndgameXWon]) {
-            result = (self.player == kPlayerX) ? kResultYouWon : kResultYouLost;
-        } else if ([stateValue isEqualToString:kValueEndgameDraw]) {
-            result = kResultDraw;
-        } else if ([stateValue isEqualToString:kValueEndgameAbandoned]) {
-            result = kResultAbandoned;
-        } else {
-            NSLog(@"received invalid message: %@", [GCKJsonUtils writeJson:payload]);
-            return;
-        }
-        
-        NSInteger winningLocation = [payload gck_integerForKey:kKeyWinningLocation];
-        
-        _joined = NO;
-        [self.delegate didEndGameWithResult:result winningLocation:winningLocation];
-    } */
+    }
 }
 
 - (void)didDetach {

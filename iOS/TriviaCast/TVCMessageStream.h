@@ -207,9 +207,10 @@ typedef NS_ENUM(NSInteger, GameResult) {
  * Joins a new game.
  *
  * @param name The name of this player.
+ * @param URL the url to the profile picture
  * @return <code>YES</code> if the request was made, <code>NO</code> if it couldn't be sent.
  */
-- (BOOL)joinGameWithName:(NSString *)name;
+- (BOOL)joinGameWithName:(NSString *)name andURL:(NSString*)URL;
 
 /**
  * Sends the order message.

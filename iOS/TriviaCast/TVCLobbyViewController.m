@@ -157,40 +157,52 @@
 }
 
 -(void) updateScoreList {
+    
+    for (UIView* subview in self.scoresScrollView.subviews) {
+        [subview removeFromSuperview];
+    }
+    int newScore = *([[[appDelegate dataSource] player] score]);
+    [self.currentScoreLabel setText:[NSString stringWithFormat:@"%i", newScore]] ;
+    
     int ycount = 0;
-    int xcount = 0;
+   // int xcount = 0;
     int buffer = 10;
-    int scoreHeight = 50;
-    int scoreWidth = 150;
+    int scoreHeight = 90;
+    int scoreWidth = self.scoresScrollView.frame.size.width;
+    
     
     for(TVCPlayer *curP in [[appDelegate dataSource] players]) {
         if (curP.playerNumber != [[[appDelegate dataSource] player] playerNumber]) {
             
             //UIImageView* imgView = (UIImageView*)[self.imageDict objectForKey:[NSNumber numberWithInt:curP.playerNumber]];
             
-            UIImageView* imgView = [[UIImageView alloc] initWithImage:[curP profilePicture]]; //[curP profilePicture];
+            UIImage* img = [curP profilePicture]; //[curP profilePicture];
             
-            if (!imgView) {
-                imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"defaultProfile.jpg"]];
+            if (!img) {
+                img = [UIImage imageNamed:@"defaultProfile.jpg"];
                 
-                [self.imageDict setObject:imgView forKey:[NSNumber numberWithInt:curP.playerNumber]];
+               // [self.imageDict setObject:imgView forKey:[NSNumber numberWithInt:curP.playerNumber]];
             }
-            float xCoord = buffer + xcount * scoreHeight;
-            float yCoord = ycount * scoreWidth + buffer;
+           // float xCoord = buffer + xcount * scoreHeight;
+            float yCoord = ycount * (scoreHeight + buffer);
             
-            TVCScoreView * holdScore = [[TVCScoreView alloc] initWithFrame:CGRectMake(xCoord, yCoord, scoreWidth, scoreHeight)];
+            TVCScoreView * holdScore = [[TVCScoreView alloc] initWithFrame:CGRectMake(0, yCoord, scoreWidth, scoreHeight)];
             
-            [holdScore setProfileThumbnail: imgView];
+            [[holdScore profileThumbnail ] setImage:img];
             [[holdScore scoreLabel] setText:[NSString stringWithFormat:@"%i",*curP.score]];
             [[holdScore nameLabel] setText:curP.name];
-            [self.scoresScrollView addSubview:holdScore];
             
-            if (ycount > 0) {
+            [self.scoresScrollView addSubview:holdScore];
+            [holdScore bringSubviewToFront:self.scoresScrollView];
+            
+            ycount++;
+            
+           /* if (ycount > 0) {
                 xcount++;
                 ycount = 0;
             } else {
                 ycount++;
-            }
+            }*/
             
         }
         
