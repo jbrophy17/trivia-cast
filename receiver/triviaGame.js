@@ -520,6 +520,7 @@ function startGuessing(){
     var responseJSON = getAllResponsesJSON();
     console.debug('sending responses to guesser ' + game.players[game.guesser].toString());
     console.debug(responseJSON);
+    game.players[game.guesser].channel.send({ type : 'guesser' });
     game.players[game.guesser].channel.send({ type : 'receiveResponses', responses : responseJSON, responseCount : game.responses.length });
 }
 
@@ -652,7 +653,7 @@ function submitGuess(channel, guess){
         }
         statusText += " submitted " + game.responses[rgIndex].toString() + ".";
         prependStatus(guesserID, statusText);
-        nextGuesser();
+        nextGuesser(true);
     }
 }
 
@@ -718,7 +719,7 @@ function nextGuesser(force){
 function startNextRound(channel){
     // only can start if we're in between rounds
     if(game.phase != PHASE_BETWEEN_ROUNDS){
-        console.warn(players[getPlayerIndexByChannel(channel)].toString() + " to start a new round during a round.");
+        console.warn(game.players[getPlayerIndexByChannel(channel)].toString() + " to start a new round during a round.");
         channel.send({ type : 'error', value : ROUND_IN_PROGRESS });
         return;
     }
@@ -750,6 +751,8 @@ function startNextRound(channel){
 }
 
 function betweenRounds(){
+    clearDeleteQueue();
+
     // notify everyone that we're in between rounds
     for(var i = 0; i < game.players.length; i++){
         if(!game.players[i].isGone){
@@ -787,7 +790,7 @@ function clearPlayerQueue(){
 function clearDeleteQueue(){
     console.debug("Processing delete queue");
     for(var i = 0; i < game.players.length; i++){
-        if(game.players[i].isGone){
+        if(typeof game.players[i] != undefined && game.players[i].isGone){
             game.deletePlayer(game.players[i].ID);
         }
     }
