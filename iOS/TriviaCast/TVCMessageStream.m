@@ -300,7 +300,7 @@ static NSString * const kValuePlayerX = @"X";
     
     if([type isEqualToString:valueTypeSetGuesser]) {
         
-        [self.delegate didReceiveGuesser];
+       // [self.delegate didReceiveGuesser];
         return;
     }
     
@@ -359,6 +359,13 @@ static NSString * const kValuePlayerX = @"X";
             [returnPlayers addObject:holdPlayer];
             
         }
+        if ([[[appDelegate dataSource] player] playerNumber] == readerID) {
+            [[[appDelegate dataSource] player] setIsReader:YES];
+        }
+        if ([[[appDelegate dataSource] player] playerNumber] == guesserID) {
+            [[[appDelegate dataSource] player] setIsGuessing:YES];
+        }
+        
         [self.delegate didReceiveGameSyncWithPlayers:returnPlayers];
         return;
     }

@@ -256,7 +256,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
          [lobbyViewController segueToReaderViewWithResponses:responses];
          }];*/
         
-    }else if ([self.player isGuessing]) {
+    }else {
         NSLog(@"not reader");
         NSMutableArray* notOutPlayers = [NSMutableArray array];
         for (TVCPlayer* p in self.players) {
@@ -300,6 +300,8 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
         if(player.playerNumber == playerNumber) {
             self.player = player;
             self.currentScore = player.score;
+            self.player.isGuessing = player.isGuessing;
+            self.player.isReader = player.isReader;
         }
     }
     [[appDelegate dataSource] setPlayers:players];
