@@ -577,11 +577,13 @@ function startGuessing(){
     var responseJSON = getAllResponsesJSON();
     console.debug('sending responses to guesser ' + game.players[game.guesser].toString());
     console.debug(responseJSON);
-    game.players[game.guesser].channel.send({ type : 'guesser' });
+    // game.players[game.guesser].channel.send({ type : 'guesser' });
     game.players[game.guesser].channel.send({ type : 'receiveResponses', responses : responseJSON, responseCount : game.responses.length });
 }
 
 function checkRoundOver(){
+    checkMinPlayers();
+
     // round is over when only reader's and your own responses are left
     var responsesLeft = 0;
     for(var i = 0; i < game.responses.length; i++){
@@ -591,7 +593,11 @@ function checkRoundOver(){
     }
 
     if(responsesLeft <= 1){
+        console.debug("No more responses, ending round");
         betweenRounds();
+    }
+    else{
+        console.debug("Enough responses left, guessing may continue");
     }
 }
 
@@ -729,7 +735,7 @@ function advanceGuesser(){
         if(loopCount >= game.players.length){
             console.warn("Couldn't find new guesser. Ending round.");
             betweenRounds();
-            return;
+            return false;
         }
         loopCount++;
 
@@ -752,11 +758,16 @@ function advanceGuesser(){
         }
     }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.players[game.guesser].isGone);
     console.debug("new guesser set to " + game.guesser);
+
+    return true;
 }
 
 function nextGuesser(force){
     if(!game.firstGuesser || force){
-        advanceGuesser();
+        var advanceAttempt = advanceGuesser();
+        if(!advanceAttempt){
+            return;
+        }
 
         console.debug('guesser is now ' + game.guesser);
     }
@@ -805,6 +816,8 @@ function startNextRound(channel){
 }
 
 function betweenRounds(){
+    console.debug("betweenRounds()");
+
     clearDeleteQueue();
 
     // notify everyone that we're in between rounds
@@ -1004,6 +1017,10 @@ function cancelOrdering(channel){
     }
 }
 
+function getPhase(channel){
+    channel.send({ "type" : "currentPhase", "phase" : game.phase });
+}
+
 function initReceiver(){
     var receiver = new cast.receiver.Receiver('1f96e9a0-9cf0-4e61-910e-c76f33bd42a2', ['com.bears.triviaCast'], "", 5),
         channelHandler = new cast.receiver.ChannelHandler('com.bears.triviaCast'),
@@ -1056,6 +1073,12 @@ function initReceiver(){
                 break;
             case "cancelOrder":
                 cancelOrdering(event.target);
+                break;
+            case "getPhase":
+                getPhase(event.target);
+                break;
+            case "pong":
+                game.players[game.getPlayerIndexByChannel(event.target)].health.checkPassed();
                 break;
             default:
                 event.target.send({ type: 'error', value : INVALID_TYPE });
