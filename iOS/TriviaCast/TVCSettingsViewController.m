@@ -131,9 +131,20 @@
     
     [self dismissViewControllerAnimated:YES completion:^(void){
         
+        //Missed round start
         if ([[[appDelegate dataSource] lobbyViewController] missedCue]) {
             [[[appDelegate dataSource] lobbyViewController] setMissedCue:NO];
             [[appDelegate dataSource] didReceiveRoundStartedWithCue:[[[appDelegate dataSource] lobbyViewController] cue]];
+        }
+        //Missed Reader Message
+        else if ([[[appDelegate dataSource] lobbyViewController] missedReader]) {
+            [[[appDelegate dataSource] lobbyViewController] setMissedReader:NO];
+            [[appDelegate dataSource] didReceiveResponses:[[appDelegate dataSource] responseDictionary]];
+        }
+        //Missed Guesser Message
+        else if ([[[appDelegate dataSource] lobbyViewController] missedGuesser]) {
+            [[[appDelegate dataSource] lobbyViewController] setMissedGuesser:NO];
+            [[appDelegate dataSource] didReceiveResponses:[[appDelegate dataSource] responseDictionary]];
         }
     }];
 }

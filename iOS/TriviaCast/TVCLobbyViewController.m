@@ -35,6 +35,8 @@
     [super viewDidLoad];
      NSLog(@"view did load");
     self.missedCue = NO;
+    self.missedGuesser = NO;
+    self.missedReader = NO;
     [[appDelegate dataSource] setCurrentViewController:self];
     [[appDelegate dataSource] setLobbyViewController:self];
     //self.dataSource = [[TVCDataSource alloc] initWithDevice:self.device];

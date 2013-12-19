@@ -18,6 +18,9 @@
 @property (weak, nonatomic) IBOutlet UIImageView *profileThumbnailImageView;
 @property (weak, nonatomic) IBOutlet UILabel *currentScoreLabel;
 @property (nonatomic) BOOL missedCue;
+@property (nonatomic) BOOL missedGuesser;
+@property (nonatomic) BOOL missedReader;
+
 @property (nonatomic, strong) NSString * cue;
 @property (nonatomic, strong) NSMutableDictionary * imageDict;
 
