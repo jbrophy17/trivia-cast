@@ -319,6 +319,7 @@
         <scene sceneID="tQa-nW-WpK">
             <objects>
                 <navigationController definesPresentationContext="YES" id="Pze-4W-k2M" sceneMemberID="viewController">
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="EEf-zb-vZZ">
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
