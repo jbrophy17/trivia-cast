@@ -132,6 +132,7 @@
     [self dismissViewControllerAnimated:YES completion:^(void){
         
         if ([[[appDelegate dataSource] lobbyViewController] missedCue]) {
+            [[[appDelegate dataSource] lobbyViewController] setMissedCue:NO];
             [[appDelegate dataSource] didReceiveRoundStartedWithCue:[[[appDelegate dataSource] lobbyViewController] cue]];
         }
     }];
