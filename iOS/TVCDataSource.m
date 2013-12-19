@@ -245,7 +245,8 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 }
 
 -(void) didReceiveResponsesHelper:(NSDictionary *)responses {
-    
+    NSLog(@"got responses, your ID is: %i", self.player.playerNumber);
+    NSLog(@"player isReader: %@ and datasource isReading: %@", self.player.isReader ? @"YES" : @"NO", self.isReader ? @"YES" : @"NO");
     if([self.player isReader]){
         
         TVCLobbyViewController* lobbyViewController = self.lobbyViewController;

@@ -346,8 +346,10 @@ static NSString * const kValuePlayerX = @"X";
             [holdPlayer setIsOut:isOut];
             [holdPlayer setScore:score];
             [holdPlayer setImageUrlString:profilePicURL completion:nil];
+            [holdPlayer setIsGuessing:NO];
+            [holdPlayer setIsReader:NO];
 
-            NSLog(@"Game synce: Profile pic url: %@", profilePicURL);
+            NSLog(@"Game sync: Profile pic url: %@", profilePicURL);
             
             if (holdPlayer.playerNumber == readerID) {
                 [holdPlayer setIsReader:YES];
