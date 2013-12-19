@@ -193,7 +193,7 @@ function Game() {
     }
 
     this.deletePlayer = function(id){
-        console.log("Deleted player " + this.players[id].toString());
+        console.log("Deleting player " + this.players[id].toString());
         this.players.splice(id, 1);
 
         // rebuild players' IDs to match their new indices
@@ -201,16 +201,21 @@ function Game() {
             if(this.players[i].ID != i){
                 // fix and notify
                 if(this.players[i].ID == this.guesser){
+                    console.debug("Updating guesser from " + this.guesser + " to " + this.guesser);
                     this.guesser = i;
                 }
                 if(this.players[i].ID == this.reader){
+                    console.debug("Updating reader from " + this.reader + " to " + this.reader);
                     this.reader = i;
                 }
 
+                console.debug("Updating ID from " + this.players[i].ID + " to " + i);
                 this.players[i].ID = i;
                 this.players[i].channel.send({ "type" : "didJoin", "number" : i });
             }
         }
+
+        console.log("Finished player deletion");
 
         // update all clients with new IDs
         this.sendGameSync();
@@ -260,14 +265,24 @@ function Game() {
 
         if(!guesserIsHere){
             console.debug("verifyKeyPlayers found missing guesser; advancing");
-            nextGuesser(true);
 
             // show responses if reader left during reading
             if(this.phase == PHASE_READING && this.reader == this.guesser){
                 console.debug("verifyKeyPlayers found reader gone during reading; showing responses");
                 showResponses();
             }
+
+            nextGuesser(true);
         }
+    }
+
+    this.responseExistsForPlayerID = function(playerID){
+        for(var i = 0; i < this.responses.length; i++){
+            if(this.responses[i].userID == playerID){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
@@ -473,9 +488,16 @@ function leavePlayer(channel){
         return;
     }
 
-    console.debug("leavePlayer: about to mark as gone");
-
-    game.players[playerID].isGone = true;
+    // if they've submitted a response, mark them as gone but keep them in the game.
+    // if not, they leave immediately.
+    if(game.responseExistsForPlayerID(playerID)){
+        console.debug("leavePlayer: already submitted response, about to mark as gone");
+        game.players[playerID].isGone = true;
+    }
+    else{
+        console.debug("leavePlayer: hasn't yet submitted response, about to kick");
+        game.deletePlayer(playerID);
+    }
 
     game.verifyKeyPlayers();
     checkMinPlayers();
@@ -712,11 +734,13 @@ function advanceGuesser(){
             return;
         }
         loopCount++;
+
         var nextGuesser = game.guesser + 1;
-        if(nextGuesser == game.players.length){
+        if(nextGuesser >= game.players.length){
             nextGuesser = 0;
         }
         game.guesser = nextGuesser;
+
         console.debug("advancing guesser (loopCount = " + loopCount + "), about to check " + game.guesser);
 
         if(typeof game.players[game.guesser] == "undefined"){
