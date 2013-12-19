@@ -10,7 +10,6 @@
 #import "TVCAppDelegate.h"
 #import "TVCDataSource.h"
 
-#import <AudioToolbox/AudioServices.h>
 
 @interface TVCReaderViewController ()
 {
@@ -56,7 +55,7 @@
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+
     [[appDelegate dataSource] setCurrentViewController:self];
 }
 

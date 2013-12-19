@@ -26,6 +26,8 @@
 #import "TVCDataSource.h"
 #import "TVCLobbyViewController.h"
 
+#import <AudioToolbox/AudioServices.h>
+
 static NSString * const kNamespace = @"com.bears.triviaCast";
 
 static NSString * const keyType = @"type";
@@ -289,6 +291,7 @@ static NSString * const kValuePlayerX = @"X";
             [responseIdDictionary setObject:response forKey:[NSString stringWithFormat:@"%i",responseID]];
         }
        
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         [self.delegate didReceiveResponses:responseIdDictionary];
         return;
     }
@@ -374,6 +377,7 @@ static NSString * const kValuePlayerX = @"X";
     
     if([type isEqualToString:valueTypeRoundStarted]) {
         NSString *cue = [payload gck_stringForKey:keyPrompt];
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         [self.delegate didReceiveRoundStartedWithCue:cue];
         return;
         
