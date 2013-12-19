@@ -17,21 +17,9 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button_done_reading"
+        android:layout_above="@+id/button_start_guess"
         android:layout_below="@+id/reader_prompt_display"
         android:layout_marginTop="20dp" />
-
-    <Button
-        android:id="@+id/button_done_reading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:background="#0099CC"
-        android:text="@string/button_done_reading_label"
-        android:textColor="#FFFFFF"
-        android:visibility="invisible" />
     
     <Button
         android:id="@+id/button_start_guess"

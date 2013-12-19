@@ -14,12 +14,11 @@
     <string name="button_submit_response_label">Submit Response</string>
     <string name="submitting_response">Submitting response&#8230;</string>
     <string name="waiting_for_other_responses_message">Waiting for everyone to\nsubmit their responses&#8230;</string>
-    <string name="button_done_reading_label">Finished Reading</string>
-    <string name="button_start_guess_label">Guess the Submitter</string>
+    <string name="button_start_guess_label">Make a Guess</string>
     <string name="someone_elses_turn">It\'s someone else\'s turn.</string>
     <string name="title_who_said_it">Who Said It?</string>
     <string name="between_rounds">Start the next round\nwhen everyone\'s ready.</string>
     <string name="youre_out_for_round">Someone guessed your response!\nThat means you can\'t guess anymore this round.</string>
-    <string name="your_response_here">Touch to write a response...</string>
+    <string name="your_response_here">Touch to write a response&#8230;</string>
 
 </resources>

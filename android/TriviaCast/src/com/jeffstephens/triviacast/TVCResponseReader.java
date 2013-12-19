@@ -32,7 +32,6 @@ public class TVCResponseReader extends Fragment {
 	private ViewPager mPager;
 	private PagerAdapter mPagerAdapter;
 	private String prompt;
-	private Button doneButton;
 	private Button guessButton;
 	private ReaderListener mListener;
 	private boolean guessingMode;
@@ -61,17 +60,11 @@ public class TVCResponseReader extends Fragment {
 
 	private void initReadingMode(){
 		Log.d(TAG, "init reading mode");
-		doneButton.setOnClickListener(new Button.OnClickListener(){
-			public void onClick(View v){
-				mListener.readerIsDone();
-			}
-		});
 	}
 
 	private void initGuessingMode(){
 		Log.d(TAG, "init guessing mode");
 		players = mListener.getPlayers();
-		doneButton.setVisibility(View.GONE);
 		guessButton.setVisibility(View.VISIBLE);
 
 		guessButton.setOnClickListener(new Button.OnClickListener(){
@@ -163,7 +156,6 @@ public class TVCResponseReader extends Fragment {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(
 				R.layout.responsereader, container, false);
 
-		doneButton = (Button) rootView.findViewById(R.id.button_done_reading);
 		guessButton = (Button) rootView.findViewById(R.id.button_start_guess);
 
 		// Instantiate a ViewPager and PagerAdapter
@@ -178,9 +170,9 @@ public class TVCResponseReader extends Fragment {
 
 			public void onPageSelected(int position) {
 				if(!guessingMode){
-					// if the last one, display button to indicate we're done reading
+					// if the last one, tell the server we're done reading
 					if(position == (NUM_PAGES - 1)){
-						doneButton.setVisibility(View.VISIBLE);
+						mListener.readerIsDone();
 					}
 				}
 				else{
