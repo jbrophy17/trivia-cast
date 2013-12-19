@@ -247,6 +247,9 @@ function Game() {
                 }
                 this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
             }
+            else{
+                console.debug("not sending gameSync to out player: " + this.players[i].toString());
+            }
         }
     }
 
@@ -671,14 +674,9 @@ function submitGuess(channel, guess){
         // update ui
         console.debug("Fading resopnse ID " + '#response' + game.responses[deleteIndex].responseID);
         $('#response' + game.responses[deleteIndex].responseID).animate({ 'opacity' : '0.5', 'margin-left' : '-40px' });
+
         var statusText = "correctly that ";
-        if(typeof game.players[playerGuessed] == "undefined"){
-            statusText += "someone who left";
-        }
-        else{
-            statusText += game.players[playerGuessed].toString();
-        }
-        statusText += " submitted " + game.responses[deleteIndex].toString();
+        statusText += game.players[playerGuessed].toString() + " submitted " + game.responses[deleteIndex].toString();
         prependStatus(guesserID, statusText);
 
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[deleteIndex].toString());
