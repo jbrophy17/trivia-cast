@@ -1,7 +1,6 @@
 package com.jeffstephens.triviacast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -467,20 +467,34 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	}
 
 	private void clearFragments(){
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
-		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
+		Log.d(TAG, "clearing fragments");
+		
+		FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+		fragmentContainer.setVisibility(View.GONE);
 
-		if(fragmentComposer != null && fragmentComposer instanceof TVCComposer){		
-			fragmentTransaction.remove(fragmentComposer);
-		}
+//		FragmentManager fragmentManager = getSupportFragmentManager();
+//		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
+//		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
+//
+//		try{
+//			fragmentTransaction.remove(fragmentComposer);
+//			fragmentTransaction.remove(fragmentReader);
+//		}
+//		catch (IllegalStateException ex){
+//			Log.w(TAG, "Got an exception in clearFragments");
+//			Log.w(TAG, ex.toString());
+//			; // no problem here
+//		}
+//
+//		fragmentTransaction.commit();
 
-		if(fragmentReader != null && fragmentReader instanceof TVCResponseReader){
-			fragmentTransaction.remove(fragmentReader);
-		}
-
-		fragmentTransaction.commit();
+		Log.d(TAG, "fragments cleared");
+	}
+	
+	private void showFragments(){
+		FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+		fragmentContainer.setVisibility(View.VISIBLE);
 	}
 
 	private void showLobbyUI(){
@@ -501,15 +515,18 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		TVCComposer fragment = new TVCComposer();
 		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
 		fragmentTransaction.commit();
+		showFragments();
 	}
 
 	private void showSubmittingResponseUI(){
+		Log.d(TAG, "showSubmittingResponseUI()");
 		// hide compose UI
 		clearFragments();
 
 		// show submitting UI
 		instructionsTextView.setText(R.string.submitting_response);
 		instructionsTextView.setVisibility(View.VISIBLE);
+		Log.d(TAG, "finished showSubmittingResponseUI()");
 	}
 
 	private void showWaitingForReadingUI(){
@@ -533,6 +550,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		fragment.setArguments(args);
 		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_READ_FRAGMENT);
 		fragmentTransaction.commit();
+		showFragments();
 	}
 
 	private void showReadingUI(){
@@ -546,11 +564,15 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	}
 
 	private void showInRoundWaitingUI(){
+		Log.d(TAG, "showInRoundWaitingUI()");
+
 		// hide reader or guessing UI
 		clearFragments();
 
 		instructionsTextView.setVisibility(View.VISIBLE);
 		instructionsTextView.setText(R.string.someone_elses_turn);
+
+		Log.d(TAG, "finished showInRoundWaitingUI()");
 	}
 
 	private void hideInstructions(){
@@ -584,7 +606,10 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		}
 
 		protected void onGameSync(JSONArray newPlayers, int newReader, int newGuesser){
-			readerID = newReader;
+			if(newReader >= 0){
+				readerID = newReader;
+			}
+
 			guesserID = newGuesser;
 
 			players.clear();
@@ -650,7 +675,12 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 				Toast.makeText(getApplicationContext(), "You guessed correctly!", Toast.LENGTH_LONG).show();
 				responses.removeResponseById(lastResponseGuessed); // remove from selectable responses
 
-				showGuessingUI();				
+				if(responses.size() == 0){
+					showInRoundWaitingUI();
+				}
+				else{
+					showGuessingUI();
+				}
 			}
 			else{
 				Toast.makeText(getApplicationContext(), "You guessed incorrectly.", Toast.LENGTH_LONG).show();
@@ -659,6 +689,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		}
 
 		protected void onRoundStarted(String newPrompt){
+			doneReading = false; 
 			currentPrompt = newPrompt;
 			showComposeUI();
 		}
