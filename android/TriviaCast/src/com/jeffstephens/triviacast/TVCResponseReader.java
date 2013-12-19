@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -58,12 +59,27 @@ public class TVCResponseReader extends Fragment {
 		}
 	}
 
-	private void initReadingMode(){
+	public void initReadingMode(){
 		Log.d(TAG, "init reading mode");
+		// vibrate
+		Vibrator v = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
+		long[] pattern = { 0, 200, 200, 200 };
+		v.vibrate(pattern, -1);
+	}
+	
+	public void updateResponses(ResponseContainer newResponses){
+		responses = newResponses;
 	}
 
-	private void initGuessingMode(){
+	public void initGuessingMode(){
 		Log.d(TAG, "init guessing mode");
+
+		// vibrate
+		Vibrator v = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
+		long[] pattern = { 0, 200, 200, 200 };
+		v.vibrate(pattern, -1);
+
+		guessingMode = true;
 		players = mListener.getPlayers();
 		guessButton.setVisibility(View.VISIBLE);
 
