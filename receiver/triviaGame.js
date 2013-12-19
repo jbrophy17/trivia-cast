@@ -248,7 +248,7 @@ function Game() {
                 this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
             }
             else{
-                console.debug("not sending gameSync to out player: " + this.players[i].toString());
+                console.debug("not sending gameSync to gone player: " + this.players[i].toString());
             }
         }
     }
