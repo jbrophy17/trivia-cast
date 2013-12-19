@@ -63,6 +63,7 @@ public abstract class GameMessageStream extends MessageStream {
 	private static final String KEY_INITIALIZE_ORDER = "initializeOrder";
 	private static final String KEY_JOIN_ORDER = "order";
 	private static final String KEY_CANCEL_ORDER = "cancelOrder";
+	private static final String KEY_PONG = "pong";
 
 	// Events to receive from server
 	private static final String KEY_USER_QUEUED = "didQueue";
@@ -80,6 +81,7 @@ public abstract class GameMessageStream extends MessageStream {
 	private static final String KEY_ORDER_INITIALIZED = "orderInitialized";
 	private static final String KEY_ORDER_CANCELED = "orderCanceled";
 	private static final String KEY_ORDER_COMPLETE = "orderComplete";
+	private static final String KEY_PING = "ping";
 
 	// Error codes
 	protected static final int ERROR_RECEIVED_INVALID_MESSAGE_TYPE = 0;
@@ -228,6 +230,24 @@ public abstract class GameMessageStream extends MessageStream {
 		}
 		catch (IOException e) {
 			Log.e(TAG, "Unable to send a(n) " + KEY_SUBMIT_GUESS + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
+	
+	public final void sendPong(){
+		Log.d(TAG, "sending pong (liveness check)");
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_PONG);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to send pong", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_PONG + " message", e);
 		}
 		catch (IllegalStateException e) {
 			Log.e(TAG, "Message Stream is not attached", e);
@@ -384,6 +404,12 @@ public abstract class GameMessageStream extends MessageStream {
 				else if (KEY_ORDER_COMPLETE.equals(event)) {
 					Log.d(TAG, "Ordering complete");
 					onOrderComplete();
+				}
+				
+				// server is requesting a liveness check
+				else if (KEY_PING.equals(event)){
+					Log.d(TAG, "Received ping (liveness check request)");
+					sendPong();
 				}
 
 				else{

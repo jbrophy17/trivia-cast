@@ -103,7 +103,10 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 	public void readerIsDone(){
 		doneReading = true;
 		mGameMessageStream.readerIsDone();
-		showInRoundWaitingUI();
+
+		if(playerID != readerID){
+			showInRoundWaitingUI();
+		}
 	}
 
 	@Override
@@ -468,30 +471,30 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 	private void clearFragments(){
 		Log.d(TAG, "clearing fragments");
-		
+
 		FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
 		fragmentContainer.setVisibility(View.GONE);
 
-//		FragmentManager fragmentManager = getSupportFragmentManager();
-//		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
-//		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
-//
-//		try{
-//			fragmentTransaction.remove(fragmentComposer);
-//			fragmentTransaction.remove(fragmentReader);
-//		}
-//		catch (IllegalStateException ex){
-//			Log.w(TAG, "Got an exception in clearFragments");
-//			Log.w(TAG, ex.toString());
-//			; // no problem here
-//		}
-//
-//		fragmentTransaction.commit();
+		//		FragmentManager fragmentManager = getSupportFragmentManager();
+		//		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		//		TVCComposer fragmentComposer = (TVCComposer) fragmentManager.findFragmentByTag(TAG_COMPOSE_FRAGMENT);
+		//		TVCResponseReader fragmentReader = (TVCResponseReader) fragmentManager.findFragmentByTag(TAG_READ_FRAGMENT);
+		//
+		//		try{
+		//			fragmentTransaction.remove(fragmentComposer);
+		//			fragmentTransaction.remove(fragmentReader);
+		//		}
+		//		catch (IllegalStateException ex){
+		//			Log.w(TAG, "Got an exception in clearFragments");
+		//			Log.w(TAG, ex.toString());
+		//			; // no problem here
+		//		}
+		//
+		//		fragmentTransaction.commit();
 
 		Log.d(TAG, "fragments cleared");
 	}
-	
+
 	private void showFragments(){
 		FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
 		fragmentContainer.setVisibility(View.VISIBLE);
@@ -584,7 +587,15 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		hideInstructions();
 
 		// show guessing UI
-		goGoTVCResponseReader(true);
+		if(playerID != readerID){
+			goGoTVCResponseReader(true);
+		}
+		else{
+			TVCResponseReader reader = (TVCResponseReader) getSupportFragmentManager().findFragmentByTag(TAG_READ_FRAGMENT);
+			showFragments();
+			reader.updateResponses(responses);
+			reader.initGuessingMode();
+		}
 	}
 
 	/**
@@ -667,6 +678,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		}
 
 		protected void onResponseReceived(){
+			// only show waiting for reading when you're not the reader
 			showWaitingForReadingUI();
 		}
 
@@ -712,7 +724,7 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 		protected void onOrderComplete(){
 			showInfoMessage("Reordering Complete!",
 					"Players are now in a new order - hopefully one that makes more sense.",
-					"OK");
+					"OK"); 
 			showLobbyUI();
 		}
 

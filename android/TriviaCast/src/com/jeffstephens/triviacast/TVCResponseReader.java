@@ -66,6 +66,10 @@ public class TVCResponseReader extends Fragment {
 		long[] pattern = { 0, 200, 200, 200 };
 		v.vibrate(pattern, -1);
 	}
+	
+	public void updateResponses(ResponseContainer newResponses){
+		responses = newResponses;
+	}
 
 	public void initGuessingMode(){
 		Log.d(TAG, "init guessing mode");
