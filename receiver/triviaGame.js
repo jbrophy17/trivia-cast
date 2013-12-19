@@ -200,6 +200,13 @@ function Game() {
         for(var i = 0; i < this.players.length; i++){
             if(this.players[i].ID != i){
                 // fix and notify
+                if(this.players[i].ID == this.guesser){
+                    this.guesser = i;
+                }
+                if(this.players[i].ID == this.reader){
+                    this.reader = i;
+                }
+
                 this.players[i].ID = i;
                 this.players[i].channel.send({ "type" : "didJoin", "number" : i });
             }
@@ -218,6 +225,10 @@ function Game() {
     }
 
     this.sendGameSync = function(noReader){
+        if(this.phase == PHASE_GUESSING){
+            noReader = true;
+        }
+
         // update all clients' user list and scores
         var playerList = new Array();
         for(var i = 0; i < this.players.length; i++){
@@ -412,24 +423,32 @@ function joinPlayer(channel, response){
 
 function checkMinPlayers(){
     var playersNotGone = 0;
+    var playersGone = 0;
     for(var i = 0; i < game.players.length; i++){
         if(!game.players[i].isGone){
             playersNotGone++;
         }
+        else{
+            playersGone++;
+        }
     }
 
-    var playerCount = playersNotGone + game.playerQueue.length;
+    var activePlayerCount = playersNotGone + game.playerQueue.length;
+    var totalPlayerCount = activePlayerCount + playersGone;
 
-    if(playerCount < MIN_PLAYER_NUMBER){
-        if(playerCount == 0){
+    if(totalPlayerCount < MIN_PLAYER_NUMBER){
+        if(activePlayerCount == 0){
             console.debug("Found 0 players left, reinitializing game");
             $('#instructions').html(GET_READY).show();
             initGame();
         }
         else{
-            console.debug("Found not enough players left, going to between rounds");
             $('#instructions').html(NEED_MORE_PLAYERS).show();
-            betweenRounds();
+
+            if(game.phase != PHASE_BETWEEN_ROUNDS){
+                console.debug("Found not enough players left, going to between rounds");
+                betweenRounds();
+            }
         }
     }
 }
