@@ -43,7 +43,7 @@ static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76
     [self.promptLabel setText:self.promptLabelText];
     [self.promptLabel setNumberOfLines:0];
     [self.promptLabel setLineBreakMode:NSLineBreakByWordWrapping];
-    [self.promptLabel sizeToFit];
+    
 }
 
 
