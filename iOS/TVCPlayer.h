@@ -21,6 +21,7 @@ typedef void(^imageSetCompletion)(BOOL);
 @property (nonatomic) UIImage* profilePicture;
 @property (nonatomic,strong) NSString* imageUrlString;
 @property BOOL updatePicture;
+@property (nonatomic) NSInteger maxAttempts;
 
 -(id) initWithName:(NSString*) name andNumber:(NSInteger) number andImageURL:(NSString *)URL;
 -(void) setImageUrlString:(NSString*)imageUrlString completion:(imageSetCompletion) comp;

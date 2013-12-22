@@ -12,6 +12,7 @@
 @interface TVCPlayer () {
     NSMutableData* requestData;
     imageSetCompletion completionBlock;
+    NSInteger currentAttempts;
 }
 -(BOOL)dataIsValidJPEG:(NSData *)data;
 
@@ -32,15 +33,35 @@
         self.isOut = NO;
         self.updatePicture = NO;
         self.profilePicture = nil;
+        self.maxAttempts = 2;
+        currentAttempts = 0;
         [self setImageUrlString:URL];
     }
     
     return self;
 }
 
+- (void) setImageUrlString:(NSString *)imageUrlString {
+    [self setImageUrlString:imageUrlString completion:nil];
+}
+
 -(void) setImageUrlString:(NSString *)imageUrlString completion:(imageSetCompletion)comp {
+    //Attempted to connect and failed too many times
+    if (currentAttempts > self.maxAttempts) {
+        NSLog(@"Attempted to set imageURL over max");
+        currentAttempts = 0;
+        self.profilePicture = nil;
+        completionBlock = nil;
+        if (comp) {
+            comp(NO);
+        }
+        return;
+    }
+    
     NSLog(@"setImageUrlString %@", imageUrlString);
     completionBlock = nil;
+    currentAttempts++;
+    
     if ( (self.profilePicture == nil && ![self.imageUrlString isEqualToString:@""]) || ![self.imageUrlString isEqualToString:imageUrlString]) {
         NSLog(@"in the set url loop");
         _imageUrlString = imageUrlString;
@@ -55,13 +76,14 @@
         
         // create the connection with the request
         // and start loading the data
-        NSURLConnection *theConnection=[NSURLConnection connectionWithRequest:theRequest delegate:self];//[[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
+        NSURLConnection *theConnection=[NSURLConnection connectionWithRequest:theRequest delegate:self];
         [theConnection start];
         
         if (!theConnection) {
-            // Release the receivedData object.
             requestData = nil;
             self.profilePicture = nil;
+            completionBlock = nil;
+            currentAttempts = 0;
             NSLog(@"Error creatingConnection");
             // Inform the user that the connection failed.
             if(comp) {
@@ -76,6 +98,8 @@
         if(comp) {
             comp(YES);
         }
+        currentAttempts = 0;
+        completionBlock = nil;
     }
     
 }
@@ -110,7 +134,7 @@
             }
             
         } else {
-            NSLog(@"request data is corrupted");
+            NSLog(@"request data is corrupted, trying again");
             self.profilePicture = nil;
             [self setImageUrlString:self.imageUrlString completion:completionBlock];
         }
