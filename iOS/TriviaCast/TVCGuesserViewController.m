@@ -9,7 +9,7 @@
 #import "TVCGuesserViewController.h"
 #import "TVCPlayer.h"
 
-#import <AudioToolbox/AudioServices.h>
+
 
 @interface TVCGuesserViewController ()
 {
@@ -66,7 +66,7 @@
 
 -(void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+    
     [[appDelegate dataSource] setCurrentViewController:self];
 }
 

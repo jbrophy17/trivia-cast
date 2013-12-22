@@ -10,6 +10,7 @@
 #import "TVCPlayer.h"
 #import "TVCLobbyViewController.h"
 #import "TVCGuesserViewController.h"
+#import "TVCReaderViewController.h"
 #import "TVCSettingsViewController.h"
 
 static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
@@ -30,7 +31,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 }
 
 @property (nonatomic, strong) NSArray* responses;
-@property (nonatomic, strong) NSDictionary* responseDictionary;
+//@property (nonatomic, strong) NSDictionary* responseDictionary;
 @property (nonatomic, strong) NSMutableDictionary* responseMap;
 
 @end
@@ -245,31 +246,40 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 }
 
 -(void) didReceiveResponsesHelper:(NSDictionary *)responses {
-    
+    NSLog(@"got responses, your ID is: %i", self.player.playerNumber);
+    NSLog(@"player isReader: %@ and datasource isReading: %@", self.player.isReader ? @"YES" : @"NO", self.isReader ? @"YES" : @"NO");
     if([self.player isReader]){
-        
-        TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
-        [lobbyViewController segueToReaderViewWithResponses:responses];
-        [self.player setIsReader:NO];
-        /*[self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
-         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-         [lobbyViewController segueToReaderViewWithResponses:responses];
-         }];*/
+        if (self.currentViewController != self.lobbyViewController) {
+            [self.lobbyViewController setMissedReader:YES];
+        } else {
+            TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
+            [lobbyViewController segueToReaderViewWithResponses:responses];
+            [self.player setIsReader:NO];
+            /*[self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
+             TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+             [lobbyViewController segueToReaderViewWithResponses:responses];
+             }];*/
+        }
         
     }else {
         NSLog(@"not reader");
-        NSMutableArray* notOutPlayers = [NSMutableArray array];
-        for (TVCPlayer* p in self.players) {
-            if (!p.isOut) {
-                [notOutPlayers addObject:p];
+        if (self.currentViewController != self.lobbyViewController && ![self.currentViewController isKindOfClass:[TVCReaderViewController class]]) {
+            [self.lobbyViewController setMissedGuesser:YES];
+        } else {
+        
+            NSMutableArray* notOutPlayers = [NSMutableArray array];
+            for (TVCPlayer* p in self.players) {
+                if (!p.isOut) {
+                    [notOutPlayers addObject:p];
+                }
             }
+            TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
+            [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:notOutPlayers];
+            /* [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
+             TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
+             [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
+             }];*/
         }
-        TVCLobbyViewController* lobbyViewController = self.lobbyViewController;
-        [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:notOutPlayers];
-        /* [self.currentViewController dismissViewControllerAnimated:YES completion:^(void){
-         TVCLobbyViewController* lobbyViewController = (TVCLobbyViewController*)self.currentViewController;
-         [lobbyViewController segueToGuesserViewWithResponses:responses andPlayers:self.players];
-         }];*/
     }
 }
 

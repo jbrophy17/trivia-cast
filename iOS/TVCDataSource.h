@@ -20,6 +20,7 @@
 @property(nonatomic, strong) UIViewController *currentViewController;
 @property(nonatomic, strong) TVCLobbyViewController *lobbyViewController;
 @property(nonatomic, strong) TVCOrderPickerViewController *orderPickerViewController;
+@property (nonatomic, strong) NSDictionary* responseDictionary;
 @property(nonatomic) NSInteger * currentGuess;
 @property(nonatomic) NSInteger currentScore;
 
