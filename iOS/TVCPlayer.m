@@ -11,8 +11,9 @@
 
 @interface TVCPlayer () {
     NSMutableData* requestData;
+    imageSetCompletion completionBlock;
 }
-
+-(BOOL)dataIsValidJPEG:(NSData *)data;
 
 @end
 
@@ -39,6 +40,7 @@
 
 -(void) setImageUrlString:(NSString *)imageUrlString completion:(imageSetCompletion)comp {
     NSLog(@"setImageUrlString %@", imageUrlString);
+    completionBlock = nil;
     if ( (self.profilePicture == nil && ![self.imageUrlString isEqualToString:@""]) || ![self.imageUrlString isEqualToString:imageUrlString]) {
         NSLog(@"in the set url loop");
         _imageUrlString = imageUrlString;
@@ -66,10 +68,8 @@
                 comp(NO);
             }
         } else {
-#warning TODO: make this fire in the actual url completion method
-            if(comp) {
-                comp(YES);
-            }
+            //sets completion block to be run, after the server request has been finished
+            completionBlock = comp;
         }
         
     } else {
@@ -98,14 +98,41 @@
 {
     if (requestData)
     {
-        self.profilePicture = [[UIImage alloc] initWithData:requestData];
-        if (self.profilePicture == nil) {
-            NSLog(@"profile pic is null, you trash programmer");
+        if ( [self dataIsValidJPEG:requestData] ) {
+            self.profilePicture = [[UIImage alloc] initWithData:requestData];
+            if (self.profilePicture == nil) {
+                NSLog(@"profile pic is null");
+            }
+            NSLog(@"%@ got picture: %@", self.name, self.imageUrlString);
+            
+            if (completionBlock) {
+                completionBlock(YES);
+            }
+            
+        } else {
+            NSLog(@"request data is corrupted");
+            self.profilePicture = nil;
+            [self setImageUrlString:self.imageUrlString completion:completionBlock];
         }
-        NSLog(@"%@ got picture: %@", self.name, self.imageUrlString);
     } else {
         NSLog(@"requestData nil");
+        if(completionBlock) {
+            completionBlock(NO);
+        }
     }
+}
+
+-(BOOL)dataIsValidJPEG:(NSData *)data
+{
+    if (!data || data.length < 2) return NO;
+    
+    NSInteger totalBytes = data.length;
+    const char *bytes = (const char*)[data bytes];
+    
+    return (bytes[0] == (char)0xff &&
+            bytes[1] == (char)0xd8 &&
+            bytes[totalBytes-2] == (char)0xff &&
+            bytes[totalBytes-1] == (char)0xd9);
 }
 
 

@@ -334,14 +334,17 @@ static NSString * const kValuePlayerX = @"X";
             BOOL isOut = [dict gck_boolForKey:keyPlayerIsOut];
             NSString* profilePicURL = [dict gck_stringForKey:keyPictureURL];
             
-            TVCPlayer *holdPlayer;
+            TVCPlayer *holdPlayer = nil;
             
             for (TVCPlayer * p in [[appDelegate dataSource] players]) {
                 if (p.playerNumber == ID) {
                     holdPlayer = p;
+                    NSLog(@"Message Stream, player is not nil");
+                    break;
                 }
             }
             if(!holdPlayer) {
+                NSLog(@"Message Stream, player is nil");
                 holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID andImageURL:profilePicURL];
             }
             
