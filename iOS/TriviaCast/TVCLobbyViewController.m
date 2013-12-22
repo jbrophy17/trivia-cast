@@ -177,15 +177,13 @@
         if (curP.playerNumber != [[[appDelegate dataSource] player] playerNumber]) {
             
             //UIImageView* imgView = (UIImageView*)[self.imageDict objectForKey:[NSNumber numberWithInt:curP.playerNumber]];
-            
-            UIImage* img = [curP profilePicture]; //[curP profilePicture];
-            
-            if (!img) {
+            UIImage* img;
+            if ( ![curP profilePicture]) {
                 img = [UIImage imageNamed:@"defaultProfile.jpg"];
-                
-               // [self.imageDict setObject:imgView forKey:[NSNumber numberWithInt:curP.playerNumber]];
+            } else {
+                img = [curP profilePicture]; //[curP profilePicture];
             }
-           // float xCoord = buffer + xcount * scoreHeight;
+            
             float yCoord = ycount * (scoreHeight + buffer);
             
             TVCScoreView * holdScore = [[TVCScoreView alloc] initWithFrame:CGRectMake(0, yCoord, scoreWidth, scoreHeight)];
@@ -207,11 +205,7 @@
             }*/
             
         }
-        
-        
-        
     }
-    NSLog(@"imageDict: %@", self.imageDict);
 }
 
 
