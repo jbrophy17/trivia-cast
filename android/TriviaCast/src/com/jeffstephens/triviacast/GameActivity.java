@@ -164,6 +164,11 @@ public class GameActivity extends ActionBarActivity implements MediaRouteAdapter
 
 		// initialize UI
 	}
+	
+	@Override
+	public void onBackPressed() {
+		Toast.makeText(getApplicationContext(), "The back button doesn't do anything in this app.", Toast.LENGTH_LONG).show();
+	}
 
 	/**
 	 * Called when the options menu is first created.
