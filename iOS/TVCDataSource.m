@@ -179,7 +179,12 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 - (void)didJoinGameAsPlayer:(NSInteger)number {
     playerNumber = number;
     //self.players = [NSArray arrayWithArray:players];
-    self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber andImageURL:[appDelegate profilePicUrl]];
+    if (!self.player) {
+        self.player = [[TVCPlayer alloc] initWithName:[self currentUserName] andNumber:playerNumber andImageURL:[appDelegate profilePicUrl]];
+    } else {
+        //For when the player gets assigned a new ID
+        [self.player setPlayerNumber:number];
+    }
     [self.lobbyViewController.descriptionLabel setText:betweenRoundsMessage];
 }
 
@@ -268,7 +273,8 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
         } else {
         
             NSMutableArray* notOutPlayers = [NSMutableArray array];
-            for (TVCPlayer* p in self.players) {
+            for (id key in [self.playerDictionary allKeys]) {
+                TVCPlayer *p = [self.playerDictionary objectForKey:key];
                 if (!p.isOut) {
                     [notOutPlayers addObject:p];
                 }
@@ -304,17 +310,27 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
 }
 
 - (void) didReceiveGameSyncWithPlayers:(NSArray *)players {
-    self.players = [NSMutableArray arrayWithArray:players];
+    NSMutableArray *holdPlayers = [NSMutableArray arrayWithArray:players];
+    NSMutableDictionary *newPlayerDictionary = [[NSMutableDictionary alloc] init];
     
-    for(TVCPlayer* player in self.players) {
-        if(player.playerNumber == playerNumber) {
-            self.player = player;
+    for(TVCPlayer* player in holdPlayers) {
+        if(player.playerNumber == self.player.playerNumber) {
+            //self.player = player;
+            
             self.currentScore = player.score;
+            self.player.score = player.score;
+            [self.player setImageUrlString:player.imageUrlString completion:nil];
+            self.player.name = player.name;
+            self.player.isOut = player.isOut;
             self.player.isGuessing = player.isGuessing;
             self.player.isReader = player.isReader;
+            [newPlayerDictionary setObject:self.player forKey:[NSNumber numberWithInt:self.player.playerNumber]];
+        } else {
+            [newPlayerDictionary setObject:player forKey:[NSNumber numberWithInt:player.playerNumber]];
         }
+        
     }
-    [[appDelegate dataSource] setPlayers:players];
+    [self setPlayerDictionary:newPlayerDictionary];
     [[[appDelegate dataSource] lobbyViewController] updateScoreList];
 }
 

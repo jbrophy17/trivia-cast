@@ -238,12 +238,12 @@ static NSString * const kValuePlayerX = @"X";
     
     if([type isEqualToString:valueTypeDidJoin]) {
         
-        NSNumber *playerValue = [NSNumber numberWithInt:[payload gck_integerForKey:keyPlayerNumber]];
+        NSInteger playerValue = [payload gck_integerForKey:keyPlayerNumber];
        
         if (playerValue) {
             //TVCPlayer * player = [[TVCPlayer alloc] initWithName:@"test" andNumber:playerValue.integerValue];
            // NSLog(@"%@ , %d",[player name], [player playerNumber]);
-            [self.delegate didJoinGameAsPlayer:playerValue.integerValue];
+            [self.delegate didJoinGameAsPlayer:playerValue];
             //NSLog(@"%@ , %d",[player name], [player playerNumber]);
             return;
         } else {
