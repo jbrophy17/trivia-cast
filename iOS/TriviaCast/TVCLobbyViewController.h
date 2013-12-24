@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <GCKFramework/GCKFramework.h>
 @class TVCDataSource;
+@class TVCPlayer;
 
 @interface TVCLobbyViewController : UIViewController 
 
@@ -22,7 +23,10 @@
 @property (nonatomic) BOOL missedReader;
 
 @property (nonatomic, strong) NSString * cue;
-@property (nonatomic, strong) NSMutableDictionary * imageDict;
+//Keeps track of players and what their score/profile picture is
+@property (nonatomic, strong) NSMutableDictionary * scoreViewDictionary;
+@property (nonatomic) NSInteger updatedScoreCount;
+@property (nonatomic) NSInteger maxScoreCount;
 
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property (weak, nonatomic) IBOutlet UIScrollView *scoresScrollView;
@@ -33,6 +37,7 @@
 - (void) segueToOrderPickerView;
 
 - (void) updateScoreList;
+-(void) setScoreViewForPlayer:(TVCPlayer*) player;
 
 - (IBAction)startRoundAction:(id)sender;
 - (IBAction)quitAction:(id)sender;

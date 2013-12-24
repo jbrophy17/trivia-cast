@@ -15,7 +15,12 @@
 #import "TVCPlayer.h"
 #import "TVCScoreView.h"
 
-@interface TVCLobbyViewController ()
+@interface TVCLobbyViewController () {
+    //used to update all pictures and scores before updating, prevent strange popping of images
+    NSMutableDictionary *bufferScoreViewDictionary;
+    //need to be set when a gamesync is received
+
+}
 
 @end
 
@@ -33,14 +38,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-     NSLog(@"view did load");
+    if (!self.scoreViewDictionary) {
+        self.scoreViewDictionary = [[NSMutableDictionary alloc] init];
+    }
     self.missedCue = NO;
     self.missedGuesser = NO;
     self.missedReader = NO;
     [[appDelegate dataSource] setCurrentViewController:self];
     [[appDelegate dataSource] setLobbyViewController:self];
-    //self.dataSource = [[TVCDataSource alloc] initWithDevice:self.device];
-	// Do any additional setup after loading the view.
+
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -158,6 +164,71 @@
     //[self.navigationController pushViewController:viewController animated:YES];
 }
 
+#warning if a gamesync is sent again, before the new dictionary is completed, things could go wrong, need to test
+-(void) setScoreViewForPlayer:(TVCPlayer*) player {
+    //Your player doesn't get shown in the score scroll view
+    if (player.playerNumber != [[[appDelegate dataSource] player] playerNumber]) {
+        
+        int scoreHeight = 90;
+        int scoreWidth = self.scoresScrollView.frame.size.width;
+        
+        //Checks to see if a view is already in the dictionary
+        TVCScoreView* scoreView = [self.scoreViewDictionary objectForKey:[NSNumber numberWithInt:player.playerNumber]];
+        if (!scoreView) {
+            scoreView = [[TVCScoreView alloc] initWithFrame:CGRectMake(0, 0, scoreWidth, scoreHeight)];
+        }
+        
+        UIImage* img;
+        if ( ![player profilePicture]) {
+            img = [UIImage imageNamed:@"defaultProfile.jpg"];
+        } else {
+            img = [player profilePicture];
+        }
+        
+        [[scoreView profileThumbnail ] setImage:img];
+        [[scoreView scoreLabel] setText:[NSString stringWithFormat:@"%i",player.score]];
+        [[scoreView nameLabel] setText:player.name];
+        
+        [bufferScoreViewDictionary setObject:scoreView forKey:[NSNumber numberWithInt:player.playerNumber]];
+    }
+    self.updatedScoreCount++;
+    if (self.updatedScoreCount == self.maxScoreCount) {
+        [self updateScoreList];
+        self.updatedScoreCount = 0;
+    }
+    
+}
+
+-(void) updateScoreList {
+    if ( [[bufferScoreViewDictionary allKeys] count] != self.maxScoreCount) {
+        NSLog(@"LobbyViewController: BufferedScoreViews is not the correct size in updateScoreList");
+        return;
+    }
+    
+    //clear the scrollview
+    for (UIView* subview in self.scoresScrollView.subviews) {
+        [subview removeFromSuperview];
+    }
+    
+    //various constants
+    int ycount = 0;
+    int buffer = 10;
+    int scoreHeight = 90;
+    
+    //for each scoreView in the buffer
+    for (id key in [bufferScoreViewDictionary allKeys]) {
+        float yCoord = ycount * (scoreHeight + buffer);
+        TVCScoreView *scoreView = [bufferScoreViewDictionary objectForKey:key];
+        [scoreView setFrame:CGRectMake(0, yCoord, scoreView.frame.size.width, scoreView.frame.size.height)];
+        [self.scoresScrollView addSubview:scoreView];
+        ycount++;
+    }
+    
+    int newScrollHeight = ycount * (scoreHeight + buffer);
+    [self.scoresScrollView setBounds:CGRectMake(0, 0, self.scoresScrollView.frame.size.width, newScrollHeight)];
+}
+
+/*
 -(void) updateScoreList {
     
     for (UIView* subview in self.scoresScrollView.subviews) {
@@ -198,16 +269,10 @@
             
             ycount++;
             
-           /* if (ycount > 0) {
-                xcount++;
-                ycount = 0;
-            } else {
-                ycount++;
-            }*/
-            
         }
     }
 }
+ */
 
 
 @end

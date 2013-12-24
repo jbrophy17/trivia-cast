@@ -331,7 +331,7 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
         
     }
     [self setPlayerDictionary:newPlayerDictionary];
-    [[[appDelegate dataSource] lobbyViewController] updateScoreList];
+   // [[[appDelegate dataSource] lobbyViewController] updateScoreList];
 }
 
 -(void)didReceiveRoundStartedWithCue:(NSString*)cue {

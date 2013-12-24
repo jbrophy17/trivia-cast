@@ -325,6 +325,8 @@ static NSString * const kValuePlayerX = @"X";
         NSInteger guesserID = [payload gck_integerForKey:valueTypeSetGuesser];
         
         NSMutableArray *returnPlayers = [NSMutableArray array];
+        [[[appDelegate dataSource] lobbyViewController] setMaxScoreCount:[players count]];
+        [[[appDelegate dataSource] lobbyViewController] setUpdatedScoreCount:0];
         for(NSDictionary * dict in players) {
             
             //NSDictionary * holdDictionary = [players gck_dictionaryForKey:key];
@@ -336,7 +338,7 @@ static NSString * const kValuePlayerX = @"X";
             
             TVCPlayer *holdPlayer = nil;
 #warning if the player ID system is ever changed, this code should be updated to be more efficient
-            
+        
             for (id key in [[[appDelegate dataSource] playerDictionary] allKeys]) {
                 TVCPlayer * p = [[[appDelegate dataSource] playerDictionary] objectForKey:key];
 #warning so horribly inefficient
@@ -354,7 +356,9 @@ static NSString * const kValuePlayerX = @"X";
             [holdPlayer setName:name];
             [holdPlayer setIsOut:isOut];
             [holdPlayer setScore:score];
-            [holdPlayer setImageUrlString:profilePicURL completion:nil];
+            [holdPlayer setImageUrlString:profilePicURL completion:^(BOOL valid) {
+                [[[appDelegate dataSource] lobbyViewController] setScoreViewForPlayer:[[[appDelegate dataSource] playerDictionary ] objectForKey:[NSNumber numberWithInt:ID]]];
+            }];
             [holdPlayer setIsGuessing:NO];
             [holdPlayer setIsReader:NO];
 
