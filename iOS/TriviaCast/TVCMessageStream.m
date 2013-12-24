@@ -335,8 +335,11 @@ static NSString * const kValuePlayerX = @"X";
             NSString* profilePicURL = [dict gck_stringForKey:keyPictureURL];
             
             TVCPlayer *holdPlayer = nil;
+#warning if the player ID system is ever changed, this code should be updated to be more efficient
             
-            for (TVCPlayer * p in [[appDelegate dataSource] players]) {
+            for (id key in [[appDelegate dataSource] playerDictionary]) {
+                TVCPlayer * p = [[[appDelegate dataSource] playerDictionary] objectForKey:key];
+#warning so horribly inefficient
                 if (p.playerNumber == ID) {
                     holdPlayer = p;
                     NSLog(@"Message Stream, player is not nil");

@@ -173,7 +173,8 @@
     int scoreWidth = self.scoresScrollView.frame.size.width;
     
     
-    for(TVCPlayer *curP in [[appDelegate dataSource] players]) {
+    for(id key in [[appDelegate dataSource] playerDictionary]) {
+        TVCPlayer *curP = [[[appDelegate dataSource] playerDictionary] objectForKey:key];
         if (curP.playerNumber != [[[appDelegate dataSource] player] playerNumber]) {
             
             //UIImageView* imgView = (UIImageView*)[self.imageDict objectForKey:[NSNumber numberWithInt:curP.playerNumber]];
