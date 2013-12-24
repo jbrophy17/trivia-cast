@@ -337,7 +337,7 @@ static NSString * const kValuePlayerX = @"X";
             TVCPlayer *holdPlayer = nil;
 #warning if the player ID system is ever changed, this code should be updated to be more efficient
             
-            for (id key in [[appDelegate dataSource] playerDictionary]) {
+            for (id key in [[[appDelegate dataSource] playerDictionary] allKeys]) {
                 TVCPlayer * p = [[[appDelegate dataSource] playerDictionary] objectForKey:key];
 #warning so horribly inefficient
                 if (p.playerNumber == ID) {

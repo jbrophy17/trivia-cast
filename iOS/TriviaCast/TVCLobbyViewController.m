@@ -173,7 +173,7 @@
     int scoreWidth = self.scoresScrollView.frame.size.width;
     
     
-    for(id key in [[appDelegate dataSource] playerDictionary]) {
+    for(id key in [[[appDelegate dataSource] playerDictionary] allKeys]) {
         TVCPlayer *curP = [[[appDelegate dataSource] playerDictionary] objectForKey:key];
         if (curP.playerNumber != [[[appDelegate dataSource] player] playerNumber]) {
             
