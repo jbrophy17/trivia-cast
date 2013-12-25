@@ -159,8 +159,6 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	}
 
 	public void updateView(){
-		updateNotification();
-
 		if(currentlyQueued){
 			showPlayerQueuedUI();
 			return;
@@ -247,19 +245,21 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	}
 
 	private void initNotification(){
-		Notification notification = new Notification(R.drawable.ic_launcher, getText(R.string.app_name),
-				System.currentTimeMillis());
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 		Intent notificationIntent = new Intent(this, GameActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification.setLatestEventInfo(this, getText(R.string.app_name),
-				getText(R.string.app_name), pendingIntent);
-		startForeground(NOTIFICATION, notification);
+		mBuilder.setContentTitle(getResources().getString(R.string.app_name));
+		mBuilder.setContentText(getResources().getString(R.string.app_name));
+		mBuilder.setContentIntent(pendingIntent);
+		startForeground(NOTIFICATION, mBuilder.build());
 	}
 
 	// update the notification text based on the state of the game
 	private void updateNotification(){
 		String nTitle = new String();
 		String nBody = new String();
+
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 
 		if(currentlyQueued){
 			nTitle = "Queued";
@@ -271,6 +271,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 				if(playerID == readerID && !doneReading){
 					nTitle = "You're Reader!";
 					nBody = "Everyone's waiting on you to read responses.";
+					mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
 				}
 				else{
 					nTitle = "Waiting for Reader";
@@ -281,6 +282,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 				if(playerID == guesserID){
 					nTitle = "You're Guesser!";
 					nBody = "Everyone's waiting on you to make a guess.";
+					mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
 				}
 				else if(outForRound){
 					nTitle = "Out for the Round";
@@ -327,12 +329,13 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		nTitle = getResources().getString(R.string.app_name) + ": " + nTitle;
 
 		// update notification
-		Notification notification = new Notification(R.drawable.ic_launcher, getResources().getString(R.string.app_name), System.currentTimeMillis());
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, GameActivity.class), 0);
-		notification.setLatestEventInfo(this, nTitle,
-				nBody, contentIntent);
-		mNM.notify(NOTIFICATION, notification);
+		mBuilder.setContentTitle(nTitle);
+		mBuilder.setContentText(nBody);
+		mBuilder.setSmallIcon(R.drawable.ic_launcher);
+		mBuilder.setContentIntent(contentIntent);
+		mNM.notify(NOTIFICATION, mBuilder.build());
 	}
 
 	@Override

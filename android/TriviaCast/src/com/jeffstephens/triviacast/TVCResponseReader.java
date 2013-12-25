@@ -61,10 +61,6 @@ public class TVCResponseReader extends Fragment {
 
 	public void initReadingMode(){
 		Log.d(TAG, "init reading mode");
-		// vibrate
-		Vibrator v = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
-		long[] pattern = { 0, 200, 200, 200 };
-		v.vibrate(pattern, -1);
 	}
 	
 	public void updateResponses(ResponseContainer newResponses){
@@ -73,11 +69,6 @@ public class TVCResponseReader extends Fragment {
 
 	public void initGuessingMode(){
 		Log.d(TAG, "init guessing mode");
-
-		// vibrate
-		Vibrator v = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
-		long[] pattern = { 0, 200, 200, 200 };
-		v.vibrate(pattern, -1);
 
 		guessingMode = true;
 		players = mListener.getPlayers();

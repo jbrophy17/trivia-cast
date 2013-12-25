@@ -45,11 +45,6 @@ public class TVCComposer extends Fragment{
 			}
 		});
 
-		// vibrate
-		Vibrator v = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
-		// Vibrate for 500 milliseconds
-		v.vibrate(200);
-
 		setPromptText(mListener.getPromptText());
 	}
 
