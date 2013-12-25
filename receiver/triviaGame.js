@@ -927,13 +927,13 @@ function newGrind(){
 function updatePlayer(channel, info){
     var playerID = getPlayerIndexByChannel(channel);
 
-    var thisName = trim(info.name);
-
-    if(!("name" in info) || thisName.length == 0){
+    if(!("name" in info) || trim(info.name).length == 0){
         console.warn("Recieved a player update request with no name. Ignoring.");
         channel.send({ "type" : "error", "value" : SENT_BLANK_NAME });
         return;
     }
+
+    var thisName = trim(info.name);
 
     var url = '';
     if("pictureURL" in info){
