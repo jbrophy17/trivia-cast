@@ -59,6 +59,14 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		@Override
 		public void onReceive(Context context, Intent intent){
 			String command = intent.getStringExtra("command");
+			
+			if(command == "quit"){
+				Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+				homeIntent.addCategory(Intent.CATEGORY_HOME);
+				homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(homeIntent);
+				return;
+			}
 
 			if(command == null){
 				String errorText = intent.getStringExtra("errorText");

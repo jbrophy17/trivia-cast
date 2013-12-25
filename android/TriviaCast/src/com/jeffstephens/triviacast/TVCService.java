@@ -74,11 +74,13 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	private boolean doneSubmitting = false;
 	private boolean outForRound = false;
 	private int phase = -1;
+	private boolean connected = false;
 
 	private int lastResponseGuessed = -1;
 
 	// Constants
 	private static final String PREF_FILE = "myPreferences";
+	private static final int EXTRA_QUIT = 1;
 
 	public class TVCBinder extends Binder{
 		TVCService getService(){
@@ -258,12 +260,17 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	private void updateNotification(){
 		String nTitle = new String();
 		String nBody = new String();
+		String nTicker = new String();
 
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+
+		boolean showQuitButton = false;
 
 		if(currentlyQueued){
 			nTitle = "Queued";
 			nBody = "You'll join the game when the next round starts.";
+			nTicker = "Joined the queue.";
+			showQuitButton = true;
 		}
 		else{
 			switch(phase){
@@ -271,26 +278,31 @@ public class TVCService extends Service implements MediaRouteAdapter {
 				if(playerID == readerID && !doneReading){
 					nTitle = "You're Reader!";
 					nBody = "Everyone's waiting on you to read responses.";
+					nTicker = "Time to read!";
 					mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
 				}
 				else{
 					nTitle = "Waiting for Reader";
 					nBody = "Wait while someone else reads responses.";
+					nTicker = "Waiting for reader.";
 				}
 				break;
 			case PHASE_GUESSING:
 				if(playerID == guesserID){
 					nTitle = "You're Guesser!";
 					nBody = "Everyone's waiting on you to make a guess.";
+					nTicker = "Time to guess!";
 					mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
 				}
 				else if(outForRound){
 					nTitle = "Out for the Round";
 					nBody = "Someone guessed your response.";
+					nTicker = "You were guessed!";
 				}
 				else{
 					nTitle = "Someone Else's Turn";
 					nBody = "Wait for it to be your turn again.";
+					nTicker = "Someone else's turn.";
 				}
 				break;
 			case PHASE_ORDERING:
@@ -300,15 +312,19 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			case PHASE_BETWEEN_ROUNDS:
 				nTitle = "Between Rounds";
 				nBody = "We're waiting for someone to start the next round.";
+				nTicker = "Between rounds.";
+				showQuitButton = true;
 				break;
 			case PHASE_SUBMITTING:
 				if(!doneSubmitting){
 					nTitle = "Write a Response!";
 					nBody = currentPrompt;
+					nTicker = "Time to write a response!";
 				}
 				else{
 					nTitle = "Waiting for Responses";
 					nBody = "We're waiting on everyone's response.";
+					nTicker = "Waiting for responses.";
 				}
 				break;
 			case -1:
@@ -316,10 +332,14 @@ public class TVCService extends Service implements MediaRouteAdapter {
 				if(playerID > -1){
 					nTitle = "Between Rounds";
 					nBody = "We're waiting for someone to start the next round.";
+					nTicker = "Between rounds.";
+					showQuitButton = true;
 				}
 				else{
 					nTitle = "Join the Game!";
 					nBody = "Choose a Chromecast to start playing.";
+					nTicker = "Ready to join the game!";
+					showQuitButton = true;
 				}
 				break; 
 			}
@@ -327,14 +347,25 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 		// prepend app name
 		nTitle = getResources().getString(R.string.app_name) + ": " + nTitle;
+		nTicker = getResources().getString(R.string.app_name) + ": " +nTicker;
 
 		// update notification
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, GameActivity.class), 0);
 		mBuilder.setContentTitle(nTitle);
 		mBuilder.setContentText(nBody);
+		mBuilder.setTicker(nTicker);
 		mBuilder.setSmallIcon(R.drawable.ic_launcher);
 		mBuilder.setContentIntent(contentIntent);
+
+		// show quit button if appropriate
+		if(showQuitButton){
+			Intent quitIntent = new Intent(this, TVCService.class);
+			quitIntent.putExtra("code", EXTRA_QUIT);
+			PendingIntent pi = PendingIntent.getService(this, 0, quitIntent, 0);
+			mBuilder.addAction(R.drawable.dialog_ic_close_normal_holo_dark, "Quit TriviaCast", pi);
+		}
+
 		mNM.notify(NOTIFICATION, mBuilder.build());
 	}
 
@@ -342,10 +373,19 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	public int onStartCommand(Intent intent, int flags, int startId){
 		Log.i("TVCService", "Received start ID " + startId + ": " + intent);
 
+		int extraCode = intent.getIntExtra("code", 0);
+
+		Log.i(TAG, "extraCode = " + extraCode);
+
 		mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
 				MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
 
 		mNM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		if(extraCode == EXTRA_QUIT){
+			sendCommand("quit");
+			stopSelf();
+		}
 
 		return START_STICKY;
 	}
@@ -353,6 +393,11 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	@Override
 	public void onDestroy(){
 		Log.i(TAG, "TVCService onDestroy");
+
+		if(connected){
+			mGameMessageStream.leaveGame();
+		}
+
 		mMediaRouter.removeCallback(mMediaRouterCallback);
 
 		MediaRouteHelper.unregisterMediaRouteProvider(mCastContext);
@@ -364,6 +409,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	 * Called when a user selects a route.
 	 */
 	private void onRouteSelected(RouteInfo route) {
+		connected = true;
 		sLog.d("onRouteSelected: %s", route.getName());
 		MediaRouteHelper.requestCastDeviceForRoute(route);
 	}
@@ -372,6 +418,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	 * Called when a user unselects a route.
 	 */
 	private void onRouteUnselected(RouteInfo route) {
+		connected = false;
 		sLog.d("onRouteUnselected: %s", route.getName());
 		setSelectedDevice(null);
 	}
