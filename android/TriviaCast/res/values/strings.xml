@@ -20,5 +20,7 @@
     <string name="between_rounds">Start the next round\nwhen everyone\'s ready.</string>
     <string name="youre_out_for_round">Someone guessed your response!\nThat means you can\'t guess anymore this round.</string>
     <string name="your_response_here">Touch to write a response&#8230;</string>
+    <string name="back_button_does_nothing">The back button doesn\'t do anything in TriviaCast.</string>
+    <string name="local_broadcast_action">tvc_local_broadcast</string>
 
 </resources>

@@ -51,6 +51,7 @@ public abstract class GameMessageStream extends MessageStream {
 	private static final String KEY_RESPONSE_ID = "responseID";
 	private static final String KEY_GUESS_RESPONSE_ID = "guessResponseId";
 	private static final String KEY_GUESS_PLAYER_NUMBER = "guessPlayerNumber";
+	private static final String KEY_PHASE = "phase";
 
 	// Commands to send to server
 	private static final String KEY_JOIN = "join";
@@ -63,6 +64,7 @@ public abstract class GameMessageStream extends MessageStream {
 	private static final String KEY_INITIALIZE_ORDER = "initializeOrder";
 	private static final String KEY_JOIN_ORDER = "order";
 	private static final String KEY_CANCEL_ORDER = "cancelOrder";
+	private static final String KEY_GET_PHASE = "getPhase";
 	private static final String KEY_PONG = "pong";
 
 	// Events to receive from server
@@ -81,6 +83,7 @@ public abstract class GameMessageStream extends MessageStream {
 	private static final String KEY_ORDER_INITIALIZED = "orderInitialized";
 	private static final String KEY_ORDER_CANCELED = "orderCanceled";
 	private static final String KEY_ORDER_COMPLETE = "orderComplete";
+	private static final String KEY_CURRENT_PHASE = "currentPhase";
 	private static final String KEY_PING = "ping";
 
 	// Error codes
@@ -215,7 +218,7 @@ public abstract class GameMessageStream extends MessageStream {
 			Log.e(TAG, "Message Stream is not attached", e);
 		}
 	}
-	
+
 	public final void submitGuess(int responseID, int playerID){
 		Log.d(TAG, "trying to submit guess: " + responseID + ", " + playerID);
 		try{
@@ -236,6 +239,24 @@ public abstract class GameMessageStream extends MessageStream {
 		}
 	}
 	
+	public final void getPhase(){
+		Log.d(TAG, "trying to get phase");
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_GET_PHASE);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to get phase", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_GET_PHASE + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
+
 	public final void sendPong(){
 		Log.d(TAG, "sending pong (liveness check)");
 		try{
@@ -267,6 +288,7 @@ public abstract class GameMessageStream extends MessageStream {
 	protected abstract void onOrderInitialized();
 	protected abstract void onOrderCanceled();
 	protected abstract void onOrderComplete();
+	protected abstract void onCurrentPhase(int newPhase);
 
 	/**
 	 * Processes all JSON messages received from the receiver device and performs the appropriate 
@@ -406,6 +428,13 @@ public abstract class GameMessageStream extends MessageStream {
 					onOrderComplete();
 				}
 				
+				// getting current phase
+				else if (KEY_CURRENT_PHASE.equals(event)){
+					Log.d(TAG, "Current phase received");
+					int phase = message.getInt(KEY_PHASE);
+					onCurrentPhase(phase);
+				}
+
 				// server is requesting a liveness check
 				else if (KEY_PING.equals(event)){
 					Log.d(TAG, "Received ping (liveness check request)");
