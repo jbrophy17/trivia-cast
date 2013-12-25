@@ -99,6 +99,7 @@ public abstract class GameMessageStream extends MessageStream {
 	protected static final int ERROR_ORDERING_WRONG_PHASE = 9;
 	protected static final int ERROR_ORDERING_NOT_HAPPENING = 10;
 	protected static final int ERROR_NOT_ENOUGH_PLAYERS_TO_ORDER = 11;
+	protected static final int ERROR_ALREADY_IN_ORDER = 12;
 
 	/**
 	 * Constructs a new GameMessageStream with GAME_NAMESPACE as the namespace used by 

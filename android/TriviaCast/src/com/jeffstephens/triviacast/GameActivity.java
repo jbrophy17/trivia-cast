@@ -457,6 +457,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 	private void showPreJoinUI(){
 		clearFragments();
 		instructionsTextView.setText(R.string.choose_chromecast);
+		instructionsTextView.setVisibility(View.VISIBLE);
 		nextRoundButton.setVisibility(View.GONE);
 		setTitle(getResources().getString(R.string.app_name) + ": Join game");
 
@@ -475,8 +476,10 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		setTitle(getResources().getString(R.string.app_name) + ": Game Lobby");
 
 		// update menu
-		cancelItem.setVisible(false);
-		startItem.setVisible(true);
+		if(menuLoaded){
+			cancelItem.setVisible(false);
+			startItem.setVisible(true);
+		}
 	}
 
 	private void showPlayerQueuedUI(){
@@ -521,7 +524,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		instructionsTextView.setText(R.string.waiting_for_other_responses_message);
 		instructionsTextView.setVisibility(View.VISIBLE);
 
-		setTitle(getResources().getString(R.string.app_name) + ": Waiting for Responses");
+		setTitle(getResources().getString(R.string.app_name) + ": Waiting");
 	}
 
 	private void goGoTVCResponseReader(boolean guessingMode){
@@ -584,9 +587,15 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		clearFragments();
 		showFragment(R.id.orderer_fragment_container);
 
+		// hide between rounds UI
+		nextRoundButton.setVisibility(View.GONE);
+		hideInstructions();
+
 		// update menu
-		cancelItem.setVisible(true);
-		startItem.setVisible(false);
+		if(menuLoaded){
+			cancelItem.setVisible(true);
+			startItem.setVisible(false);
+		}
 	}
 
 	private void hideInstructions(){

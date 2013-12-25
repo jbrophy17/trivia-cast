@@ -36,7 +36,7 @@ public class TVCOrderer extends Fragment{
 		super.onStart();
 
 		// instantiate UI
-		joinOrderButton = (Button) getView().findViewById(R.id.button_submit_response);
+		joinOrderButton = (Button) getView().findViewById(R.id.button_join_order);
 
 		// set listeners
 		joinOrderButton.setOnClickListener(new Button.OnClickListener(){

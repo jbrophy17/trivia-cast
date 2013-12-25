@@ -22,7 +22,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/order_instructions"
         android:background="#0099CC"
         android:text="@string/button_join_order_label"
         android:textColor="#FFFFFF"

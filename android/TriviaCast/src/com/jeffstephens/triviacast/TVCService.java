@@ -125,6 +125,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	}
 
 	private void showInRoundWaitingUI(){
+		updateNotification();
 		sendCommand(GameActivity.CMD_SHOW_IN_ROUND_WAITING_UI);
 	}
 
@@ -777,6 +778,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 		protected void onCurrentPhase(int newPhase){
 			phase = newPhase;
+			updateNotification();
 		}
 
 		// Some error code has been received. Let the user know.
@@ -818,6 +820,9 @@ public class TVCService extends Service implements MediaRouteAdapter {
 				break;
 			case ERROR_NOT_ENOUGH_PLAYERS_TO_ORDER:
 				messageText = "There aren't enough players to change their order yet.";
+				break;
+			case ERROR_ALREADY_IN_ORDER:
+				messageText = "You've already joined the order! Cancel if you made a mistake.";
 				break;
 			default:
 				messageText = "An unknown error occurred.";
