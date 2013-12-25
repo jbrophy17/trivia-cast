@@ -59,7 +59,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		@Override
 		public void onReceive(Context context, Intent intent){
 			String command = intent.getStringExtra("command");
-			
+
 			if(command == "quit"){
 				Intent homeIntent = new Intent(Intent.ACTION_MAIN);
 				homeIntent.addCategory(Intent.CATEGORY_HOME);
@@ -145,7 +145,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 	@Override
 	public void onCreate(Bundle bundle) {
 		Log.i(TAG, "GameActivity onCreate");
-		
+
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_game);
 
@@ -219,7 +219,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 			// kill service
 			Intent serviceIntent = new Intent(this, TVCService.class);
 			stopService(serviceIntent);
-			
+
 			// go to home
 			Intent intent = new Intent(Intent.ACTION_MAIN);
 			intent.addCategory(Intent.CATEGORY_HOME);
@@ -409,6 +409,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		clearFragments();
 		instructionsTextView.setText(R.string.choose_chromecast);
 		nextRoundButton.setVisibility(View.GONE);
+		setTitle(getResources().getString(R.string.app_name) + ": Join game");
 	}
 
 	private void showLobbyUI(){
@@ -416,11 +417,13 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		instructionsTextView.setText(R.string.between_rounds);
 		instructionsTextView.setVisibility(View.VISIBLE);
 		nextRoundButton.setVisibility(View.VISIBLE);
+		setTitle(getResources().getString(R.string.app_name) + ": Game Lobby");
 	}
 
 	private void showPlayerQueuedUI(){
 		nextRoundButton.setVisibility(View.VISIBLE);
 		instructionsTextView.setText(R.string.in_queue_message);
+		setTitle(getResources().getString(R.string.app_name) + ": Queued to Join");
 	}
 
 	private void showComposeUI(){
@@ -435,6 +438,8 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
 		fragmentTransaction.commit();
 		showFragments();
+
+		setTitle(getResources().getString(R.string.app_name) + ": Write Response");
 	}
 
 	private void showSubmittingResponseUI(){
@@ -455,6 +460,8 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		// show waiting UI
 		instructionsTextView.setText(R.string.waiting_for_other_responses_message);
 		instructionsTextView.setVisibility(View.VISIBLE);
+
+		setTitle(getResources().getString(R.string.app_name) + ": Waiting for Responses");
 	}
 
 	private void goGoTVCResponseReader(boolean guessingMode){
@@ -483,6 +490,8 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 
 		// show reading UI
 		goGoTVCResponseReader(false);
+
+		setTitle(getResources().getString(R.string.app_name) + ": Reading");
 	}
 
 	private void showInRoundWaitingUI(){
@@ -493,12 +502,16 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 
 		instructionsTextView.setVisibility(View.VISIBLE);
 		instructionsTextView.setText(R.string.someone_elses_turn);
+		
+		setTitle(getResources().getString(R.string.app_name) + ": Waiting");
 
 		Log.d(TAG, "finished showInRoundWaitingUI()");
 	}
 
 	private void showOutForRoundUI(){
 		instructionsTextView.setText(R.string.youre_out_for_round);
+
+		setTitle(getResources().getString(R.string.app_name) + ": Out for Round");
 	}
 
 	private void hideInstructions(){
@@ -510,6 +523,8 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		hideInstructions();
 
 		goGoTVCResponseReader(true);
+
+		setTitle(getResources().getString(R.string.app_name) + ": Guessing");
 	}
 
 }
