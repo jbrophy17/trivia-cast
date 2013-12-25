@@ -229,7 +229,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item){		
+	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
 		case R.id.set_name_menu_item:
 			updatePlayerName(false);
