@@ -196,6 +196,11 @@ function Game() {
         console.log("Deleting player " + this.players[id].toString());
         this.players.splice(id, 1);
 
+        // if deleting reader or guesser, fix
+        if(id == this.guesser || id == this.reader){
+            advanceGuesser();
+        }
+
         // rebuild players' IDs to match their new indices
         for(var i = 0; i < this.players.length; i++){
             if(this.players[i].ID != i){
