@@ -927,7 +927,9 @@ function newGrind(){
 function updatePlayer(channel, info){
     var playerID = getPlayerIndexByChannel(channel);
 
-    if(!("name" in info) || info.name.length == 0){
+    var thisName = trim(info.name);
+
+    if(!("name" in info) || thisName.length == 0){
         console.warn("Recieved a player update request with no name. Ignoring.");
         channel.send({ "type" : "error", "value" : SENT_BLANK_NAME });
         return;
@@ -947,11 +949,11 @@ function updatePlayer(channel, info){
     }
 
     if(isQueued){
-        game.playerQueue[playerID].name = info.name;
+        game.playerQueue[playerID].name = thisName;
         game.playerQueue[playerID].pictureURL = url;
     }
     else{
-        game.players[playerID].name = info.name;
+        game.players[playerID].name = thisName;
         game.players[playerID].pictureURL = url;
     }
 
