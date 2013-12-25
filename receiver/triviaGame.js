@@ -10,6 +10,7 @@ INVALID_TYPE           = 8;
 ORDER_UNAVAILABLE      = 9;
 NOT_ORDERING           = 10;
 TOO_FEW_TO_ORDER       = 11;
+ALREADY_IN_ORDER       = 12;
 
 // phase constants
 PHASE_READING        = 100;
@@ -174,6 +175,7 @@ function Game() {
     }
 
     this.queuePlayer = function(player){
+        cancelOrdering();
         this.playerQueue.push(player);
         player.channel.send({ type: 'didQueue' });
         console.log("Queued player " + player.toString());
@@ -238,6 +240,8 @@ function Game() {
     }
 
     this.sendGameSync = function(noReader){
+        console.debug("sending gamesync");
+
         if(this.phase == PHASE_GUESSING){
             noReader = true;
         }
@@ -253,9 +257,17 @@ function Game() {
                     thisReader = -1;
                 }
                 else{
+                    console.debug("gamesync: sending reader as player at index " + this.reader);
                     var thisReader = this.players[this.reader].ID;
                 }
-                this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
+
+                var guesserID = -1;
+
+                if(this.guesser >= 0){
+                    guesserID = this.players[this.guesser].ID;
+                }
+
+                this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : guesserID });
             }
             else{
                 console.debug("not sending gameSync to gone player: " + this.players[i].toString());
@@ -339,7 +351,7 @@ function updatePlayerList(){
 
     $('#playerlist').empty();
     for(var i = 0; i < game.players.length; i++){
-        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].toString() + '</li><br>';
+        var playerHTML = '<li><em>' + game.players[i].score + '</em> ' + game.players[i].toString() + '</li>';
         $('#playerlist').append(playerHTML);
     }
 
@@ -493,6 +505,9 @@ function checkMinPlayers(){
 }
 
 function leavePlayer(channel){
+    // if we're ordering, cancel
+    cancelOrdering();
+
     // if this player is queued, just dequeue them
     for(var i = 0; i < game.playerQueue.length; i++){
         if(game.playerQueue[i].channel == channel){
@@ -704,6 +719,7 @@ function submitGuess(channel, guess){
 
         var statusText = "correctly that ";
         statusText += game.players[playerGuessed].toString() + " submitted " + game.responses[deleteIndex].toString();
+        $('#status').empty();
         prependStatus(guesserID, statusText);
 
         console.log(game.players[guesserID].toString() + ' correctly guessed that ' + game.players[playerGuessed].toString() + ' submitted ' + game.responses[deleteIndex].toString());
@@ -731,6 +747,7 @@ function submitGuess(channel, guess){
             statusText += game.players[playerGuessed].toString();
         }
         statusText += " submitted " + game.responses[rgIndex].toString() + ".";
+        $('#status').empty();
         prependStatus(guesserID, statusText);
         nextGuesser(true);
     }
@@ -846,12 +863,14 @@ function betweenRounds(){
     // notify everyone that we're in between rounds
     for(var i = 0; i < game.players.length; i++){
         if(!game.players[i].isGone){
+            game.players[i].isOut = false;
             game.players[i].channel.send({ 'type' : 'roundOver' });
         }
     }
 
     game.setPhase(PHASE_BETWEEN_ROUNDS);
     $('#instructions').show();
+    $("#orderscreen").hide();
 
     if(game.players.length > 0){
         startScreen('TriviaCast Round Over!');
@@ -900,7 +919,6 @@ function newGrind(){
     // build array of players and set their isOut to false
     var playerList = new Object();
     for(var i = 0; i < game.players.length; i++){
-        game.players[i].isOut = false;
         playerList[i] = game.players[i].clientSafeVersion();
     }
 
@@ -964,7 +982,7 @@ function updatePlayer(channel, info){
 // start ordering players and tell everyone
 function initializeOrdering(channel){
     // only can order once there are enough people (no point to ordering with ≤2 players)
-    if(game.players.length < MIN_PLAYER_NUMBER){
+    if((game.players.length + game.playerQueue.length) < MIN_PLAYER_NUMBER){
         console.warn("Tried to start ordering with not enough players.");
         channel.send({ "type" : "error", "value" : TOO_FEW_TO_ORDER });
         return;
@@ -987,7 +1005,8 @@ function initializeOrdering(channel){
         startScreen("TriviaCast: Set Player Order");
         $("#instructions").html("Each player should press the join button in the order they're sitting.").show();
         $("#scoreboard").hide();
-        $("#orderscreen").empty().show();
+        $("#orderscreen ul").empty()
+        $("#orderscreen").show();
     }
     else{
         console.debug("Tried to start ordering during wrong phase");
@@ -1002,20 +1021,36 @@ function setPlayerOrder(channel){
         return;
     }
 
-    game.orderQueue.push(game.players[getPlayerIndexByChannel(channel)]);
+    var thisPlayer = game.players[getPlayerIndexByChannel(channel)];
+
+    // check if already in order
+    if(game.orderQueue.indexOf(thisPlayer) != -1){
+        console.warn("Client tried to join order twice.");
+        channel.send({ "type" : "error", "value" : ALREADY_IN_ORDER });
+        return;
+    }
+
+    game.orderQueue.push(thisPlayer);
     console.debug("Setting order for " + game.players[getPlayerIndexByChannel(channel)].toString());
 
-    $("#orderscreen").append(game.players[getPlayerIndexByChannel(channel)].toString() + "<br />");
+    $("#orderscreen ul").append("<li>" + game.players[getPlayerIndexByChannel(channel)].toString() + "</li>");
 
     // if this is the last player, rebuild players and notify everyone
     if(game.orderQueue.length == game.players.length){
         console.debug("Rebuilding players with new order")
         game.players = game.orderQueue;
 
+        console.debug("order queue:");
+        console.debug(game.orderQueue);
+        console.debug("players after copying:");
+        console.debug(game.players);
+
         for(var i = 0; i < game.players.length; i++){
             game.players[i].ID = i;
             game.players[i].channel.send({ "type" : "didJoin", "number" : i });
         }
+
+        console.debug("reassigned IDs");
 
         game.sendGameSync();
 
@@ -1023,7 +1058,10 @@ function setPlayerOrder(channel){
             game.players[i].channel.send({ "type" : "orderComplete" });
         }
 
+        console.debug("Finished rebuilding player order");
+
         updatePlayerList();
+        betweenRounds();
         game.setPhase(PHASE_BETWEEN_ROUNDS);
     }
 }
@@ -1031,6 +1069,8 @@ function setPlayerOrder(channel){
 function cancelOrdering(channel){
     if(game.phase == PHASE_ORDERING){
         console.debug("Canceling ordering process");
+        $('#orderscreen').hide();
+        betweenRounds();
         game.setPhase(PHASE_BETWEEN_ROUNDS);
         for(var i = 0; i < game.players.length; i++){
             game.players[i].channel.send({ "type" : "orderCanceled" });
@@ -1038,7 +1078,9 @@ function cancelOrdering(channel){
     }
     else{
         console.warn("Client tried to cancel ordering in the wrong phase");
-        channel.send({ "type" : "error", "value" : NOT_ORDERING });
+        if(typeof channel != "undefined"){
+            channel.send({ "type" : "error", "value" : NOT_ORDERING });
+        }
     }
 }
 
