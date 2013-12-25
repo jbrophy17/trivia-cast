@@ -216,7 +216,10 @@ function Game() {
 
                 console.debug("Updating ID from " + this.players[i].ID + " to " + i);
                 this.players[i].ID = i;
-                this.players[i].channel.send({ "type" : "didJoin", "number" : i });
+
+                if(!this.players[i].isGone){
+                    this.players[i].channel.send({ "type" : "didJoin", "number" : i });
+                }
             }
         }
 
@@ -246,14 +249,27 @@ function Game() {
         }
         for(var i = 0; i < this.players.length; i++){
             if(!this.players[i].isGone){
-                var thisReader = this.players[this.reader].ID;
-                if(typeof noReader != "undefined"){
+                if(typeof noReader != "undefined" || this.reader == -1){
                     thisReader = -1;
+                }
+                else{
+                    var thisReader = this.players[this.reader].ID;
                 }
                 this.players[i].channel.send({type : 'gameSync', players : playerList, reader : thisReader, guesser : this.players[this.guesser].ID });
             }
             else{
                 console.debug("not sending gameSync to gone player: " + this.players[i].toString());
+            }
+        }
+    }
+
+    this.setPhase = function(newPhase){
+        this.phase = newPhase;
+
+        // notify everyone
+        for(var i = 0; i < this.players.length; i++){
+            if(!this.players[i].isGone){
+                getPhase(this.players[i].channel);
             }
         }
     }
@@ -562,7 +578,7 @@ function getAllResponsesJSON(){
 }
 
 function startReading(){
-    game.phase = PHASE_READING;
+    game.setPhase(PHASE_READING);
     $('#status').html('Sit tight while <strong>' + game.players[game.reader].toString() + '</strong> is reading.');
 
     // randomize order of responses
@@ -576,7 +592,7 @@ function startReading(){
 }
 
 function startGuessing(){
-    game.phase = PHASE_GUESSING;
+    game.setPhase(PHASE_GUESSING);
 
     // send guesser all responses
     var responseJSON = getAllResponsesJSON();
@@ -764,6 +780,8 @@ function advanceGuesser(){
     }while(typeof game.players[game.guesser] == "undefined" || game.players[game.guesser].isOut || game.players[game.guesser].isGone);
     console.debug("new guesser set to " + game.guesser);
 
+    game.sendGameSync(true);
+
     return true;
 }
 
@@ -805,7 +823,7 @@ function startNextRound(channel){
     $("#instructions").hide();
     newGrind();
 
-    game.phase = PHASE_SUBMITTING;
+    game.setPhase(PHASE_SUBMITTING);
 
     // show next question
     game.getNextCue();
@@ -832,7 +850,7 @@ function betweenRounds(){
         }
     }
 
-    game.phase = PHASE_BETWEEN_ROUNDS;
+    game.setPhase(PHASE_BETWEEN_ROUNDS);
     $('#instructions').show();
 
     if(game.players.length > 0){
@@ -957,7 +975,7 @@ function initializeOrdering(channel){
         clearPlayerQueue();
         updatePlayerList();
         game.orderQueue = new Array();
-        game.phase = PHASE_ORDERING;
+        game.setPhase(PHASE_ORDERING);
 
         for(var i = 0; i < game.players.length; i++){
             game.players[i].channel.send({ "type" : "orderInitialized" });
@@ -1004,14 +1022,14 @@ function setPlayerOrder(channel){
         }
 
         updatePlayerList();
-        game.phase = PHASE_BETWEEN_ROUNDS;
+        game.setPhase(PHASE_BETWEEN_ROUNDS);
     }
 }
 
 function cancelOrdering(channel){
     if(game.phase == PHASE_ORDERING){
         console.debug("Canceling ordering process");
-        game.phase = PHASE_BETWEEN_ROUNDS;
+        game.setPhase(PHASE_BETWEEN_ROUNDS);
         for(var i = 0; i < game.players.length; i++){
             game.players[i].channel.send({ "type" : "orderCanceled" });
         }
