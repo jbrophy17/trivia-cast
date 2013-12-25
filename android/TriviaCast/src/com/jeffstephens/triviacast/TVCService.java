@@ -159,7 +159,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	private void showPreJoinUI(){
 		sendCommand(GameActivity.CMD_SHOW_PRE_JOIN_UI);
 	}
-	
+
 	private void showOrderingUI(){
 		sendCommand(GameActivity.CMD_SHOW_ORDERING_UI);
 	}
@@ -169,7 +169,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			showPreJoinUI();
 			return;
 		}
-		
+
 		if(currentlyQueued){
 			showPlayerQueuedUI();
 			return;
@@ -199,8 +199,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			}
 			break;
 		case PHASE_ORDERING:
-			// TODO
-			Log.w(TAG, "Ordering phase, what do");
+			showOrderingUI();
 			break;
 		case PHASE_BETWEEN_ROUNDS:
 			showLobbyUI();
@@ -275,7 +274,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 		boolean showQuitButton = false;
 		boolean useVibration = false;
-		
+
 		if(!connected){
 			nTitle = "Join the Game!";
 			nBody = "Choose a Chromecast to start playing.";
@@ -323,8 +322,10 @@ public class TVCService extends Service implements MediaRouteAdapter {
 				}
 				break;
 			case PHASE_ORDERING:
-				// TODO
-				Log.w(TAG, "Ordering phase, what do");
+				nTitle="Setting Player Order";
+				nBody="Everyone should set their order now.";
+				nTicker="Time to set order!";
+				useVibration = true;
 				break;
 			case PHASE_BETWEEN_ROUNDS:
 				nTitle = "Between Rounds";
@@ -383,7 +384,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			PendingIntent pi = PendingIntent.getService(this, 0, quitIntent, 0);
 			mBuilder.addAction(R.drawable.dialog_ic_close_normal_holo_dark, "Quit TriviaCast", pi);
 		}
-		
+
 		// add vibration if appropriate
 		if(useVibration){
 			long[] pattern = { 0, 200, 200, 200 };
