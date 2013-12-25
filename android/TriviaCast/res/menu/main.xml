@@ -24,8 +24,12 @@
         app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/set_name_media_item"
+        android:id="@+id/set_name_menu_item"
         android:title="@string/menu_settings"
+        android:visible="true"/>
+    <item
+        android:id="@+id/quit_game_menu_item"
+        android:title="@string/menu_quit"
         android:visible="true"/>
 
 </menu>

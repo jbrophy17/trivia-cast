@@ -204,8 +204,19 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
-		case R.id.set_name_media_item:
+		case R.id.set_name_menu_item:
 			updatePlayerName(false);
+			return true;
+		case R.id.quit_game_menu_item:
+			// kill service
+			Intent serviceIntent = new Intent(this, TVCService.class);
+			stopService(serviceIntent);
+			
+			// go to home
+			Intent intent = new Intent(Intent.ACTION_MAIN);
+			intent.addCategory(Intent.CATEGORY_HOME);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
