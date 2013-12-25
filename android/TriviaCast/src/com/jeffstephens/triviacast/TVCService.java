@@ -6,17 +6,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
 import android.support.v7.media.MediaRouter.RouteInfo;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.cast.ApplicationChannel;
@@ -29,8 +33,6 @@ import com.google.cast.MediaRouteAdapter;
 import com.google.cast.MediaRouteHelper;
 import com.google.cast.MediaRouteStateChangeListener;
 import com.google.cast.SessionError;
-import com.jeffstephens.triviacast.TVCComposer.ComposerListener;
-import com.jeffstephens.triviacast.TVCResponseReader.ReaderListener;
 
 public class TVCService extends Service implements MediaRouteAdapter {
 
@@ -48,6 +50,9 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	private MediaRouter.Callback mMediaRouterCallback;
 	private MediaRouter mMediaRouter;
 	public MediaRouteSelector mMediaRouteSelector;
+
+	private NotificationManager mNM;
+	private int NOTIFICATION = R.string.tvc_service_notification;
 
 	// Game phase constants
 	private static final int PHASE_READING        = 100;
@@ -67,6 +72,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	private boolean currentlyQueued = false;
 	private boolean doneReading = false;
 	private boolean doneSubmitting = false;
+	private boolean outForRound = false;
 	private int phase = -1;
 
 	private int lastResponseGuessed = -1;
@@ -104,6 +110,8 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 	private void sendCommand(String command){
 		Log.d(TAG, "sending command: " + command);
+
+		updateNotification();
 
 		Intent intent = new Intent(getResources().getString(R.string.local_broadcast_action));
 		intent.putExtra("command", command);
@@ -151,6 +159,8 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	}
 
 	public void updateView(){
+		updateNotification();
+
 		if(currentlyQueued){
 			showPlayerQueuedUI();
 			return;
@@ -171,6 +181,9 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			Log.d(TAG, "Guessing phase. I'm guesser if my ID (" + playerID + ") = guesser (" + guesserID + ")");
 			if(playerID == guesserID){
 				showGuessingUI();
+			}
+			else if(outForRound){
+				showOutForRoundUI();
 			}
 			else{
 				showInRoundWaitingUI();
@@ -228,6 +241,98 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 		// load settings
 		loadPlayerName();
+
+		// show notification
+		initNotification();
+	}
+
+	private void initNotification(){
+		Notification notification = new Notification(R.drawable.ic_launcher, getText(R.string.app_name),
+				System.currentTimeMillis());
+		Intent notificationIntent = new Intent(this, GameActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(this, getText(R.string.app_name),
+				getText(R.string.app_name), pendingIntent);
+		startForeground(NOTIFICATION, notification);
+	}
+
+	// update the notification text based on the state of the game
+	private void updateNotification(){
+		String nTitle = new String();
+		String nBody = new String();
+
+		if(currentlyQueued){
+			nTitle = "Queued";
+			nBody = "You'll join the game when the next round starts.";
+		}
+		else{
+			switch(phase){
+			case PHASE_READING:
+				if(playerID == readerID && !doneReading){
+					nTitle = "You're Reader!";
+					nBody = "Everyone's waiting on you to read responses.";
+				}
+				else{
+					nTitle = "Waiting for Reader";
+					nBody = "Wait while someone else reads responses.";
+				}
+				break;
+			case PHASE_GUESSING:
+				if(playerID == guesserID){
+					nTitle = "You're Guesser!";
+					nBody = "Everyone's waiting on you to make a guess.";
+				}
+				else if(outForRound){
+					nTitle = "Out for the Round";
+					nBody = "Someone guessed your response.";
+				}
+				else{
+					nTitle = "Someone Else's Turn";
+					nBody = "Wait for it to be your turn again.";
+				}
+				break;
+			case PHASE_ORDERING:
+				// TODO
+				Log.w(TAG, "Ordering phase, what do");
+				break;
+			case PHASE_BETWEEN_ROUNDS:
+				nTitle = "Between Rounds";
+				nBody = "We're waiting for someone to start the next round.";
+				break;
+			case PHASE_SUBMITTING:
+				if(!doneSubmitting){
+					nTitle = "Write a Response!";
+					nBody = currentPrompt;
+				}
+				else{
+					nTitle = "Waiting for Responses";
+					nBody = "We're waiting on everyone's response.";
+				}
+				break;
+			case -1:
+				// already checked for queued at top of method
+				if(playerID > -1){
+					nTitle = "Between Rounds";
+					nBody = "We're waiting for someone to start the next round.";
+				}
+				else{
+					nTitle = "Join the Game!";
+					nBody = "Choose a Chromecast to start playing.";
+				}
+				break; 
+			}
+		}
+
+		// prepend app name
+		nTitle = getResources().getString(R.string.app_name) + ": " + nTitle;
+
+		// update notification
+		Notification notification = new Notification(R.drawable.ic_launcher, getResources().getString(R.string.app_name), System.currentTimeMillis());
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, GameActivity.class), 0);
+		notification.setLatestEventInfo(this, nTitle,
+				nBody, contentIntent);
+		mNM.notify(NOTIFICATION, notification);
 	}
 
 	@Override
@@ -236,6 +341,8 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 		mMediaRouter.addCallback(mMediaRouteSelector, mMediaRouterCallback,
 				MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+
+		mNM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		return START_STICKY;
 	}
@@ -337,7 +444,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		mGameMessageStream.submitResponse(response);
 		doneSubmitting = true;
 	}
-	
+
 	public void submitGuess(int responseID, int playerID){
 		lastResponseGuessed = responseID;
 		mGameMessageStream.submitGuess(responseID, playerID);
@@ -497,6 +604,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 				try{
 					if(players.getPlayerById(playerID).isOut){
+						outForRound = true;
 						showOutForRoundUI();
 					}
 				}
@@ -562,11 +670,13 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		protected void onRoundStarted(String newPrompt){
 			doneReading = false; 
 			doneSubmitting = false;
+			outForRound = false;
 			currentPrompt = newPrompt;
 			showComposeUI();
 		}
 
 		protected void onRoundEnded(){
+			updateNotification();
 			showLobbyUI();
 		}
 
