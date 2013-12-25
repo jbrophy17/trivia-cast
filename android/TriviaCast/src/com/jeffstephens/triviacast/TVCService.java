@@ -161,6 +161,11 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	}
 
 	public void updateView(){
+		if(!connected){
+			showPreJoinUI();
+			return;
+		}
+		
 		if(currentlyQueued){
 			showPlayerQueuedUI();
 			return;
@@ -265,8 +270,15 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 
 		boolean showQuitButton = false;
+		
+		if(!connected){
+			nTitle = "Join the Game!";
+			nBody = "Choose a Chromecast to start playing.";
+			nTicker = "Ready to join the game!";
+			showQuitButton = true;
+		}
 
-		if(currentlyQueued){
+		else if(currentlyQueued){
 			nTitle = "Queued";
 			nBody = "You'll join the game when the next round starts.";
 			nTicker = "Joined the queue.";
@@ -419,6 +431,8 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	 */
 	private void onRouteUnselected(RouteInfo route) {
 		connected = false;
+		updateNotification();
+		updateView();
 		sLog.d("onRouteUnselected: %s", route.getName());
 		setSelectedDevice(null);
 	}
