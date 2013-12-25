@@ -1,16 +1,18 @@
 package com.jeffstephens.triviacast;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TVCComposer extends Fragment{
 	ComposerListener mListener;
@@ -41,7 +43,30 @@ public class TVCComposer extends Fragment{
 		// set listeners
 		submitResponseButton.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
-				mListener.submitResponseText(getResponse());
+				final String responseText = getResponse();
+
+				// if an empty response, confirm first
+				if(responseText.length() == 0){
+					AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
+
+					alert.setTitle("Empty Response!");
+					alert.setMessage("Are you sure you want to submit an empty response?");
+
+					alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							mListener.submitResponseText(responseText);
+						}
+					});
+
+					alert.setNegativeButton("No",  new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							; // do nothing
+						}
+					});
+				}
+				else{
+					mListener.submitResponseText(responseText);
+				}
 			}
 		});
 
