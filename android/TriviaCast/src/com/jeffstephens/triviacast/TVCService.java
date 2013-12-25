@@ -270,6 +270,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 
 		boolean showQuitButton = false;
+		boolean useVibration = false;
 		
 		if(!connected){
 			nTitle = "Join the Game!";
@@ -291,7 +292,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 					nTitle = "You're Reader!";
 					nBody = "Everyone's waiting on you to read responses.";
 					nTicker = "Time to read!";
-					mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
+					useVibration = true;
 				}
 				else{
 					nTitle = "Waiting for Reader";
@@ -304,7 +305,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 					nTitle = "You're Guesser!";
 					nBody = "Everyone's waiting on you to make a guess.";
 					nTicker = "Time to guess!";
-					mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
+					useVibration = true;
 				}
 				else if(outForRound){
 					nTitle = "Out for the Round";
@@ -332,6 +333,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 					nTitle = "Write a Response!";
 					nBody = currentPrompt;
 					nTicker = "Time to write a response!";
+					useVibration = true;
 				}
 				else{
 					nTitle = "Waiting for Responses";
@@ -376,6 +378,12 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			quitIntent.putExtra("code", EXTRA_QUIT);
 			PendingIntent pi = PendingIntent.getService(this, 0, quitIntent, 0);
 			mBuilder.addAction(R.drawable.dialog_ic_close_normal_holo_dark, "Quit TriviaCast", pi);
+		}
+		
+		// add vibration if appropriate
+		if(useVibration){
+			long[] pattern = { 0, 200, 200, 200 };
+			mBuilder.setVibrate(pattern);
 		}
 
 		mNM.notify(NOTIFICATION, mBuilder.build());
