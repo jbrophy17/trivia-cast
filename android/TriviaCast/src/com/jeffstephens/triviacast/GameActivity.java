@@ -1,7 +1,6 @@
 package com.jeffstephens.triviacast;
 
-import com.jeffstephens.triviacast.TVCComposer.ComposerListener;
-import com.jeffstephens.triviacast.TVCResponseReader.ReaderListener;
+import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -29,7 +28,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class GameActivity extends ActionBarActivity implements ComposerListener, ReaderListener {
+import com.jeffstephens.triviacast.TVCComposer.ComposerListener;
+import com.jeffstephens.triviacast.TVCOrderer.OrdererListener;
+import com.jeffstephens.triviacast.TVCResponseReader.ReaderListener;
+
+public class GameActivity extends ActionBarActivity implements ComposerListener, ReaderListener, OrdererListener {
 
 	// Debug toggle
 	public static final boolean IS_DEBUG = false;
@@ -47,13 +50,19 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 	public static final String CMD_SHOW_COMPOSE_UI = "showComposeUI";
 	public static final String CMD_SHOW_LOBBY_UI = "showLobbyUI";
 	public static final String CMD_SHOW_PRE_JOIN_UI = "showPreJoinUI";
+	public static final String CMD_SHOW_ORDERING_UI = "showOrderingUI";
 
 	// UI elements
 	private Button nextRoundButton;
 	private TextView instructionsTextView;
 
+	private MenuItem cancelItem;
+	private MenuItem startItem;
+	private boolean menuLoaded = false;
+
 	private static final String TAG_COMPOSE_FRAGMENT = "COMPOSE_FRAGMENT";
 	private static final String TAG_READ_FRAGMENT = "READ_FRAGMENT";
+	private static final String TAG_ORDER_FRAGMENT = "ORDER_FRAGMENT";
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
 		@Override
@@ -131,6 +140,10 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 					showPreJoinUI();
 				}
 
+				else if(CMD_SHOW_ORDERING_UI.equals(command)){
+					showOrderingUI();
+				}
+
 				else{
 					Log.e(TAG, "Received bad command from LocalBroadcast: " + command);
 				}
@@ -206,14 +219,36 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		MediaRouteActionProvider mediaRouteActionProvider =
 				(MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
 		mediaRouteActionProvider.setRouteSelector(mBoundService.mMediaRouteSelector);
+
+		// get menu items for later access
+		cancelItem = (MenuItem) menu.findItem(R.id.cancel_order_menu_item);
+		startItem = (MenuItem) menu.findItem(R.id.set_order_menu_item);
+		menuLoaded = true;
+
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item){
+	public boolean onOptionsItemSelected(MenuItem item){		
 		switch(item.getItemId()){
 		case R.id.set_name_menu_item:
 			updatePlayerName(false);
+			return true;
+		case R.id.set_order_menu_item:
+			if(mBoundService.connected){
+				mBoundService.mGameMessageStream.startOrdering();
+			}
+			else{
+				showErrorMessage("You can only set player order if you're connected to a Chromecast!");
+			}
+			return true;
+		case R.id.cancel_order_menu_item:
+			if(mBoundService.connected){
+				mBoundService.mGameMessageStream.cancelOrder();
+			}
+			else{
+				showErrorMessage("You can only cancel player ordering if you're connected to a Chromecast!");
+			}
 			return true;
 		case R.id.quit_game_menu_item:
 			// kill service
@@ -309,6 +344,14 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		showInRoundWaitingUI();
 	}
 
+	/**
+	 * Interface so orderer can interact
+	 */
+	@Override
+	public void joinOrder(){
+		mBoundService.mGameMessageStream.joinOrder();
+	}
+
 	public void showErrorMessage(String messageText){
 		new AlertDialog.Builder(this)
 		.setTitle("Uh oh!")
@@ -394,14 +437,20 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 	private void clearFragments(){
 		Log.d(TAG, "clearing fragments");
 
-		FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
-		fragmentContainer.setVisibility(View.GONE);
+		ArrayList<FrameLayout> fragments = new ArrayList<FrameLayout>();
+		fragments.add((FrameLayout) findViewById(R.id.composer_fragment_container));
+		fragments.add((FrameLayout) findViewById(R.id.reader_fragment_container));
+		fragments.add((FrameLayout) findViewById(R.id.orderer_fragment_container));
+
+		for(FrameLayout fl : fragments){
+			fl.setVisibility(View.GONE);
+		}
 
 		Log.d(TAG, "fragments cleared");
 	}
 
-	private void showFragments(){
-		FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+	private void showFragment(int fragmentID){
+		FrameLayout fragmentContainer = (FrameLayout) findViewById(fragmentID);
 		fragmentContainer.setVisibility(View.VISIBLE);
 	}
 
@@ -410,6 +459,12 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		instructionsTextView.setText(R.string.choose_chromecast);
 		nextRoundButton.setVisibility(View.GONE);
 		setTitle(getResources().getString(R.string.app_name) + ": Join game");
+
+		// update menu
+		if(menuLoaded){
+			cancelItem.setVisible(false);
+			startItem.setVisible(true);
+		}
 	}
 
 	private void showLobbyUI(){
@@ -418,6 +473,10 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		instructionsTextView.setVisibility(View.VISIBLE);
 		nextRoundButton.setVisibility(View.VISIBLE);
 		setTitle(getResources().getString(R.string.app_name) + ": Game Lobby");
+
+		// update menu
+		cancelItem.setVisible(false);
+		startItem.setVisible(true);
 	}
 
 	private void showPlayerQueuedUI(){
@@ -435,9 +494,10 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		TVCComposer fragment = new TVCComposer();
-		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
+		fragmentTransaction.replace(R.id.composer_fragment_container, fragment, TAG_COMPOSE_FRAGMENT);
 		fragmentTransaction.commit();
-		showFragments();
+		clearFragments();
+		showFragment(R.id.composer_fragment_container);
 
 		setTitle(getResources().getString(R.string.app_name) + ": Write Response");
 	}
@@ -477,9 +537,10 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		TVCResponseReader fragment = new TVCResponseReader();
 		fragment.setArguments(args);
-		fragmentTransaction.replace(R.id.fragment_container, fragment, TAG_READ_FRAGMENT);
+		fragmentTransaction.replace(R.id.reader_fragment_container, fragment, TAG_READ_FRAGMENT);
 		fragmentTransaction.commit();
-		showFragments();
+		clearFragments();
+		showFragment(R.id.reader_fragment_container);
 	}
 
 	private void showReadingUI(){
@@ -502,7 +563,7 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 
 		instructionsTextView.setVisibility(View.VISIBLE);
 		instructionsTextView.setText(R.string.someone_elses_turn);
-		
+
 		setTitle(getResources().getString(R.string.app_name) + ": Waiting");
 
 		Log.d(TAG, "finished showInRoundWaitingUI()");
@@ -512,6 +573,20 @@ public class GameActivity extends ActionBarActivity implements ComposerListener,
 		instructionsTextView.setText(R.string.youre_out_for_round);
 
 		setTitle(getResources().getString(R.string.app_name) + ": Out for Round");
+	}
+
+	private void showOrderingUI(){
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		TVCOrderer fragment = new TVCOrderer();
+		fragmentTransaction.replace(R.id.orderer_fragment_container, fragment, TAG_ORDER_FRAGMENT);
+		fragmentTransaction.commit();
+		clearFragments();
+		showFragment(R.id.orderer_fragment_container);
+
+		// update menu
+		cancelItem.setVisible(true);
+		startItem.setVisible(false);
 	}
 
 	private void hideInstructions(){

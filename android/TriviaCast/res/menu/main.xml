@@ -28,6 +28,14 @@
         android:title="@string/menu_settings"
         android:visible="true"/>
     <item
+        android:id="@+id/set_order_menu_item"
+        android:title="@string/menu_set_order"
+        android:visible="true"/>
+    <item
+        android:id="@+id/cancel_order_menu_item"
+        android:title="@string/menu_cancel_order"
+        android:visible="false"/>
+    <item
         android:id="@+id/quit_game_menu_item"
         android:title="@string/menu_quit"
         android:visible="true"/>

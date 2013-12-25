@@ -256,6 +256,60 @@ public abstract class GameMessageStream extends MessageStream {
 			Log.e(TAG, "Message Stream is not attached", e);
 		}
 	}
+	
+	public final void startOrdering(){
+		Log.d(TAG, "sending initializeOrder");
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_INITIALIZE_ORDER);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to start ordering", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_INITIALIZE_ORDER + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
+	
+	public final void joinOrder(){
+		Log.d(TAG, "sending join order");
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_JOIN_ORDER);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to join order", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_JOIN_ORDER + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
+	
+	public final void cancelOrder(){
+		Log.d(TAG, "sending cancelOrder");
+		try{
+			JSONObject payload = new JSONObject();
+			payload.put(KEY_TYPE, KEY_CANCEL_ORDER);
+			sendMessage(payload);
+		}
+		catch (JSONException e) {
+			Log.e(TAG, "Cannot create object to cancel order", e);
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Unable to send a(n) " + KEY_CANCEL_ORDER + " message", e);
+		}
+		catch (IllegalStateException e) {
+			Log.e(TAG, "Message Stream is not attached", e);
+		}
+	}
 
 	public final void sendPong(){
 		Log.d(TAG, "sending pong (liveness check)");

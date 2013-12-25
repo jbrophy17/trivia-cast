@@ -6,6 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="choose_chromecast">Choose a Chromecast\nto join a game.</string>
     <string name="button_next_round_label">Start Next Round</string>
+    <string name="button_join_order_label">Join Next in Order</string>
     <string name="media_route_menu_title">Choose Chromecast</string>
     <string name="menu_settings">Set Name</string>
     <string name="menu_quit">Quit TriviaCast</string>
@@ -24,5 +25,8 @@
     <string name="back_button_does_nothing">The back button doesn\'t do anything in TriviaCast.</string>
     <string name="local_broadcast_action">tvc_local_broadcast</string>
     <string name="tvc_service_notification">TriviaCast</string>
+    <string name="order_instructions_text">Everyone in the room should press the button in the order they\'d like to play.</string>
+    <string name="menu_set_order">Set Order</string>
+    <string name="menu_cancel_order">Cancel Ordering</string>
 
 </resources>

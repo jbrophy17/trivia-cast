@@ -74,7 +74,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 	private boolean doneSubmitting = false;
 	private boolean outForRound = false;
 	private int phase = -1;
-	private boolean connected = false;
+	public boolean connected = false;
 
 	private int lastResponseGuessed = -1;
 
@@ -158,6 +158,10 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 	private void showPreJoinUI(){
 		sendCommand(GameActivity.CMD_SHOW_PRE_JOIN_UI);
+	}
+	
+	private void showOrderingUI(){
+		sendCommand(GameActivity.CMD_SHOW_ORDERING_UI);
 	}
 
 	public void updateView(){
@@ -753,7 +757,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		}
 
 		protected void onOrderInitialized(){
-			// TODO: show ordering interface
+			showOrderingUI();
 		}
 
 		protected void onOrderCanceled(){

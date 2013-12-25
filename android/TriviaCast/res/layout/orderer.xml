@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/order_instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="130dp"
+        android:gravity="center"
+        android:text="@string/order_instructions_text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#333333" />
+
+    <Button
+        android:id="@+id/button_join_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/order_instructions"
+        android:background="#0099CC"
+        android:text="@string/button_join_order_label"
+        android:textColor="#FFFFFF"
+        android:visibility="visible" />
+
+</RelativeLayout>
