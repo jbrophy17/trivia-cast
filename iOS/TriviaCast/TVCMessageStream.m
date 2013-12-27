@@ -28,8 +28,6 @@
 
 #import <AudioToolbox/AudioServices.h>
 
-static NSString * const kNamespace = @"com.bears.triviaCast";
-
 static NSString * const keyType = @"type";
 
 // Messages Received

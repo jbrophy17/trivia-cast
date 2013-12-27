@@ -13,7 +13,6 @@
 #import "TVCReaderViewController.h"
 #import "TVCSettingsViewController.h"
 
-static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 static NSString * const betweenRoundsMessage = @"Start the round once everyone has joined";
 static NSString * const queuedToJoinMessage = @"You will join at the begining of the next round";
 static NSString * const waitForGuesserMessage = @"The guesser is currently guessing";

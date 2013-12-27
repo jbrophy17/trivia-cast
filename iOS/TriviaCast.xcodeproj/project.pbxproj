@@ -15,6 +15,7 @@
 		DC38689A18256ED100E22E92 /* guesserIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689618256ED100E22E92 /* guesserIcon@2x.png */; };
 		DC38689F1825722700E22E92 /* readerIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689D1825722700E22E92 /* readerIcon.png */; };
 		DC3868A01825722700E22E92 /* readerIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC38689E1825722700E22E92 /* readerIcon@2x.png */; };
+		DC42C079186E03D300E4AE8B /* TVCConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DC42C078186E03D300E4AE8B /* TVCConstants.m */; };
 		DC69C9C018459852008CF909 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC69C9BF18459852008CF909 /* AudioToolbox.framework */; };
 		DCA511F618278605004F3F66 /* TVCCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA511F518278605004F3F66 /* TVCCameraViewController.m */; };
 		DCA511F9182787F6004F3F66 /* TVCCameraSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DCA511F8182787F6004F3F66 /* TVCCameraSessionManager.m */; };
@@ -79,6 +80,8 @@
 		DC38689618256ED100E22E92 /* guesserIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "guesserIcon@2x.png"; sourceTree = "<group>"; };
 		DC38689D1825722700E22E92 /* readerIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = readerIcon.png; sourceTree = "<group>"; };
 		DC38689E1825722700E22E92 /* readerIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "readerIcon@2x.png"; sourceTree = "<group>"; };
+		DC42C077186E03D300E4AE8B /* TVCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TVCConstants.h; path = TriviaCast/TVCConstants.h; sourceTree = "<group>"; };
+		DC42C078186E03D300E4AE8B /* TVCConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TVCConstants.m; path = TriviaCast/TVCConstants.m; sourceTree = "<group>"; };
 		DC69C9BF18459852008CF909 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		DCA511F418278605004F3F66 /* TVCCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TVCCameraViewController.h; sourceTree = "<group>"; };
 		DCA511F518278605004F3F66 /* TVCCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TVCCameraViewController.m; sourceTree = "<group>"; };
@@ -302,6 +305,8 @@
 				DCF2039017F3457F00B2D093 /* TVCDataSource.m */,
 				DCA511F7182787F6004F3F66 /* TVCCameraSessionManager.h */,
 				DCA511F8182787F6004F3F66 /* TVCCameraSessionManager.m */,
+				DC42C077186E03D300E4AE8B /* TVCConstants.h */,
+				DC42C078186E03D300E4AE8B /* TVCConstants.m */,
 			);
 			name = Models;
 			path = ..;
@@ -475,6 +480,7 @@
 				DC007F6D17F1EEF700342963 /* TVCPickerView.m in Sources */,
 				DCA51206182B5434004F3F66 /* TVCScoreView.m in Sources */,
 				DCE24F2117EA968A00C1615F /* TVCResponse.m in Sources */,
+				DC42C079186E03D300E4AE8B /* TVCConstants.m in Sources */,
 				DCA511F9182787F6004F3F66 /* TVCCameraSessionManager.m in Sources */,
 				DCF2039117F3457F00B2D093 /* TVCDataSource.m in Sources */,
 				DCA511F618278605004F3F66 /* TVCCameraViewController.m in Sources */,

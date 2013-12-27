@@ -14,9 +14,6 @@
 
 #import <GCKFramework/GCKFramework.h>
 
-
-static NSString * const kReceiverApplicationName = @"1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
-
 @interface TVCResponseViewController () 
 
 @property (nonatomic) TVCPlayer * player;
