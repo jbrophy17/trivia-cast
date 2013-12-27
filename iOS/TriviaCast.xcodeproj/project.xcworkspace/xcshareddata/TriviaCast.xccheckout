@@ -5,7 +5,7 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>4A8C2680-728E-4841-B8EC-C369FB2B4405</string>
+	<string>9E807C49-EC8C-4C52-8FE8-2FBE0901DC21</string>
 	<key>IDESourceControlProjectName</key>
 	<string>TriviaCast</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
@@ -14,11 +14,11 @@
 		<string>https://github.com/jbrophy17/trivia-cast.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>TriviaCast.xcodeproj/project.xcworkspace</string>
+	<string>iOS/TriviaCast.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>8D5E4B7D-D37D-4E16-9B6B-2A0FBF0389E8</key>
-		<string>../..</string>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/jbrophy17/trivia-cast.git</string>
