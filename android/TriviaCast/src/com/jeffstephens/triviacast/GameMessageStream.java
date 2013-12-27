@@ -33,8 +33,6 @@ import java.io.IOException;
 public abstract class GameMessageStream extends MessageStream {
 	private static final String TAG = GameMessageStream.class.getSimpleName();
 
-	private static final String GAME_NAMESPACE = "com.bears.triviaCast";
-
 	// What the JSON is made of
 	private static final String KEY_TYPE = "type";
 	private static final String KEY_NAME = "name";
@@ -106,7 +104,7 @@ public abstract class GameMessageStream extends MessageStream {
 	 * the superclass.
 	 */
 	protected GameMessageStream() {
-		super(GAME_NAMESPACE);
+		super(TVCConstants.GAME_NAMESPACE);
 	}
 
 	public final void joinGame(String name){

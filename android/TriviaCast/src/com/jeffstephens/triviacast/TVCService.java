@@ -38,7 +38,6 @@ public class TVCService extends Service implements MediaRouteAdapter {
 
 	private static final String TAG = GameMessageStream.class.getSimpleName();
 	private static final Logger sLog = new Logger(TAG, true);
-	private static final String APP_NAME = "1f96e9a0-9cf0-4e61-910e-c76f33bd42a2";
 
 	private ApplicationSession mSession;
 	private SessionListener mSessionListener;
@@ -241,7 +240,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 		MediaRouteHelper.registerMinimalMediaRouteProvider(mCastContext, this);
 		mMediaRouter = MediaRouter.getInstance(getApplicationContext());
 		mMediaRouteSelector = MediaRouteHelper.buildMediaRouteSelector(
-				MediaRouteHelper.CATEGORY_CAST, APP_NAME, null);
+				MediaRouteHelper.CATEGORY_CAST, TVCConstants.APP_NAME, null);
 
 		mMediaRouterCallback = new MediaRouterCallback();
 
@@ -575,7 +574,7 @@ public class TVCService extends Service implements MediaRouteAdapter {
 			mSession.setListener(mSessionListener);
 
 			try {
-				mSession.startSession(APP_NAME);
+				mSession.startSession(TVCConstants.APP_NAME);
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to open a session", e);
 			}

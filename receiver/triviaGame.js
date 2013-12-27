@@ -1089,12 +1089,12 @@ function getPhase(channel){
 }
 
 function initReceiver(){
-    var receiver = new cast.receiver.Receiver('1f96e9a0-9cf0-4e61-910e-c76f33bd42a2', ['com.bears.triviaCast'], "", 5),
-        channelHandler = new cast.receiver.ChannelHandler('com.bears.triviaCast'),
+    var receiver = new cast.receiver.Receiver(APP_NAME, [APP_NAMESPACE], "", 5),
+        channelHandler = new cast.receiver.ChannelHandler(APP_NAMESPACE),
         $messages = $('.messages');
 
     channelHandler.addChannelFactory(
-        receiver.createChannelFactory('com.bears.triviaCast'));
+        receiver.createChannelFactory(APP_NAMESPACE));
 
     receiver.start();
     console.log('receiver started');
