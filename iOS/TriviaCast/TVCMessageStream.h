@@ -182,7 +182,7 @@ typedef NS_ENUM(NSInteger, GameResult) {
  *
  * @param players an array of player objects
  */
-- (void) didReceiveGameSyncWithPlayers:(NSArray*) players;
+- (void) didReceiveGameSyncWithPlayers:(NSArray*) players andProfilePictureURLs:(NSArray*) profilePictureURLs;
 
 
 

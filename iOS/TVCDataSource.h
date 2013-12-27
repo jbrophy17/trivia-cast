@@ -12,6 +12,7 @@
 #import "TVCOrderPickerViewController.h"
 
 @class TVCLobbyViewController;
+@class TVCMessageStream;
 
 @interface TVCDataSource : NSObject <TVCMessageStreamDelegate, GCKApplicationSessionDelegate>
 @property(nonatomic, strong) GCKDevice *device;

@@ -309,9 +309,10 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
     
 }
 
-- (void) didReceiveGameSyncWithPlayers:(NSArray *)players {
+- (void) didReceiveGameSyncWithPlayers:(NSArray *)players andProfilePictureURLs:(NSArray *)profilePictureURLs {
+
     NSMutableArray *holdPlayers = [NSMutableArray arrayWithArray:players];
-    NSMutableDictionary *newPlayerDictionary = [[NSMutableDictionary alloc] init];
+    //NSMutableDictionary *newPlayerDictionary = [[NSMutableDictionary alloc] init];
     
     for(TVCPlayer* player in holdPlayers) {
         if(player.playerNumber == self.player.playerNumber) {
@@ -319,18 +320,24 @@ static NSString * const submittedResponseMessage = @"Your response was submitted
             
             self.currentScore = player.score;
             self.player.score = player.score;
-            [self.player setImageUrlString:player.imageUrlString completion:nil];
             self.player.name = player.name;
             self.player.isOut = player.isOut;
             self.player.isGuessing = player.isGuessing;
             self.player.isReader = player.isReader;
-            [newPlayerDictionary setObject:self.player forKey:[NSNumber numberWithInt:self.player.playerNumber]];
+            [self.playerDictionary setObject:self.player forKey:[NSNumber numberWithInt:self.player.playerNumber]];
+            [[self.playerDictionary objectForKey:[NSNumber numberWithInt:player.playerNumber]] setImageUrlString:[profilePictureURLs objectAtIndex:player.playerNumber] completion:^(BOOL valid) {
+                [[[appDelegate dataSource] lobbyViewController] setScoreViewForPlayer:[[[appDelegate dataSource] playerDictionary ] objectForKey:[NSNumber numberWithInt:player.playerNumber]]];
+            }];
+            
         } else {
-            [newPlayerDictionary setObject:player forKey:[NSNumber numberWithInt:player.playerNumber]];
+            [self.playerDictionary setObject:player forKey:[NSNumber numberWithInt:player.playerNumber]];
+            [[self.playerDictionary objectForKey:[NSNumber numberWithInt:player.playerNumber]] setImageUrlString:[profilePictureURLs objectAtIndex:player.playerNumber] completion:^(BOOL valid) {
+                [[[appDelegate dataSource] lobbyViewController] setScoreViewForPlayer:[[[appDelegate dataSource] playerDictionary ] objectForKey:[NSNumber numberWithInt:player.playerNumber]]];
+            }];
         }
         
     }
-    [self setPlayerDictionary:newPlayerDictionary];
+    //[self setPlayerDictionary:newPlayerDictionary];
    // [[[appDelegate dataSource] lobbyViewController] updateScoreList];
 }
 

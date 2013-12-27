@@ -88,43 +88,6 @@ static NSString * const keyScore = @"score";
 static NSString * const keyID = @"ID";
 static NSString * const keyPictureURL = @"pictureURL";
 
-//Google
-
-static NSString * const kKeyColumn = @"column";
-static NSString * const kKeyCommand = @"command";
-static NSString * const kKeyEndState = @"end_state";
-static NSString * const kKeyEvent = @"event";
-static NSString * const kKeyGameOver = @"game_over";
-static NSString * const kKeyMessage = @"message";
-static NSString * const kKeyName = @"name";
-static NSString * const kKeyOpponents = @"opponents";
-static NSString * const kKeyPlayer = @"player";
-static NSString * const kKeyRow = @"row";
-static NSString * const kKeyWinningLocation = @"winning_location";
-
-static NSString * const kKeyText = @"text";
-static NSString * const kKeyResponses = @"responses";
-
-static NSString * const kValueCommandJoin = @"join";
-static NSString * const kValueCommandLeave = @"leave";
-static NSString * const kValueCommandMove = @"move";
-static NSString * const kValueCommandRespond = @"respond";
-
-static NSString * const kValueEventEndgame = @"endgame";
-static NSString * const kValueEventError = @"error";
-static NSString * const kValueEventJoined = @"joined";
-static NSString * const kValueEventMoved = @"moved";
-
-static NSString * const kValueEventReader = @"reader";
-static NSString * const kValueEventGuesser = @"guesser";
-
-static NSString * const kValueEndgameAbandoned = @"abandoned";
-static NSString * const kValueEndgameDraw = @"draw";
-static NSString * const kValueEndgameOWon = @"O-won";
-static NSString * const kValueEndgameXWon = @"X-won";
-
-static NSString * const kValuePlayerO = @"O";
-static NSString * const kValuePlayerX = @"X";
 
 @interface TVCMessageStream () {
     BOOL _joined;
@@ -325,6 +288,8 @@ static NSString * const kValuePlayerX = @"X";
         NSInteger guesserID = [payload gck_integerForKey:valueTypeSetGuesser];
         
         NSMutableArray *returnPlayers = [NSMutableArray array];
+        NSMutableArray *returnPlayerURLs = [NSMutableArray array];
+        
         [[[appDelegate dataSource] lobbyViewController] setMaxScoreCount:[players count]];
         [[[appDelegate dataSource] lobbyViewController] setUpdatedScoreCount:0];
         for(NSDictionary * dict in players) {
@@ -350,19 +315,20 @@ static NSString * const kValuePlayerX = @"X";
             }
             if(!holdPlayer) {
                 NSLog(@"Message Stream, player is nil");
-                holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID andImageURL:profilePicURL];
+                holdPlayer = [[TVCPlayer alloc] initWithName:name andNumber:ID andImageURL:nil];
             }
             
             [holdPlayer setName:name];
             [holdPlayer setIsOut:isOut];
             [holdPlayer setScore:score];
-            [holdPlayer setImageUrlString:profilePicURL completion:^(BOOL valid) {
-                [[[appDelegate dataSource] lobbyViewController] setScoreViewForPlayer:[[[appDelegate dataSource] playerDictionary ] objectForKey:[NSNumber numberWithInt:ID]]];
-            }];
+#warning this is a bad race condition
+            //To prevent race condition
+            [returnPlayerURLs addObject:profilePicURL];
+            
             [holdPlayer setIsGuessing:NO];
             [holdPlayer setIsReader:NO];
 
-            NSLog(@"Game sync: Profile pic url: %@", profilePicURL);
+            //NSLog(@"Game sync: Profile pic url: %@", profilePicURL);
             
             if (holdPlayer.playerNumber == readerID) {
                 [holdPlayer setIsReader:YES];
@@ -381,7 +347,7 @@ static NSString * const kValuePlayerX = @"X";
             [[[appDelegate dataSource] player] setIsGuessing:YES];
         }
         
-        [self.delegate didReceiveGameSyncWithPlayers:returnPlayers];
+        [self.delegate didReceiveGameSyncWithPlayers:returnPlayers andProfilePictureURLs:returnPlayerURLs];
         return;
     }
     

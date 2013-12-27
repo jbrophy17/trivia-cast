@@ -139,7 +139,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "362"
             endingLineNumber = "362"
-            landmarkName = "-didReceiveResponses:fromPlayers:"
+            landmarkName = "-responseWasReceived"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -299,7 +299,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "251"
             endingLineNumber = "251"
-            landmarkName = "-didReceiveResponsesHelper:"
+            landmarkName = "-timerFired:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -331,7 +331,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "47"
             endingLineNumber = "47"
-            landmarkName = "-viewWillAppear:"
+            landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -411,7 +411,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "307"
             endingLineNumber = "307"
-            landmarkName = "-didReceiveGameSyncWithPlayers:"
+            landmarkName = "-didReceiveGuessResponse:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -443,8 +443,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "178"
             endingLineNumber = "178"
-            landmarkName = "@implementation TVCLobbyViewController"
-            landmarkType = "3">
+            landmarkName = "-setScoreViewForPlayer:"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
