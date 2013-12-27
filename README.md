@@ -1,8 +1,8 @@
-# Trivia-Cast
+# TriviaCast
 #### A Game for Friends
 ##### [trivia-cast.com](http://www.trivia-cast.com/)
 
-Trivia-cast is a party game designed to be played with friends using a [Google Chromecast](http://www.google.com/intl/en/chrome/devices/chromecast/).
+TriviaCast is a party game designed to be played with friends using a [Google Chromecast](http://www.google.com/intl/en/chrome/devices/chromecast/).
 
 ## Rules of the Game
 
@@ -39,5 +39,7 @@ Trivia-cast is a party game designed to be played with friends using a [Google C
 While the Chromecast SDK is in a limited preview, this app can't publically used without some configuration. Follow these steps to get it set up:
 
 1. [Buy a Chromecast](https://play.google.com/store/devices/details?id=chromecast)
-2. [Whitelist your Chromecast for development](https://docs.google.com/a/google.com/forms/d/1dwWBstwCRL1mdEbSxSVFkxyo4R-2iQczl1ttgeqSeRw/viewform). If you'd like to host your own version of the game, upload `/receiver/*` to a web server and use that web address in the whitelisting form. If you just want to try it out, you can use `http://trivia-cast.com/receiver.html` as the web address, make a pull request (or email [jefftheman45@gmail.com](mailto:jefftheman45@gmail.com) with your app key, and we'll keep that key in the apps and the server for a few days.
-3. If you're using your own server, you'll have to enter the application key in both the iOS and Android apps (`TVCConstants.m` and `TVCConstants.java`, respectively) and build the apps.
+2. [Whitelist your Chromecast for development](https://docs.google.com/a/google.com/forms/d/1dwWBstwCRL1mdEbSxSVFkxyo4R-2iQczl1ttgeqSeRw/viewform).
+ * If you'd like to host your own version of the game, upload `/receiver/*` to a web server and use that web address in the whitelisting form.
+ * If you just want to try it out, you can use `http://trivia-cast.com/receiver.html` as the web address, make a pull request with your app key filled in in `TVCConstants.m`, `TVCConstants.java`, and `TVCConstants.js`, or email [jefftheman45@gmail.com](mailto:jefftheman45@gmail.com) with your app key, and we'll keep that key in the apps and the server for a few days.
+3. If you're using your own server, you'll have to enter the application key in both the iOS and Android apps (`TVCConstants.m` and `TVCConstants.java`, respectively) and build the apps, and enter your key in `TVCConstants.js`.
