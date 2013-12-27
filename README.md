@@ -1,6 +1,5 @@
 # TriviaCast
 #### A Game for Friends
-##### [trivia-cast.com](http://www.trivia-cast.com/)
 
 TriviaCast is a party game designed to be played with friends using a [Google Chromecast](http://www.google.com/intl/en/chrome/devices/chromecast/).
 
