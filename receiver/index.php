@@ -11,7 +11,7 @@
 			<input type="text" name="promptSubmission" id="promptSubmission" placeholder="Submit a prompt..." size="40">
 			<input type="submit" value="Add">
 		</form>
-		<h2 id="formlink"><a href="#" onclick="showAddPrompt();">submit a prompt &raquo;</a></h2>
+		<h2 id="formlink"><a href="#" class="addlink">submit a prompt &raquo;</a></h2>
 	</div>
 	<div id="content">
 		<h2>TriviaCast is a game for friends.</h2>
@@ -19,7 +19,7 @@
 			but it gets better with more.</p>
 		<p>Basically, a prompt appears on the TV screen and everyone responds to it with their phone or tablet. Once everyone's
 			submitted something, you take turns trying to guess who said what, for points. And
-			<a href="#" onclick="showAddPrompt();">the prompts are crowdsourced</a>!</p>
+			<a href="#" class="addlink">the prompts are crowdsourced</a>!</p>
 
 		<h2>How it Works</h2>
 		<p>One person should have a Chromecast and a TV. Everyone gets on that person's wifi and behaves while connected. Everyone
@@ -61,6 +61,7 @@
 		$('#prompt').hide();
 		$('#formlink').fadeOut();
 		$('#submitPrompt').fadeIn();
+		$('#promptSubmission').focus();
 		return false;
 	}
 
@@ -104,6 +105,11 @@
 	}, function(){
 		$('#formlink').fadeOut('slow');
 	});
+
+	$('.addlink').click(function(e){
+		e.preventDefault();
+		showAddPrompt();
+	})
 
 	$('#submitPrompt').submit(function(e){
 		e.preventDefault();
