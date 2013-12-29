@@ -73,7 +73,7 @@
 
 				if(response.type == "success"){
 					$('#submitPrompt').fadeOut();
-					setTimeout(function(){ $('#prompt').html("Thanks for your submission!").fadeIn(); adding = false; setTimeout(init, 1500);}, 500);
+					setTimeout(function(){ $('#prompt').html("Thanks for your submission!").fadeIn(); $('#promptSubmission').val(''); adding = false; setTimeout(init, 1500);}, 500);
 				}
 				else{
 					console.error("Received API error: " + data);
